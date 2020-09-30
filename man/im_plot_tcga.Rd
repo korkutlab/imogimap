@@ -4,7 +4,7 @@
 \alias{im_plot_tcga}
 \title{A correlation function}
 \usage{
-im_plot_tcga(gene1, gene2, cohort, Immune_Feauture)
+im_plot_tcga(gene1, gene2, cohort, Immune_Feature)
 }
 \arguments{
 \item{gene1}{a single gene name}
@@ -23,7 +23,7 @@ Generates coopretivity boxplots immune checkpoints
 }
 \examples{
 im_plot_tcga(gene1 = "TGFBR1",gene2="CSF1",
-                  cohort="lihc", Immune_Feauture="Mast.Cells.Activated")
+                  cohort="lihc", Immune_Feature="Mast.Cells.Activated")
 im_plot_tcga()
 }
 \keyword{boxplots}
