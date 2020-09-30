@@ -3,22 +3,23 @@
 #' Generates coopretivity boxplots immune checkpoints
 #' @param gene1 a single gene name
 #' @param gene2 a single gene name
-#' @param Immune_Feature an immune feature name as listed in im_syng output.
+#' @param Immune_Feautue an immune feature name as listed in im_syng output.
 #' @param df_mrna a formated mRNA data frame
 #' @param df_ict an optional formated immune cell type fractions data frame
 #' @param df_lf an optional formated Leukocyte fraction data frame
 #' @keywords boxplots
 #' @return a list of multiple dataframes of correlation coefficients and p.values
 #' @export
-#' @examples im_plot(gene1 = "TGFB1",gene2="TNFSF4",
-#'                   Immune_Feature="EMT_score",
+#' @examples im_boot(gene1 = "TGFB1",gene2="TNFSF4",
+#'                   Immune_Feature="EMTscore",
+#'                   N_iteration=1000,
 #'                   df_mrna =  sample_mRNA_data,
 #'                   df_lf = sample_Leukocyte_fraction_data,
 #'                   df_ict = sample_immune_cell_fraction_data)
-#' im_plot()
+#' im_boot()
 
 
-im_plot<-function(gene1,gene2,Immune_Feature,df_mrna,df_ict,df_lf){
+im_boot<-function(gene1 , gene2 , Immune_Feature , N_iteration , df_mrna , df_ict , df_lf){
 
 
   #read data
@@ -65,29 +66,59 @@ im_plot<-function(gene1,gene2,Immune_Feature,df_mrna,df_ict,df_lf){
   #construct quantile ranking matrices
   df_selected <- scale(df_selected,center = T,scale = T)
   df_select_qr <- Get_qunatile_rank(df_selected)
+  if(is.null(df_select_qr)){
+    stop('CScore calculation failed!' )
+  }else{
+    if(ncol(df_select_qr)<3){
+      stop('CScore calculation failed!' )
+    }
+  }
   #--------------------------------------------
 
-  #plot
-  df_feature <- merge(df_feature,df_select_qr,by="Tumor_Sample_ID")
-  df_feature <- df_feature[df_feature[,3] %in% c(1,4),]
-  df_feature <- df_feature[df_feature[,4] %in% c(1,4),]
-  df_feature$state <- as.factor(as.integer((df_feature[,3]*2+df_feature[,4])/3))
 
+  #Get C Score
 
-  p=ggplot(df_feature, aes(x=state,y=get(Immune_Feature))) +
-    labs(title="", x="", y=Immune_Feature)+
-    geom_boxplot(width=0.5, show.legend = T, outlier.size = 1.0, lwd=0.5, outlier.colour = "red",outlier.shape = 21)+
-    geom_jitter(position = position_jitter(width=0.1), cex=1, pch=19, alpha=1)+
-    theme( axis.text.x=element_text(size=10),
-      axis.text.y=element_text(size=10,angle = 90),
-      axis.title =element_text(size=10),legend.position ="top")+
-    scale_x_discrete(labels =  c(" Both low",paste0(gene2," high\n",gene1," low"), paste0(gene1," high\n",gene2," low"),"Both high"))+
-    stat_compare_means(comparisons =
-        list( c("1", "2"),c("1", "3"), c("3", "4"), c("2", "4")),
-      size=5,method = "wilcox.test")+
-    theme(legend.text=element_text(size=10))
+  dft <- merge(df_feature,df_select_qr,by="Tumor_Sample_ID")
+  dft <- as.data.frame(dft)
+  dft <- dft[dft[,3] %in% c(1,4),]
+  dft <- dft[dft[,4] %in% c(1,4),]
+  dft <- dft[complete.cases(dft),]
+  myscore <- Get_CScore(dft)$CScore
+  if(is.na(myscore)) stop("Error: Not enough data to calculate combination score!")
+  mysign <- sign(myscore)
+  #--------------------------------------------
 
-  return(p)
+  #Bootstrap
+  P_Count <- 0.0
+  df <- df_mrna
+
+  for(i in 1:N_iteration){
+
+    df_selected <- as.data.frame(t(df[sample(nrow(df),2,replace = F),]))
+    df_selected <- scale(df_selected,center = T,scale = T)
+    df_select_qr <- Get_qunatile_rank(df_selected)
+    if(is.null(df_select_qr)){
+      next
+    }else{
+      if(ncol(df_select_qr)<3){
+        next
+      }
+    }
+    dft <- merge(df_feature,df_select_qr,by="Tumor_Sample_ID")
+    dft <- as.data.frame(dft)
+    dft <- dft[dft[,3] %in% c(1,4),]
+    dft <- dft[dft[,4] %in% c(1,4),]
+    dft <- dft[complete.cases(dft),]
+    cc <- sum(mysign*Get_CScore(dft)$CScore > mysign*myscore)
+    if(!is.na(cc)){
+      P_Count <- P_Count + cc
+    }
+  }
+
+  P_Count <- P_Count/N_iteration
+
+  return(P_Count)
 }
+
 
 

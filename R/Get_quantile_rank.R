@@ -16,6 +16,12 @@ Get_qunatile_rank<-function(df){
       as.integer(cut(x,df_breaks,include.lowest=TRUE))
     }
   })
+  if(is.null(dfr)){
+    lgenes <- names(dfr)[sapply(dfr, is.null)]
+    warning("Genes with duplications in quantile values are removed:  ", lapply(lgenes, function(x)paste0(x,"  ")))
+    return(dfr)
+  }
+
   if(inherits(dfr, "list")){
     lgenes <- names(dfr)[sapply(dfr, is.null)]
     warning("Genes with duplications in quantile values are removed:  ", lapply(lgenes, function(x)paste0(x,"  ")))

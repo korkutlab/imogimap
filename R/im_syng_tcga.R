@@ -66,7 +66,7 @@ im_syng_tcga<-function(gene_list,cohort){
           dft2 <- dft2[dft2[ , 4] %in% c(1 , 4) , ]
           dft2 <- dft2[complete.cases(dft2),]
           if(nrow(dft2>0)){
-            dfts <- Get_syng_score(dft2)
+            dfts <- Get_CScore(dft2)
             dfts$Cohort <- disease
             dfts <- dfts[ , c("Cohort" , c(setdiff(colnames(dfts) , "Cohort")))]
             df_syng <- rbind(df_syng , dfts)
@@ -100,7 +100,7 @@ im_syng_tcga<-function(gene_list,cohort){
           dft2 <- dft2[dft2[,4] %in% c(1,4),]
           dft2 <- dft2[complete.cases(dft2),]
           if(nrow(dft2>0)){
-            dfts <- Get_Cscore(dft2)
+            dfts <- Get_CScore(dft2)
             dfts$Cohort <- disease
             dfts <- dfts[,c("Cohort",c(setdiff(colnames(dfts),"Cohort")))]
             df_syng <- rbind(df_syng,dfts)

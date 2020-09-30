@@ -26,10 +26,10 @@ Get_CScore=function(fdata){
     n3 <- length(dft3)
     n4 <- length(dft4)
 
-    if(n1<2 || n2<2 || n3<2 || n4<2){
+    if(n1<1 || n2<1 || n3<1 || n4<1){
       CS <- NA
-      sp1 <- NA
-      sp2 <- NA
+      Cp1 <- NA
+      Cp2 <- NA
     }else{
       m1 <- median(dft1,na.rm=T)
       m2 <- median(dft2,na.rm=T)
@@ -41,13 +41,13 @@ Get_CScore=function(fdata){
       mc <- (m4-m1)
       CS_sign <- floor(abs(sign(ma) + sign(mb) + sign(mc)) / 3)
       CS <- CS_sign * (abs(mc) - max(abs(ma) , abs(mb)))
-      sp1 <- wilcox.test(dft3 , dft4 , paired = F , exact = F)$p.value
-      sp2 <- wilcox.test(dft2 , dft4 , paired = F , exact = F)$p.value
+      Cp1 <- wilcox.test(dft3 , dft4 , paired = F , exact = F)$p.value
+      Cp2 <- wilcox.test(dft2 , dft4 , paired = F , exact = F)$p.value
     }
     sscoreij <- data.frame(Gene=colnames(fdata)[3],
       ICP=colnames(fdata)[4],
       Immune_Feature=colnames(fdata)[2],
-      CScore=CS,pvalueA_AB=sp1,pvalueB_AB=sp2)
+      CScore=CS,pvalueA_AB=Cp1,pvalueB_AB=Cp2)
   }
   return(sscoreij)
 }

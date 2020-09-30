@@ -9,11 +9,11 @@
 #' @return a list of multiple dataframes of correlation coefficients and p.values
 #' @export
 #' @examples im_plot_tcga(gene1 = "TGFBR1",gene2="CSF1",
-#'                   cohort="lihc", Immune_Feauture="Mast.Cells.Activated")
+#'                   cohort="lihc", Immune_Feature="Mast.Cells.Activated")
 #' im_plot_tcga()
 
 
-im_plot_tcga<-function(gene1,gene2,cohort,Immune_Feauture){
+im_plot_tcga<-function(gene1,gene2,cohort,Immune_Feature){
 
 
   cohort <- tolower(cohort)
@@ -33,18 +33,18 @@ im_plot_tcga<-function(gene1,gene2,cohort,Immune_Feauture){
   if(nrow(df_selected)==0){
     stop("ERROR: No gene found. Select a gene name from your mRNA data")
   }
-  if(Immune_Feauture=="EMTscore"){
+  if(Immune_Feature=="EMTscore"){
     df_feature <- pathio::TCGA_EMT
     colnames(df_feature)[1] <- "PATIENT_BARCODE"
   }else{
-    if(Immune_Feauture=="Leukocyte_fraction"){
+    if(Immune_Feature=="Leukocyte_fraction"){
       df_feature <- pathio::TCGA_Leukocyte_fraction
       colnames(df_feature)[1] <- "PATIENT_BARCODE"
     }else{
       df_feature <- pathio::TCGA_IMCell_fraction
-      tmp <- which(colnames(df_feature)==Immune_Feauture)
+      tmp <- which(colnames(df_feature)==Immune_Feature)
       if(length(tmp)==0){
-        stop(Immune_Feauture," Not found. Check ... for list of immune features\n")
+        stop(Immune_Feature," Not found. Check ... for list of immune features\n")
       }else{
         tmpID <- which(colnames(df_feature)=="PATIENT_BARCODE")
         df_feature <- df_feature[,c(tmpID,tmp)]
@@ -75,8 +75,8 @@ im_plot_tcga<-function(gene1,gene2,cohort,Immune_Feauture){
 
 
 
-  p<-ggplot(df_feature, aes(x=state,y=get(Immune_Feauture),col="grey")) +
-    labs(title="", x="", y=Immune_Feauture)+
+  p<-ggplot(df_feature, aes(x=state,y=get(Immune_Feature),col="grey")) +
+    labs(title="", x="", y=Immune_Feature)+
     geom_boxplot(width=0.5, show.legend = T, outlier.size = 1.0, lwd=0.5, outlier.colour = "red",outlier.shape = 21)+
     geom_jitter(position = position_jitter(width=0.1), cex=1, pch=19, alpha=1)+
     theme( axis.text.x=element_text(size=10),
@@ -91,10 +91,10 @@ im_plot_tcga<-function(gene1,gene2,cohort,Immune_Feauture){
   gg<-ggplot_build(p)
   xx<-gg$data[[1]][c("group","outliers")]
   df_feature2<-merge(df_feature,xx,by.x="state",by.y="group")
-  df_feature2$out<-apply(df_feature2,1,function(x) x[Immune_Feauture] %in% x$outliers)
+  df_feature2$out<-apply(df_feature2,1,function(x) x[Immune_Feature] %in% x$outliers)
 
-  p<-ggplot(df_feature2, aes(x=state,y=get(Immune_Feauture))) +
-    labs(title="", x="", y=Immune_Feauture)+
+  p<-ggplot(df_feature2, aes(x=state,y=get(Immune_Feature))) +
+    labs(title="", x="", y=Immune_Feature)+
     geom_boxplot(width=0.5, show.legend = T, lwd=0.5,
       outlier.shape = NA,border="grey")+
     geom_jitter(aes(col=out) ,position = position_jitter(width=0.1),
