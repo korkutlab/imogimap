@@ -1,19 +1,18 @@
-#' Calculates pathway score
-#' Calculates a pathway score from a gene list
+#' Calculates EMT score
+#' Calculates EMT score from a gene list
 #' @param  pdf a formated mRNA data frame
 #' @keywords immune checkpoints
 #' @return a dataframe of correlation coefficient and p.values
+#' @examples get_emt_score(pdf=sample_mRNA_data)
 #' @export
-#' @examples Get_EMTscore(pdf=sample_mRNA_data)
-#' Get_EMTscore()
 #'
 #'
-Get_EMTscore=function(pdf){
+get_emt_score=function(pdf){
 
   missing_EMT <- EMT_gene_list[-which(EMT_gene_list$genes %in% rownames(pdf)),]$gene
   if(length(missing_EMT)>0){
     warning(length(missing_EMT)," missing EMT signature genes:  \n  ",
-      lapply(missing_EMT, function(x)paste0(x,"  ")),"\nCheck EMT_list for all signature genes.\n")
+      lapply(missing_EMT, function(x)paste0(x,"  ")),"\nCheck EMT_gene_list for all signature genes.\n")
   }
 
   sub_list <- EMT_gene_list[!(EMT_gene_list$genes %in% missing_EMT),]
@@ -31,6 +30,7 @@ Get_EMTscore=function(pdf){
     colnames(pscore) <- "EMTscore"
     pscore$EMTscore <- 2^pscore$EMTscore
     pscore$Tumor_Sample_ID <- rownames(pscore)
+    pscore <- pscore[,c("Tumor_Sample_ID","EMTscore")]
   }
   return(pscore)
 }

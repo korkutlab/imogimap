@@ -2,28 +2,37 @@
 % Please edit documentation in R/im_plot_tcga.R
 \name{im_plot_tcga}
 \alias{im_plot_tcga}
-\title{A correlation function}
+\title{Generate a stratified boxplot for immune feature values}
 \usage{
-im_plot_tcga(gene1, gene2, cohort, Immune_Feature)
+im_plot_tcga(cotarget, checkpoint, cohort, Immune_Feature, logtrans)
 }
 \arguments{
-\item{gene1}{a single gene name}
+\item{cotarget}{A charachter indicating a single cotarget Hugo symbol.}
 
-\item{gene2}{a single gene name}
+\item{checkpoint}{A charachter indicating a single checkpoint Hugo symbol.}
 
 \item{cohort}{a single TCGA disease}
 
-\item{Immune_Feautue}{an immune feature name as listed in im_syng_tcga output.}
+\item{logtrans}{An optional logical indicating if y axis should be displayed in logarithmic scale. Default is FALSE.}
+
+\item{Immune_Feauture}{an immune feature name as listed in TCGA_immune_features_list.}
 }
 \value{
 a list of multiple dataframes of correlation coefficients and p.values
 }
 \description{
-Generates coopretivity boxplots immune checkpoints
+Generate a stratified boxplot for immune feature values
+}
+\details{
+Feature data is stratified base on expression quartiles of cotarget and checkpoint. High/Low categories include samples with expression values in lower/upper quartiles correspondingly. Samples with expression values in middle quartiles are discarded. For details of quartile calculation see get_quantile_rank function.
 }
 \examples{
-im_plot_tcga(gene1 = "TGFBR1",gene2="CSF1",
-                  cohort="lihc", Immune_Feature="Mast.Cells.Activated")
-im_plot_tcga()
+im_plot_tcga(cotarget = "BRAF", checkpoint="CD274",
+cohort="acc", Immune_Feature="Mast.Cells.Activated",logtrans=TRUE)
 }
-\keyword{boxplots}
+\keyword{boxplots,}
+\keyword{cbioportal}
+\keyword{checkpoints,}
+\keyword{data}
+\keyword{features,}
+\keyword{immune}

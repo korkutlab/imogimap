@@ -7,7 +7,9 @@ Authors@R:
            role = c("aut", "cre"),
            email = "b.bozorgui@gmail.com",
            comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: Imogene (Immuno-oncology gene expression associations) is a group-to-group comparison tool that assesses user-provided mRNA expressions to identify associated features at the tumor immune interface that have likely biological relevance and cooperatively effect with regard to immune oncological processes. 
+Description: Imogene (Immuno-oncology gene expression associations) is a group-to-group comparison tool that assesses 
+    user-provided mRNA expressions to identify associated features at the tumor immune interface that have likely
+    biological relevance and cooperatively effect with regard to immune oncological processes. 
 License: `use_mda_license()`
 Encoding: UTF-8
 LazyData: true

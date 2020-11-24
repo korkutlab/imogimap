@@ -2,31 +2,45 @@
 % Please edit documentation in R/im_cor.R
 \name{im_cor}
 \alias{im_cor}
-\title{A correlation function}
+\title{Calculate Spearman correlation with immune checkpoints}
 \usage{
-im_cor(gene_list, df_mrna, df_ict, df_lf)
+im_cor(cotarget, checkpoint, data_expression, data_feature, add_features)
 }
 \arguments{
-\item{gene_list}{a list of charachters}
+\item{cotarget}{A charachter vector of gene/protein IDs.}
 
-\item{df_mrna}{a formated mRNA data frame}
+\item{checkpoint}{An optional charachter vector of immune checkpoint gene/protein IDs.}
 
-\item{df_ict}{a formated immune cell type fractions data frame}
+\item{data_expression}{A numeric matrix or data frame containing gene/protein expressions.}
 
-\item{df_lf}{a formated Leukocyte fraction data frame}
+\item{data_feature}{An optional numeric matrix or data frame containing immune features.}
+
+\item{add_features}{An optional logical indicating if EMT score, angiogenesis score and IFNG expression should be added to immune features. Default is TRUE.}
 }
 \value{
-a list of multiple dataframes of correlation coefficients and p.values
+A list of dataframes containing spearman correlations and non-FDR adjusted probability values.
 }
 \description{
-Calculates correlation with immune checkpoints
+Calculate Spearman correlation with immune checkpoints
+}
+\details{
+By default (if no checkpoint is specified), icp_gene_list will be used.
+
+data_expression is formatted with genes/proteins as rows and samples/patients as columns.
+For data_expression sample formats see sample_mRNA_data.
+
+data_feature is formated with samples/patients as rows and immune features as columns.
+For data_feature sample format see sample_immune_cell_fraction_data.
 }
 \examples{
-im_cor(gene_list =  c("MCL1","TP53"),
-                 df_mrna =  sample_mRNA_data,
-                 df_lf = sample_Leukocyte_fraction_data,
-                 df_ict = sample_immune_cell_fraction_data)
-im_cor()
+im_cor(cotarget =  c("BRAF","CTLA4"),
+                 checkpoint= c("CD274","CTLA4"),
+                 data_expression =  sample_mRNA_data,
+                 data_feature = sample_immune_cell_fraction_data,
+                 add_features=T)
 }
-\keyword{features}
+\keyword{Spearman}
+\keyword{checkpoints}
+\keyword{correlation,immune}
+\keyword{features,}
 \keyword{immune}

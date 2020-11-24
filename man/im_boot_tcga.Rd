@@ -26,7 +26,6 @@ im_boot_tcga(gene1 = "ACVRL1",gene2="CD274",
                   cohort="brca",
                   Immune_Feature="Leukocyte_fraction",
                   N_iteration=100000)
-im_boot_tcga()
 }
 \keyword{bootstrap,}
 \keyword{pvalue,}

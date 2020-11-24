@@ -2,24 +2,37 @@
 % Please edit documentation in R/im_cor_tcga.R
 \name{im_cor_tcga}
 \alias{im_cor_tcga}
-\title{A correlation function}
+\title{Find Spearman correlation of co-target genes with immuno-oncology features using cbioportal data}
 \usage{
-im_cor_tcga(gene_list, cohort)
+im_cor_tcga(cotarget, checkpoint, cohort)
 }
 \arguments{
-\item{gene_list}{a list of genes Hugo symbol}
+\item{cotarget}{A charachter vector of gene Hugo symbols.}
 
-\item{cohort}{a list of TCGA diseases}
+\item{checkpoint}{An optional charachter vector of immune checkpoint gene/protein IDs.}
+
+\item{cohort}{a charachter vector of TCGA diseases}
 }
 \value{
-a dataframe of correlation coefficient and p.values
+a list of dataframes containing Spearman correlations and non-FDR adjusted probability values.
 }
 \description{
-This function allows you to calculate correlation with immune checkpoints
+Find Spearman correlation of co-target genes with immuno-oncology features using cbioportal data
+}
+\details{
+im_cor_tcga uses gene expressions from cbioportal data, 2018 tcga pancan atlas to find correlation and probaility values between cotargets and immune checkpoints and immuno-oncology features as listed in TCGA_immune_features_list.
+
+By default (if no checkpoint is specified), icp_gene_list will be used.
+
+For TCGA disease list see TCGA_disease_list
+
+A non-FDR-adjusted p.value is reported for each correlation value to allow for easier adjustments by user.
 }
 \examples{
-im_cor_tcga(gene_list=c("TP53","HER2"),cohort=c("acc","gbm"))
-im_cor_tcga()
+im_cor_tcga(cotarget=c("BRAF"),checkpoint=c("CD274","CTLA4"),cohort=c("acc","gbm"))
 }
-\keyword{checkpoints}
-\keyword{immune}
+\keyword{correlation,}
+\keyword{expression}
+\keyword{features,}
+\keyword{gene}
+\keyword{immunouoncology}

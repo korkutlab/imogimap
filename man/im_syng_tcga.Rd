@@ -2,24 +2,51 @@
 % Please edit documentation in R/im_syng_tcga.R
 \name{im_syng_tcga}
 \alias{im_syng_tcga}
-\title{A correlation function}
+\title{Find combinatorial association of immunotherapy co-targets with all tumor intrinsic features.}
 \usage{
-im_syng_tcga(gene_list, cohort)
+im_syng_tcga(
+  cotarget,
+  checkpoint,
+  cohort,
+  data_feature,
+  add_pvalue,
+  N_iteration
+)
 }
 \arguments{
-\item{gene_list}{a list of genes Hugo symbol}
+\item{cotarget}{A character vector of gene Hugo symbols.}
+
+\item{checkpoint}{An optional character vector of immune checkpoint gene Hugo symbols.}
 
 \item{cohort}{a list of TCGA diseases}
+
+\item{data_feature}{An optional numeric matrix or data frame containing immune features.}
+
+\item{add_pvalue}{An optional logical indicating if a prandom bootstrapping value should be calculated. Default is FALSE.}
+
+\item{N_iteration}{Number of iterrations for random bootstrapping}
 }
 \value{
-a dataframe of correlation coefficient and p.values
+a dataframe of synergy scores and bootstrapping pvalues
 }
 \description{
-This function allows you to calculate correlation with immune checkpoints
+Find combinatorial association of immunotherapy co-targets with all tumor intrinsic features.
+}
+\details{
+im_syng_tcga uses gene expressions from cbioportal data, 2018  tcga pancan atlas to find combinatorial association of immunotherapy co-targets with immuno-oncology features as listed in TCGA_immune_features_list
+
+For details of synergy score calculations see get_syng_score function.
+
+By default (if no checkpoint is specified), icp_gene_list will be used.
+
+A p.value is computed using random bootstraping with replacement from the distibution of synergy scores for each immune checkpointand-immune feature pair. The default values of N_iteration is 1000.
 }
 \examples{
-im_syng_tcga(gene_list=c("TP53","TGFB1"),cohort=c("acc","gbm"))
-im_syng_tcga()
+im_syng_tcga(cotarget=c("TP53","TGFB1"),checkpoint=c(),cohort=c("acc","gbm"),add_pvalue=TRUE, N_iteration=1000)
 }
-\keyword{checkpoints}
+\keyword{Synergy,}
+\keyword{TCGA}
+\keyword{bootstrapping,}
+\keyword{checkpoint,}
+\keyword{feature,}
 \keyword{immune}

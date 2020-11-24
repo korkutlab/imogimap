@@ -32,6 +32,5 @@ im_boot(gene1 = "TGFB1",gene2="TNFSF4",
                   df_mrna =  sample_mRNA_data,
                   df_lf = sample_Leukocyte_fraction_data,
                   df_ict = sample_immune_cell_fraction_data)
-im_boot()
 }
 \keyword{boxplots}

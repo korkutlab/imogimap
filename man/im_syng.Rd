@@ -2,31 +2,62 @@
 % Please edit documentation in R/im_syng.R
 \name{im_syng}
 \alias{im_syng}
-\title{A correlation function}
+\title{Find combinatorial association of immunotherapy co-targets with tumor intrinsic features.}
 \usage{
-im_syng(gene_list, df_mrna, df_ict, df_lf)
+im_syng(
+  cotarget,
+  checkpoint,
+  data_expression,
+  data_feature,
+  add_features,
+  add_pvalue,
+  N_iteration
+)
 }
 \arguments{
-\item{gene_list}{a list of charachters}
+\item{cotarget}{A charachter vector of gene/protein IDs.}
 
-\item{df_mrna}{a formated mRNA data frame}
+\item{checkpoint}{An optional charachter vector of immune checkpoint gene/protein IDs.}
 
-\item{df_ict}{a formated immune cell type fractions data frame}
+\item{data_expression}{A non-negative numeric matrix or data frame containing gene/protein expressions in linear scale.}
 
-\item{df_lf}{a formated Leukocyte fraction data frame}
+\item{data_feature}{An optional numeric matrix or data frame containing immune features.}
+
+\item{add_features}{An optional logical indicating if EMT score, angiogenesis score and IFNG expression should be added to immune features. Default is TRUE.}
+
+\item{add_pvalue}{An optional logical indicating if a prandom bootstrapping value should be calculated. Default is FALSE.}
+
+\item{N_iteration}{Number of iterrations for random bootstrapping}
 }
 \value{
-a dataframes of bliss scores
+a dataframes of synergy scores and bootstrapping pvalues
 }
 \description{
-Generates coopretivity boxplots immune checkpoints
+Find combinatorial association of immunotherapy co-targets with tumor intrinsic features.
+}
+\details{
+For details of synergy score calculations see get_syng_score function.
+
+By default (if no checkpoint is specified), icp_gene_list will be used.
+
+data_expression is formatted with genes/proteins as rows and samples/patients as columns.
+For data_expression sample formats see sample_mRNA_data.
+
+data_feature is formated with samples/patients as rows and immune features as columns.
+For data_feature sample format see sample_immune_cell_fraction_data.
+
+A p.value is computed using random bootstraping with replacement from the distibution of synergy scores for each immune checkpointand-immune feature pair. The default values of N_iteration is 1000.
 }
 \examples{
-im_syng(gene_list =  c("TGBFR1","TGBFR2","ACVRL1","ENG"),
-                  df_mrna =  sample_mRNA_data,
-                  df_lf = sample_Leukocyte_fraction_data,
-                  df_ict = sample_immune_cell_fraction_data)
-im_syng()
+im_syng(cotarget =  c("BRAF"),
+                  checkpoint= c("CD274","CTLA4"),
+                  data_expression =  sample_mRNA_data,
+                  data_feature = sample_Leukocyte_fraction_data,
+                  add_features=T,add_pvalue=T,
+                  N_iteration=1000)
 }
-\keyword{features}
+\keyword{Synergy,}
+\keyword{bootstrapping}
+\keyword{checkpoint,}
+\keyword{feature,}
 \keyword{immune}

@@ -2,35 +2,40 @@
 % Please edit documentation in R/im_plot.R
 \name{im_plot}
 \alias{im_plot}
-\title{A correlation function}
+\title{Generate a stratified boxplot for immune feature values}
 \usage{
-im_plot(gene1, gene2, Immune_Feature, df_mrna, df_ict, df_lf)
+im_plot(cotarget, checkpoint, data_expression, data_feature)
 }
 \arguments{
-\item{gene1}{a single gene name}
+\item{cotarget}{A charachter indicating a single cotarget ID.}
 
-\item{gene2}{a single gene name}
+\item{checkpoint}{A charachter indicating a single checkpoint ID.}
 
-\item{Immune_Feature}{an immune feature name as listed in im_syng output.}
+\item{data_expression}{A numeric matrix or data frame containing gene/protein expressions}
 
-\item{df_mrna}{a formated mRNA data frame}
-
-\item{df_ict}{an optional formated immune cell type fractions data frame}
-
-\item{df_lf}{an optional formated Leukocyte fraction data frame}
+\item{data_feature}{A numeric matrix or data frame containing a single immune feature.}
 }
 \value{
-a list of multiple dataframes of correlation coefficients and p.values
+a stratified boxplot
 }
 \description{
-Generates coopretivity boxplots immune checkpoints
+Generate a stratified boxplot for immune feature values
+}
+\details{
+Feature data is stratified base on expression quartiles of cotarget and checkpoint. High/Low categories include samples with expression values in lower/upper quartiles correspondingly. Samples with expression values in middle quartiles are discarded. For details of quartile calculation see get_quantile_rank function.
+
+data_expression is formatted with genes/proteins as rows and samples/patients as columns.
+For data_expression sample formats see sample_mRNA_data.
+
+data_feature is formated with samples/patients as rows and immune feature as single column.
+For data_feature sample format see sample_Leukocyte_fraction_data.
 }
 \examples{
-im_plot(gene1 = "TGFB1",gene2="TNFSF4",
-                  Immune_Feature="EMT_score",
-                  df_mrna =  sample_mRNA_data,
-                  df_lf = sample_Leukocyte_fraction_data,
-                  df_ict = sample_immune_cell_fraction_data)
-im_plot()
+im_plot(cotarget = "TGFB1",checkpoint="TNFSF4",
+                  data_expression =  sample_mRNA_data,
+                  data_feature = sample_Leukocyte_fraction_data)
 }
-\keyword{boxplots}
+\keyword{boxplot,}
+\keyword{checkpoints}
+\keyword{features,}
+\keyword{immune}

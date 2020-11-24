@@ -9,15 +9,13 @@
 #' @param df_lf an optional formated Leukocyte fraction data frame
 #' @keywords boxplots
 #' @return a list of multiple dataframes of correlation coefficients and p.values
-#' @export
 #' @examples im_boot(gene1 = "TGFB1",gene2="TNFSF4",
 #'                   Immune_Feature="EMTscore",
 #'                   N_iteration=1000,
 #'                   df_mrna =  sample_mRNA_data,
 #'                   df_lf = sample_Leukocyte_fraction_data,
 #'                   df_ict = sample_immune_cell_fraction_data)
-#' im_boot()
-
+#' @export
 
 im_boot<-function(gene1 , gene2 , Immune_Feature , N_iteration , df_mrna , df_ict , df_lf){
 
@@ -29,7 +27,7 @@ im_boot<-function(gene1 , gene2 , Immune_Feature , N_iteration , df_mrna , df_ic
     stop("ERROR: No gene found. Select a gene name from your mRNA data")
   }
   if(Immune_Feature=="EMTscore"){
-    df_EMT <-  Get_EMTscore(mydata)
+    df_EMT <-  get_EMTscore(mydata)
     if(nrow(df_EMT)==0){
       stop("No EMT signature gene found.\n")
     }else{
@@ -65,7 +63,7 @@ im_boot<-function(gene1 , gene2 , Immune_Feature , N_iteration , df_mrna , df_ic
 
   #construct quantile ranking matrices
   df_selected <- scale(df_selected,center = T,scale = T)
-  df_select_qr <- Get_qunatile_rank(df_selected)
+  df_select_qr <- get_qunatile_rank(df_selected)
   if(is.null(df_select_qr)){
     stop('CScore calculation failed!' )
   }else{
@@ -83,7 +81,7 @@ im_boot<-function(gene1 , gene2 , Immune_Feature , N_iteration , df_mrna , df_ic
   dft <- dft[dft[,3] %in% c(1,4),]
   dft <- dft[dft[,4] %in% c(1,4),]
   dft <- dft[complete.cases(dft),]
-  myscore <- Get_CScore(dft)$CScore
+  myscore <- get_syng_score(dft)$CScore
   if(is.na(myscore)) stop("Error: Not enough data to calculate combination score!")
   mysign <- sign(myscore)
   #--------------------------------------------
@@ -96,7 +94,7 @@ im_boot<-function(gene1 , gene2 , Immune_Feature , N_iteration , df_mrna , df_ic
 
     df_selected <- as.data.frame(t(df[sample(nrow(df),2,replace = F),]))
     df_selected <- scale(df_selected,center = T,scale = T)
-    df_select_qr <- Get_qunatile_rank(df_selected)
+    df_select_qr <- get_qunatile_rank(df_selected)
     if(is.null(df_select_qr)){
       next
     }else{
@@ -109,7 +107,7 @@ im_boot<-function(gene1 , gene2 , Immune_Feature , N_iteration , df_mrna , df_ic
     dft <- dft[dft[,3] %in% c(1,4),]
     dft <- dft[dft[,4] %in% c(1,4),]
     dft <- dft[complete.cases(dft),]
-    cc <- sum(mysign*Get_CScore(dft)$CScore > mysign*myscore)
+    cc <- sum(mysign*get_syng_score(dft)$CScore > mysign*myscore)
     if(!is.na(cc)){
       P_Count <- P_Count + cc
     }
