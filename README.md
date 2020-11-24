@@ -1,14 +1,18 @@
 # imogene
-#imogene is an R package that assesses user-provided genomic profiles against a curated list of immune checkpoints and identifies combinations that have noteworthy synergistic associations with tumor intrinsic immune processes. In the absence of user-provided data, Imogene uses number of API functions to assess TCGA mRNA data via publicly available CBioPortal repositories. 
+imogene is an R package that assesses user-provided genomic profiles against a curated list of immune checkpoints and identifies combinations that have noteworthy synergistic associations with tumor intrinsic immune processes. In the absence of user-provided data, Imogene uses number of API functions to assess TCGA mRNA data via publicly available CBioPortal repositories. 
 
-#Some imogene functions import cBioPortalData, dplyr, tidyr libraries.
 
-#To install from github
+# Quick Start
+
+# Installation
 install_github('bozorgui/imogene')
 
+# Note
+
+Some imogene functions import cBioPortalData, dplyr, tidyr libraries.
 
 
-# ----------Use with sample data --------------
+# example Use with sample data
 
 df <- im_cor(cotarget = "BRAF",
   checkpoint = "CD276",
@@ -38,7 +42,7 @@ im_boot("ACVR2B","CD274",Immune_Feature = "Leukocyte_fraction",
   
   
   
-# -------------Use with cbioportal data --------------
+# Use with cbioportal data
 
 #Get synergy scores
 df <- im_syng_tcga(cotarget = "BRAF",checkpoint = "CD276",cohort = "acc",add_pvalue = T,N_iteration = 100)
