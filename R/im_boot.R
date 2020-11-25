@@ -81,6 +81,7 @@ im_boot<-function(gene1 , gene2 , Immune_Feature , N_iteration , df_mrna , df_ic
   dft <- dft[dft[,3] %in% c(1,4),]
   dft <- dft[dft[,4] %in% c(1,4),]
   dft <- dft[complete.cases(dft),]
+  dft<- dft[,c(2,3,4)]
   myscore <- get_syng_score(dft)$CScore
   if(is.na(myscore)) stop("Error: Not enough data to calculate combination score!")
   mysign <- sign(myscore)
@@ -107,6 +108,7 @@ im_boot<-function(gene1 , gene2 , Immune_Feature , N_iteration , df_mrna , df_ic
     dft <- dft[dft[,3] %in% c(1,4),]
     dft <- dft[dft[,4] %in% c(1,4),]
     dft <- dft[complete.cases(dft),]
+    dft<- dft[,c(2,3,4)]
     cc <- sum(mysign*get_syng_score(dft)$CScore > mysign*myscore)
     if(!is.na(cc)){
       P_Count <- P_Count + cc

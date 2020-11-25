@@ -165,6 +165,7 @@ im_syng<-function(cotarget,checkpoint,data_expression,data_feature, add_features
           dft <- df_bank_sub2[,c(1,2,k,bank_size)]
           dft <- dft[dft[,3] %in% c(1,4),]
           dft <- dft[complete.cases(dft),]
+          dft<- dft[,c(2,3,4)]
           syng_dist[k-2] <- get_syng_score(dft)$Synergy_score
         }
         syng_dist <- syng_dist[complete.cases(syng_dist)]
@@ -175,6 +176,8 @@ im_syng<-function(cotarget,checkpoint,data_expression,data_feature, add_features
           dft <- merge(data_feature[,c(1,j+1)],dft,by="Tumor_Sample_ID")
           dft <- dft[dft[,3] %in% c(1,4),]
           dft <- dft[dft[,4] %in% c(1,4),]
+          dft<- dft[,c(2,3,4)]
+          dft <- dft[complete.cases(dft),]
           cc <- get_syng_score(dft)
           myscore <- cc$Synergy_score
           if(is.na(myscore)){
@@ -202,6 +205,8 @@ im_syng<-function(cotarget,checkpoint,data_expression,data_feature, add_features
           dft2 <- merge(data_feature[,c(1,feature_ID)],dft,by="Tumor_Sample_ID")
           dft2 <- dft2[dft2[,3] %in% c(1,4),]
           dft2 <- dft2[dft2[,4] %in% c(1,4),]
+          dft2<- dft2[,c(2,3,4)]
+          dft2 <- dft2[complete.cases(dft2),]
           df_syng <- rbind(df_syng,get_syng_score(dft2))
         }
       }
