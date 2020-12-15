@@ -4,10 +4,12 @@
 \alias{get_syng_score}
 \title{Calculate synergy score for the association effect of two genes/proteins on a feature or response}
 \usage{
-get_syng_score(fdata)
+get_syng_score(fdata, method)
 }
 \arguments{
 \item{fdata}{A numeric data frame with 3 columns: A numeric value of an immune feature and two group ID's based on quantile stratification of two genes/proteins.}
+
+\item{method}{a charachter string indicating which synergy score to be used. one of "HSA" or "Bliss". Default is HSA.}
 }
 \value{
 A data frame containing synergy scores
@@ -26,5 +28,7 @@ dft <- TCGA_EMT$EMTscore
 mydata<- cbind(feature=dft,gene1=sample(c(1,4),length(dft),replace = T),gene2=sample(c(1,4),length(dft),replace = T))
 get_syng_score(mydata)
 }
-\keyword{score}
+\keyword{Bliss}
+\keyword{HSA,}
+\keyword{scoring,}
 \keyword{synergy}

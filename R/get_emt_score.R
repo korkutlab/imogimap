@@ -28,7 +28,7 @@ get_emt_score=function(pdf){
 
     pscore <-as.data.frame(colMeans(pdf_sub,na.rm = T))
     colnames(pscore) <- "EMTscore"
-    pscore$EMTscore <- 2^pscore$EMTscore
+    #pscore$EMTscore <- 2^pscore$EMTscore
     pscore$Tumor_Sample_ID <- rownames(pscore)
     pscore <- pscore[,c("Tumor_Sample_ID","EMTscore")]
   }

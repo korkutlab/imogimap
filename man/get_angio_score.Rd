@@ -2,8 +2,7 @@
 % Please edit documentation in R/get_angio_score.R
 \name{get_angio_score}
 \alias{get_angio_score}
-\title{Calculates Angiogenesis score
-Calculates Angiogenesis score from a gene list}
+\title{Calculates Angiogenesis score}
 \usage{
 get_angio_score(pdf)
 }
@@ -15,7 +14,6 @@ a dataframe of correlation coefficient and p.values
 }
 \description{
 Calculates Angiogenesis score
-Calculates Angiogenesis score from a gene list
 }
 \examples{
 get_angio_score(pdf=sample_mRNA_data)

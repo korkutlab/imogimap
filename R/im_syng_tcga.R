@@ -5,25 +5,47 @@
 #' @param cotarget A character vector of gene Hugo symbols.
 #' @param checkpoint An optional character vector of immune checkpoint gene Hugo symbols.
 #' @param cohort a list of TCGA diseases
-#' @param data_feature  An optional numeric matrix or data frame containing immune features.
-#' @param add_pvalue An optional logical indicating if a prandom bootstrapping value should be calculated. Default is FALSE.
+#' @param method a charachter string indicating which synergy score to be used. one of "HSA" or "Bliss". Default is HSA.
+#' @param data_feature  An optional numeric matrix or data frame containing normalized immune features.
+#' @param add_pvalue An optional logical indicating if a random bootstrapping value should be calculated. Default is FALSE.
 #' @param N_iteration Number of iterrations for random bootstrapping
-#' @keywords Synergy, immune feature, immune checkpoint, bootstrapping, TCGA
+#' @keywords Synergy scoring, immune feature, immune checkpoint, bootstrapping, TCGA
 #' @return a dataframe of synergy scores and bootstrapping pvalues
 #' @details
 #'
-#' im_syng_tcga uses gene expressions from cbioportal data, 2018  tcga pancan atlas to find combinatorial association of immunotherapy co-targets with immuno-oncology features as listed in TCGA_immune_features_list
+#' im_syng_tcga uses gene expressions from cbioportal data, 2018  tcga pancan atlas to find combinatorial association of immunotherapy co-targets and immune checkpoints with immuno-oncology features as listed in TCGA_immune_features_list
 #'
 #' For details of synergy score calculations see get_syng_score function.
 #'
 #' By default (if no checkpoint is specified), icp_gene_list will be used.
+#'
+#' The optional data_feature must be normalized to have a range between [0,1].
 #'
 #' A p.value is computed using random bootstraping with replacement from the distibution of synergy scores for each immune checkpointand-immune feature pair. The default values of N_iteration is 1000.
 #'
 #' @examples im_syng_tcga(cotarget=c("TP53","TGFB1"),checkpoint=c(),cohort=c("acc","gbm"),add_pvalue=TRUE, N_iteration=1000)
 #' @export
 
-im_syng_tcga<-function(cotarget, checkpoint, cohort, data_feature, add_pvalue, N_iteration){
+im_syng_tcga<-function(cotarget, checkpoint, cohort, method, feature, add_pvalue, N_iteration){
+
+  #Check inputs
+  if(missing(method)){
+    method <- "HSA"
+  }else{
+    method <- toupper(method)
+    if(!(method=="HSA" || method=="BLISS")){
+      stop("ERROR: Method is not HSA or BLISS.")
+    }
+  }
+  if(!missing(feature)){
+    df_min <- min(feature,na.rm=T)
+    df_max <- max(feature,na.rm=T)
+    if(df_min < 0 | df_max > 1 ){
+      stop("ERROR: feature is out of range. Normalize data_feature to [0,1].")
+    }
+    feature <- as.data.frame(feature)
+    feature$Tumor_Sample_ID <- rownames(feauture)
+  }
 
   cohort <- tolower(cohort)
 
@@ -91,17 +113,23 @@ im_syng_tcga<-function(cotarget, checkpoint, cohort, data_feature, add_pvalue, N
     cohort_IFNG <- get_ifng_score(data_expression)
     cohort_AG <- get_angio_score(data_expression)
 
+    #Normalize features--------------------------------------
+    cohort_EMT$EMTscore <- ( tanh( cohort_EMT$EMTscore ) + 1 ) / 2
+    cohort_IFNG$IFNGscore <- ( tanh( cohort_IFNG$IFNGscore ) + 1 ) / 2
+    cohort_AG$AGscore <- ( tanh( cohort_AG$AGscore ) + 1 ) / 2
+    df_lf <- TCGA_TMB
+    df_lf$TMB_Non.silent_per_Mb <- tanh(  df_lf$TMB_Non.silent_per_Mb )
+    df_lf$TMB_Silent_per_Mb <- tanh(  df_lf$TMB_Silent_per_Mb )
+
     #Merge all features-------------------------------
     dft <- as.data.frame(merge(cohort_EMT , cohort_AG, by="Tumor_Sample_ID"))
     dft <- as.data.frame(merge(dft , cohort_IFNG, by="Tumor_Sample_ID"))
     dft<- as.data.frame(merge(dft , TCGA_Leukocyte_fraction, by="Tumor_Sample_ID"))
-    dft <- as.data.frame(merge(dft , TCGA_TMB, by="Tumor_Sample_ID"))
+    dft <- as.data.frame(merge(dft , df_lf, by="Tumor_Sample_ID"))
 
     #Add optional user provided features---------------
-    if(!missing(data_feature)){
-      data_feature <- as.data.frame(data_feature)
-      data_feature$Tumor_Sample_ID <- rownames(data_feauture)
-      dft <- as.data.frame(merge(dft , data_feature, by="Tumor_Sample_ID"))
+    if(!missing(feature)){
+      dft <- as.data.frame(merge(dft , feature, by="Tumor_Sample_ID"))
     }
     data_feature <- dft
     rm(dft)
@@ -166,7 +194,7 @@ im_syng_tcga<-function(cotarget, checkpoint, cohort, data_feature, add_pvalue, N
             dft <- dft[dft[,3] %in% c(1,4),]
             dft <- dft[complete.cases(dft),]
             dft<- dft[,c(2,3,4)]
-            syng_dist[k-2] <- get_syng_score(dft)$Synergy_score
+            syng_dist[k-2] <- get_syng_score(dft,method)$Synergy_score
           }
           syng_dist <- syng_dist[complete.cases(syng_dist)]
 
@@ -178,7 +206,7 @@ im_syng_tcga<-function(cotarget, checkpoint, cohort, data_feature, add_pvalue, N
             dft <- dft[dft[,4] %in% c(1,4),]
             dft <- dft[complete.cases(dft),]
             dft<- dft[,c(2,3,4)]
-            cc <- get_syng_score(dft)
+            cc <- get_syng_score(dft,method)
             #Get synergy score--------
             myscore <- cc$Synergy_score
             if(is.na(myscore)){
@@ -211,7 +239,7 @@ im_syng_tcga<-function(cotarget, checkpoint, cohort, data_feature, add_pvalue, N
             dft <- dft[dft[,3] %in% c(1,4),]
             dft <- dft[complete.cases(dft),]
             dft<- dft[,c(2,3,4)]
-            syng_dist[k-2] <- get_syng_score(dft)$Synergy_score
+            syng_dist[k-2] <- get_syng_score(dft,method)$Synergy_score
           }
           syng_dist <- syng_dist[complete.cases(syng_dist)]
 
@@ -224,7 +252,7 @@ im_syng_tcga<-function(cotarget, checkpoint, cohort, data_feature, add_pvalue, N
             dft <- dft[complete.cases(dft),]
             dft<- dft[,c(2,3,4)]
             #Get synergy score--------
-            cc <- get_syng_score(dft)
+            cc <- get_syng_score(dft,method)
             myscore <- cc$Synergy_score
             if(is.na(myscore)){
               cc$Pvalue <- NA
@@ -263,7 +291,7 @@ im_syng_tcga<-function(cotarget, checkpoint, cohort, data_feature, add_pvalue, N
             dft2 <- dft2[complete.cases(dft2),]
 
             dft2<- dft2[,c(2,3,4)]
-            dfts <- get_syng_score(dft2)
+            dfts <- get_syng_score(dft2,method)
             dfts$Disease <- disease
             dfts <- dfts[ , c("Disease" , c(setdiff(colnames(dfts) , "Disease")))]
             df_syng <- rbind(df_syng , dfts)
@@ -282,7 +310,7 @@ im_syng_tcga<-function(cotarget, checkpoint, cohort, data_feature, add_pvalue, N
             dft2 <- dft2[dft2[,4] %in% c(1,4),]
             dft2 <- dft2[complete.cases(dft2),]
             dft2<- dft2[,c(2,3,4)]
-            dfts <- get_syng_score(dft2)
+            dfts <- get_syng_score(dft2,method)
             dfts$Disease <- disease
             dfts <- dfts[ , c("Disease" , c(setdiff(colnames(dfts) , "Disease")))]
             df_syng <- rbind(df_syng,dfts)

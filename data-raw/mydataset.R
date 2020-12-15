@@ -12,7 +12,8 @@ TCGA_disease_list  <- dft$x
 
 #List of Immune Checkpoints
 icp_gene_list <-  scan("genes_Immune_checkpoints.txt",what = "charachter")
-
+icp_gene_list[1] <- "C10orf54"
+icp_gene_list[12] <- "DKFZp686O24166"
 #TCGA Pancan sample ID's
 dfCT  <- read.table("pancan_samples.txt", sep = "\t", header=TRUE)
 colnames(dfCT)[2] <- "Tumor_Sample_ID"
@@ -29,6 +30,7 @@ dfmeth$Tumor_Sample_ID <- substr(dfmeth$Tumor_Sample_ID_full, 1, 15)
 dfmeth <- setDT(dfmeth)[, lapply(.SD, mean), by=c(names(dfmeth)[3]), .SDcols=2]
 dfmeth <- dfmeth[which(dfmeth$Tumor_Sample_ID %in% sel),]
 rownames(dfmeth)<-dfmeth$Tumor_Sample_ID
+dfmeth[dfmeth$Leukocyte_fraction<0,]$Leukocyte_fraction <- 0
 TCGA_Leukocyte_fraction <- dfmeth
 
 #PANCAN EMT scores
@@ -98,6 +100,7 @@ usethis::use_data(
   AG_gene_list,
   overwrite = T)
 
-usethis::use_data(sample_Leukocyte_fraction_data, overwrite = T)
+usethis::use_data(TCGA_Leukocyte_fraction, overwrite = T)
 document()
+
 

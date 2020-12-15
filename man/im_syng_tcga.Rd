@@ -8,7 +8,8 @@ im_syng_tcga(
   cotarget,
   checkpoint,
   cohort,
-  data_feature,
+  method,
+  feature,
   add_pvalue,
   N_iteration
 )
@@ -20,11 +21,13 @@ im_syng_tcga(
 
 \item{cohort}{a list of TCGA diseases}
 
-\item{data_feature}{An optional numeric matrix or data frame containing immune features.}
+\item{method}{a charachter string indicating which synergy score to be used. one of "HSA" or "Bliss". Default is HSA.}
 
-\item{add_pvalue}{An optional logical indicating if a prandom bootstrapping value should be calculated. Default is FALSE.}
+\item{add_pvalue}{An optional logical indicating if a random bootstrapping value should be calculated. Default is FALSE.}
 
 \item{N_iteration}{Number of iterrations for random bootstrapping}
+
+\item{data_feature}{An optional numeric matrix or data frame containing normalized immune features.}
 }
 \value{
 a dataframe of synergy scores and bootstrapping pvalues
@@ -33,20 +36,23 @@ a dataframe of synergy scores and bootstrapping pvalues
 Find combinatorial association of immunotherapy co-targets with all tumor intrinsic features.
 }
 \details{
-im_syng_tcga uses gene expressions from cbioportal data, 2018  tcga pancan atlas to find combinatorial association of immunotherapy co-targets with immuno-oncology features as listed in TCGA_immune_features_list
+im_syng_tcga uses gene expressions from cbioportal data, 2018  tcga pancan atlas to find combinatorial association of immunotherapy co-targets and immune checkpoints with immuno-oncology features as listed in TCGA_immune_features_list
 
 For details of synergy score calculations see get_syng_score function.
 
 By default (if no checkpoint is specified), icp_gene_list will be used.
+
+The optional data_feature must be normalized to have a range between \link{0,1}.
 
 A p.value is computed using random bootstraping with replacement from the distibution of synergy scores for each immune checkpointand-immune feature pair. The default values of N_iteration is 1000.
 }
 \examples{
 im_syng_tcga(cotarget=c("TP53","TGFB1"),checkpoint=c(),cohort=c("acc","gbm"),add_pvalue=TRUE, N_iteration=1000)
 }
-\keyword{Synergy,}
+\keyword{Synergy}
 \keyword{TCGA}
 \keyword{bootstrapping,}
 \keyword{checkpoint,}
 \keyword{feature,}
 \keyword{immune}
+\keyword{scoring,}

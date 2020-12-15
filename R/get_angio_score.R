@@ -1,5 +1,4 @@
 #' Calculates Angiogenesis score
-#' Calculates Angiogenesis score from a gene list
 #' @param  pdf a formated mRNA data frame
 #' @keywords immune checkpoints
 #' @return a dataframe of correlation coefficient and p.values
@@ -28,7 +27,7 @@ get_angio_score=function(pdf){
 
     pscore <-as.data.frame(colMeans(pdf_sub,na.rm = T))
     colnames(pscore) <- "AGscore"
-    pscore$AGscore <- 2^pscore$AGscore
+    #pscore$AGscore <- 2^pscore$AGscore
     pscore$Tumor_Sample_ID <- rownames(pscore)
     pscore <- pscore[,c("Tumor_Sample_ID","AGscore")]
   }

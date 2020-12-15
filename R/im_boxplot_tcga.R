@@ -14,11 +14,11 @@
 #' Feature data is stratified base on expression quartiles of cotarget and checkpoint. High/Low categories include samples with expression values in lower/upper quartiles correspondingly. Samples with expression values in middle quartiles are discarded. For details of quartile calculation see get_quantile_rank function.
 #'
 #' @return a list of multiple dataframes of correlation coefficients and p.values
-#' @examples im_plot_tcga(cotarget = "BRAF", checkpoint="CD274",
+#' @examples im_boxplot_tcga(cotarget = "BRAF", checkpoint="CD274",
 #' cohort="acc", Immune_Feature="Mast.Cells.Activated",logtrans=TRUE)
 #' @export
 
-im_plot_tcga<-function(cotarget,checkpoint,cohort,Immune_Feature,logtrans){
+im_boxplot_tcga<-function(cotarget,checkpoint,cohort,Immune_Feature,logtrans){
 
 
   cohort <- tolower(cohort)

@@ -17,12 +17,12 @@
 #' data_feature is formated with samples/patients as rows and immune feature as single column.
 #' For data_feature sample format see sample_Leukocyte_fraction_data.
 #'
-#' @examples im_plot(cotarget = "TGFB1",checkpoint="TNFSF4",
+#' @examples im_boxplot(cotarget = "TGFB1",checkpoint="TNFSF4",
 #'                   data_expression =  sample_mRNA_data,
 #'                   data_feature = sample_Leukocyte_fraction_data)
 #' @export
 
-im_plot <- function(cotarget,checkpoint,data_expression,data_feature){
+im_boxplot <- function(cotarget,checkpoint,data_expression,data_feature){
 
 
   #Check for co-target and checkpoint expressions---------

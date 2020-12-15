@@ -10,10 +10,18 @@ Authors@R:
 Description: Imogene (Immuno-oncology gene expression associations) is a group-to-group comparison tool that assesses 
     user-provided mRNA expressions to identify associated features at the tumor immune interface that have likely
     biological relevance and cooperatively effect with regard to immune oncological processes. 
-License: `use_mda_license()`
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Depends: 
     R (>= 2.10)
+Imports: 
+    dplyr,
+    ggplot2,
+    ggpubr,
+    tibble,
+    tidyr,
+    cBioPortalData,
+    igraph
