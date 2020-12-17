@@ -15,7 +15,7 @@
 #'
 #' im_syng_tcga uses gene expressions from cbioportal data, 2018  tcga pancan atlas to find combinatorial association of immunotherapy co-targets and immune checkpoints with immuno-oncology features as listed in TCGA_immune_features_list
 #'
-#' For details of synergy score calculations see get_syng_score function.
+#' For synergy score calculations all features are normalized to be on [0,1] range. For details of synergy score calculations see get_syng_score function.
 #'
 #' By default (if no checkpoint is specified), icp_gene_list will be used.
 #'
@@ -23,7 +23,7 @@
 #'
 #' A p.value is computed using random bootstraping with replacement from the distibution of synergy scores for each immune checkpointand-immune feature pair. The default values of N_iteration is 1000.
 #'
-#' @examples im_syng_tcga(cotarget=c("TP53","TGFB1"),checkpoint=c(),cohort=c("acc","gbm"),add_pvalue=TRUE, N_iteration=1000)
+#' @examples im_syng_tcga(cotarget=c("TP53","TGFB1"), cohort=c("acc","gbm"),add_pvalue=TRUE, N_iteration=1000)
 #' @export
 
 im_syng_tcga<-function(cotarget, checkpoint, cohort, method, feature, add_pvalue, N_iteration){
@@ -86,8 +86,8 @@ im_syng_tcga<-function(cotarget, checkpoint, cohort, method, feature, add_pvalue
     #Construct quantile ranking matrices for each sample -----------------------
     df_selected <- scale(log2(df_selected+1),center = T,scale = T)
     df_icp <- scale(log2(df_icp+1),center = T,scale = T)
-    df_select_qr <- get_qunatile_rank(df_selected)
-    df_icp_qr <- get_qunatile_rank(df_icp)
+    df_select_qr <- get_quantile_rank(df_selected)
+    df_icp_qr <- get_quantile_rank(df_icp)
 
     #Construct quantile ranking matrices for each patient -------------------------------------
     #PATIENT_BARCODE is used instead of Tumor_Sample_ID for immune cell count features as calculated by CIBERSORT
@@ -156,7 +156,7 @@ im_syng_tcga<-function(cotarget, checkpoint, cohort, method, feature, add_pvalue
 
       #Construct quantile ranking matrices for bank---------------------
       df_bank <- scale(log2(df_bank+1),center = T,scale = T)
-      df_bank_qr <- get_qunatile_rank(df_bank)
+      df_bank_qr <- get_quantile_rank(df_bank)
       df_bank_qr2 <- df_bank_qr
       df_bank_qr2$PATIENT_BARCODE <- substr(df_bank_qr2$Tumor_Sample_ID, 1, 12)
       df_bank_qr2$Tumor_Sample_ID <- NULL

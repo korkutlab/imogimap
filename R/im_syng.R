@@ -1,6 +1,6 @@
 #' Find combinatorial association of immunotherapy co-targets with tumor intrinsic features.
 #'
-#' @param cotarget A charachter vector of gene/protein IDs.
+#' @param cotarget A charachter vector of gene IDs.
 #' @param checkpoint An optional charachter vector of immune checkpoint gene/protein IDs.
 #' @param data_expression A non-negative numeric matrix or data frame containing gene/protein expressions in linear scale.
 #' @param data_feature An optional numeric matrix or data frame containing immune features.
@@ -113,8 +113,8 @@ im_syng<-function(cotarget,checkpoint,data_expression,data_feature, add_features
   #Construct quantile ranking matrices--------------
   df_selected <- scale(log2(df_selected+1),center = T,scale = T)
   df_icp <- scale(log2(df_icp+1),center = T,scale = T)
-  df_select_qr <- get_qunatile_rank(df_selected)
-  df_icp_qr <- get_qunatile_rank(df_icp)
+  df_select_qr <- get_quantile_rank(df_selected)
+  df_icp_qr <- get_quantile_rank(df_icp)
 
 
 
@@ -139,7 +139,7 @@ im_syng<-function(cotarget,checkpoint,data_expression,data_feature, add_features
     df_bank <- df_bank[, -which(colSums(abs(df_bank)) == 0 )]
     #Construct quantile ranking matrices
     df_bank <- scale(log2(df_bank+1),center = T,scale = T)
-    df_bank_qr <- get_qunatile_rank(df_bank)
+    df_bank_qr <- get_quantile_rank(df_bank)
 
     #Merge with feature data
     df_bank_merged <- merge(data_feature,df_bank_qr,by="Tumor_Sample_ID")

@@ -1,15 +1,16 @@
-#' Calculate synergy score for the association effect of two genes/proteins on a feature or response
+#' finds a statistical synergistic score for the combinatorial association of gene pairs on a feature
 #'
-#' @param fdata A numeric data frame with 3 columns: A numeric value of an immune feature and two group ID's based on quantile stratification of two genes/proteins.
-#' @param method a charachter string indicating which synergy score to be used. one of "HSA" or "Bliss". Default is HSA.
+#' @param fdata A numeric data frame with 3 columns: A numeric indicating value of an immune feature and two integers, each interpreted as a coded label for the expression level of a gene. Each row of fdata is a different sample or experiment.
+#' @param method a charachter string indicating which synergy score method to be used. One of "HSA" or "Bliss". Default is HSA.
 #' @keywords synergy scoring, HSA, Bliss
 #' @return A data frame containing synergy scores
 #' @details
 #'
-#'  fdata is a numeric data frame with 3 columns: The first column contains the numeric value of a single feature. The second and third column are any of the numbers 1 or 4, representing low or high levels of expression of two genes/proteins respectely. For details of quantile startification see get_quantile_rank.
+#'  fdata is a numeric data frame with 3 columns: The first column contains the numeric value of a single immune feature. The second and third columns are any of the coded labels 1 or 4, representing low or high expression levels of two genes as outputed by get_quantile_rank. For details of quantile startification see get_quantile_rank.
+#' For synergy score calculations, fdata is stratified based on coded labels of the last two columns. Groups are labled as low-low, low-high, high-low and high-high representing the expression levels of the corresponding two genes in each group. Median values of the feature column are then determined for each group.
 #'
-#' Synergy score calculation are based on Bliss defenition of independence: First median values of the feature column are determined for four groups of low-low, low-high, high-low and high-high expressions. Lets define ma, mb, and mc as median of low-high, high-low and high-high groups minus median of low-low group. The synergy score is then defined as
-#' floor(abs(sign(ma) + sign(mb) + sign(mc)) / 3)*(abs(mc) - max(abs(ma) , abs(mb))). The value of the score is positive for synergistic effects and negative for antagonistic effects. By default the synergy score will be zero if ma, mb , and mc have opposite signs.
+#' Synergy scores are defined as the deviation of immune feature's median value in high-high group from the its expected median as estimated using one of the "HSA" or "Bliss" models. Lets define ma and mb as the difference between the levels of immune feature in low-low group and low-high/high-low groups respectively. The expected median of high-high group is then defined as max(ma , mb) in "HSA" model and as ma+mb-ma*mb in "Bliss" model. Synergy score is then calculated as the difference between mc and the expected median. Scores are called synergistic if mc exceeds the expected median. Antagonistic scores are ignored. The value of the synergy score are multipled by 100 and a sign factor depending on the dirrection of the effect. By default synergy score will be zero if median values change in opposite directions. Differences in median values that are smaller that combined standard errors are considered as zero.
+#'
 #'
 #'
 #' @examples
@@ -19,6 +20,7 @@
 #' @export
 #'
 get_syng_score=function(fdata,method){
+
   if(nrow(fdata)<2){
     sscoreij <- data.frame(Gene=colnames(fdata)[2],
       ICP=colnames(fdata)[3],
@@ -38,8 +40,6 @@ get_syng_score=function(fdata,method){
 
     if(n1<1 || n2<1 || n3<1 || n4<1){
       CS <- NA
-      Cp1 <- NA
-      Cp2 <- NA
     }else{
       m_LL <- median(dft_LL,na.rm=T)
       m_LH <- median(dft_LH,na.rm=T)
@@ -67,22 +67,30 @@ get_syng_score=function(fdata,method){
       CS_sign <- sign_c*floor( abs(mean(my_sign,na.rm=T)))
 
       if(CS_sign==0 || is.na(CS_sign)){
-        CS <- 0
+        CS <- NA
       }else{
         ma <- abs(ma)
         mb <- abs(mb)
         mc <- abs(mc)
+
+        if( missing(method) ){
+          method=="HSA"
+        }
         method <-  toupper(method)
 
-        if( (missing(method)) || (method=="HSA") ){
-          CS <- CS_sign * (mc/max(ma , mb))
-        }
-        else{
+        if(method=="HSA" ){
+          me <- mc - max(ma,mb)
+        }else{
           if(method=="BLISS"){
-            CS <- CS_sign * (mc/(ma + mb - ma*mb))
+            me <- mc- (ma + mb - ma*mb)
           }else{
             stop("ERROR: Method is not  HSA or BLISS.")
           }
+        }
+        if( me < 0 ){
+          CS<- NA
+        }else{
+          CS <- CS_sign * me * 100
         }
       }
     }

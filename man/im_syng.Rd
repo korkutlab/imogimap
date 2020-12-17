@@ -15,7 +15,7 @@ im_syng(
 )
 }
 \arguments{
-\item{cotarget}{A charachter vector of gene/protein IDs.}
+\item{cotarget}{A charachter vector of gene IDs.}
 
 \item{checkpoint}{An optional charachter vector of immune checkpoint gene/protein IDs.}
 

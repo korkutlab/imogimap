@@ -4,20 +4,33 @@
 \alias{im_netplot}
 \title{Convert SIF to to igraph network}
 \usage{
-im_netplot(df, cohort, Immune_Feature, cutoff)
+im_netplot(df, checkpoint, cohort, Immune_Feature, cutoff, seed)
 }
 \arguments{
-\item{sif}{a binary SIF as a data.frame with three columns:
-"gene_A", "INTERACTION_TYPE", "gene_B"}
+\item{df}{A dataframe as outputed by im_syng_tcga or im_syng}
 
-\item{directed}{a boolean weather the returned graph should be directed (DEFAULT: TRUE)}
+\item{checkpoint}{An optional character vector of immune checkpoints for color coding vertex. default is icp_gene_list}
+
+\item{cohort}{An optional charachter string indicating a single TCGA disease.}
+
+\item{Immune_Feature}{a charachter string indicating name of animmune feature.}
+
+\item{cutoff}{A numeric indicating cut-off for absolute values of synergy scores.}
+
+\item{seed}{A single value, interpreted as an integer, or NULL (see set.seed for details).}
 }
 \value{
-a directed igraph network with interaction types
+A plotted igraph object showing network of synergistic (red) and antagonistic (blue) associations.
 }
 \description{
 Convert SIF to to igraph network
 }
 \details{
-Users are likely to run into issues if the input SIF has factor levels
+im_netplot egenrate and plots network from synergy-score data frame. vertexes are gene names in dataframe and edges are synergistic (red) and antagonistic (blue) associations. Edges with absolute values lower that the cut-off wil be removed from the graph.
+
+seed is an integer that is the starting point from which random numbers are generated in igraph. Seed value is used for the reproducibility of plot layout. different seed numbers will generate different
+}
+\examples{
+df <- im_syng_tcga(cotarget = icp_gene_list,checkpoint = icp_gene_list,cohort = "brca")
+im_netplot(df, Immune_Feature = "EMTscore",cutoff = 5, seed = 1234)
 }

@@ -38,7 +38,7 @@ Find combinatorial association of immunotherapy co-targets with all tumor intrin
 \details{
 im_syng_tcga uses gene expressions from cbioportal data, 2018  tcga pancan atlas to find combinatorial association of immunotherapy co-targets and immune checkpoints with immuno-oncology features as listed in TCGA_immune_features_list
 
-For details of synergy score calculations see get_syng_score function.
+For synergy score calculations all features are normalized to be on \link{0,1} range. For details of synergy score calculations see get_syng_score function.
 
 By default (if no checkpoint is specified), icp_gene_list will be used.
 
@@ -47,7 +47,7 @@ The optional data_feature must be normalized to have a range between \link{0,1}.
 A p.value is computed using random bootstraping with replacement from the distibution of synergy scores for each immune checkpointand-immune feature pair. The default values of N_iteration is 1000.
 }
 \examples{
-im_syng_tcga(cotarget=c("TP53","TGFB1"),checkpoint=c(),cohort=c("acc","gbm"),add_pvalue=TRUE, N_iteration=1000)
+im_syng_tcga(cotarget=c("TP53","TGFB1"), cohort=c("acc","gbm"),add_pvalue=TRUE, N_iteration=1000)
 }
 \keyword{Synergy}
 \keyword{TCGA}
