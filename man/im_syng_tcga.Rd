@@ -5,8 +5,8 @@
 \title{Find combinatorial association of immunotherapy co-targets with all tumor intrinsic features.}
 \usage{
 im_syng_tcga(
-  cotarget,
-  checkpoint,
+  onco_gene,
+  icp_gene,
   cohort,
   method,
   feature,
@@ -15,13 +15,13 @@ im_syng_tcga(
 )
 }
 \arguments{
-\item{cotarget}{A character vector of gene Hugo symbols.}
+\item{onco_gene}{A character vector of gene Hugo symbols.}
 
-\item{checkpoint}{An optional character vector of immune checkpoint gene Hugo symbols.}
+\item{icp_gene}{An optional character vector of immune checkpoint gene Hugo symbols.}
 
 \item{cohort}{a list of TCGA diseases}
 
-\item{method}{a charachter string indicating which synergy score to be used. one of "HSA" or "Bliss". Default is HSA.}
+\item{method}{a charachter string indicating which synergy score to be used. one of "max" or "independence". Default is "max".}
 
 \item{add_pvalue}{An optional logical indicating if a random bootstrapping value should be calculated. Default is FALSE.}
 
@@ -36,18 +36,18 @@ a dataframe of synergy scores and bootstrapping pvalues
 Find combinatorial association of immunotherapy co-targets with all tumor intrinsic features.
 }
 \details{
-im_syng_tcga uses gene expressions from cbioportal data, 2018  tcga pancan atlas to find combinatorial association of immunotherapy co-targets and immune checkpoints with immuno-oncology features as listed in TCGA_immune_features_list
+im_syng_tcga uses expression data from cbioportal data, 2018  tcga pancan atlas to find combinatorial association of immunotherapy co-targets and immune checkpoints with immuno-oncology features as listed in TCGA_immune_features_list
 
 For synergy score calculations all features are normalized to be on \link{0,1} range. For details of synergy score calculations see get_syng_score function.
 
-By default (if no checkpoint is specified), icp_gene_list will be used.
+By default (if no icp_gene is specified), icp_gene_list will be used.
 
 The optional data_feature must be normalized to have a range between \link{0,1}.
 
 A p.value is computed using random bootstraping with replacement from the distibution of synergy scores for each immune checkpointand-immune feature pair. The default values of N_iteration is 1000.
 }
 \examples{
-im_syng_tcga(cotarget=c("TP53","TGFB1"), cohort=c("acc","gbm"),add_pvalue=TRUE, N_iteration=1000)
+im_syng_tcga(onco_gene=c("TP53","TGFB1"), cohort=c("acc","gbm"),add_pvalue=TRUE, N_iteration=1000)
 }
 \keyword{Synergy}
 \keyword{TCGA}

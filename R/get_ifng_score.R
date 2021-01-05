@@ -1,18 +1,20 @@
-#' Calculates Z score for IFNG
-#' Calculates Z score, the mean-centered and normalized by standard deviation
-#'     expression values for IFNG within the specified dataset
-#' @param  pdf a formated mRNA data frame
-#' @keywords immune checkpoints
-#' @return a dataframe of correlation coefficient and p.values
+#' Calculates a score for IFNG expression
+#' @param  pdf A numeric data frame or matrix with samples as columns and gene/proteins as rows.
+#' @keywords IFNG, gene/protein expression
+#' @return a dataframe of IFNG score for each sample
+#' @details
+#' To calculate IFNG score, IFNG expression is mean-centered and normalized by standard deviation based on distribution of  expression in all samples.
+#'
 #' @examples get_ifng_score(pdf=sample_mRNA_data)
 #' @export
 #'
 get_ifng_score=function(pdf){
+  pdf <- as.matrix(pdf)
   IFNG_gene_list <- "IFNG"
   missing_IFNG <- IFNG_gene_list[-which(IFNG_gene_list %in% rownames(pdf))]
   if(length(missing_IFNG)>0){
-    warning(length(missing_IFNG)," missing EMT signature genes:  \n  ",
-      lapply(missing_IFNG, function(x)paste0(x,"  ")),"\nCheck EMT_gene_list for all signature genes.\n")
+    warning(length(missing_IFNG)," missing IFNG genes:",
+      lapply(missing_IFNG, function(x)paste0(x,"  ")),"\n")
   }
 
   sub_list <- IFNG_gene_list[!(IFNG_gene_list %in% missing_IFNG)]

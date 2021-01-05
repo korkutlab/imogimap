@@ -3,22 +3,22 @@
 #' @import cBioPortalData
 #' @import ggplot2
 #' @import ggpubr
-#' @param cotarget A charachter indicating a single cotarget Hugo symbol.
-#' @param checkpoint A charachter indicating a single checkpoint Hugo symbol.
+#' @param onco_gene A charachter indicating a single onco_gene Hugo symbol.
+#' @param icp_gene A charachter indicating a single immune checkpoint Hugo symbol.
 #' @param cohort a single TCGA disease
 #' @param Immune_Feauture an immune feature name as listed in TCGA_immune_features_list.
 #' @param logtrans An optional logical indicating if y axis should be displayed in logarithmic scale. Default is FALSE.
 #' @keywords boxplots, immune features, immune checkpoints, cbioportal data
 #' @details
 #'
-#' Feature data is stratified base on expression quartiles of cotarget and checkpoint. High/Low categories include samples with expression values in lower/upper quartiles correspondingly. Samples with expression values in middle quartiles are discarded. For details of quartile calculation see get_quantile_rank function.
+#' Feature data is stratified base on expression quartiles of onco_gene and icp_gene. High/Low categories include samples with expression values in lower/upper quartiles correspondingly. Samples with expression values in middle quartiles are discarded. For details of quartile calculation see get_quantile_rank function.
 #'
 #' @return a list of multiple dataframes of correlation coefficients and p.values
-#' @examples im_boxplot_tcga(cotarget = "BRAF", checkpoint="CD274",
+#' @examples im_boxplot_tcga(onco_gene = "BRAF", icp_gene="CD274",
 #' cohort="acc", Immune_Feature="Mast.Cells.Activated",logtrans=TRUE)
 #' @export
 
-im_boxplot_tcga<-function(cotarget,checkpoint,cohort,Immune_Feature,logtrans){
+im_boxplot_tcga<-function(onco_gene,icp_gene,cohort,Immune_Feature,logtrans){
 
 
   cohort <- tolower(cohort)
@@ -32,7 +32,7 @@ im_boxplot_tcga<-function(cotarget,checkpoint,cohort,Immune_Feature,logtrans){
   df <- df@assays@data@listData[[1]]
   rownames(df)<- plyr::mapvalues(rownames(df),df2$Entrez_Gene_Id,df2$Hugo_Symbol,
     warn_missing = F)
-  df_selected <- as.data.frame(t(df[rownames(df) %in% c(cotarget,checkpoint),]))
+  df_selected <- as.data.frame(t(df[rownames(df) %in% c(onco_gene,icp_gene),]))
   if(nrow(df_selected)==0){
     stop("ERROR: No gene found. Select a gene name from your mRNA data")
   }
@@ -81,7 +81,7 @@ im_boxplot_tcga<-function(cotarget,checkpoint,cohort,Immune_Feature,logtrans){
 
   #construct quantile ranking matrices------------
   df_selected <- scale(df_selected,center = T,scale = T)
-  df_select_qr <- get_qunatile_rank(df_selected)
+  df_select_qr <- get_quantile_rank(df_selected)
   colnames(df_select_qr)[1]<- "PATIENT_BARCODE"
 
 
@@ -113,8 +113,8 @@ im_boxplot_tcga<-function(cotarget,checkpoint,cohort,Immune_Feature,logtrans){
       axis.title =element_text(size=10),legend.position ="top")+
     scale_x_discrete(labels =
         c(" Both low",
-          paste0(checkpoint," high\n",cotarget," low"),
-          paste0(cotarget," high\n",checkpoint," low"),
+          paste0(icp_gene," high\n",onco_gene," low"),
+          paste0(onco_gene," high\n",icp_gene," low"),
           "Both high"))+
     stat_compare_means(comparisons =
         list( c("1", "2"),c("1", "3"), c("3", "4"), c("2", "4")),
@@ -135,8 +135,8 @@ im_boxplot_tcga<-function(cotarget,checkpoint,cohort,Immune_Feature,logtrans){
     geom_jitter(aes(col=out) ,position = position_jitter(width=0.1),
       cex=1, pch=19, alpha=1)+
     scale_color_manual(values=c("black","red"),guide="none")+
-    scale_x_discrete(labels =  c(" Both low",paste0(checkpoint," high\n",cotarget," low"),
-      paste0(cotarget," high\n",checkpoint," low"),"Both high"))+
+    scale_x_discrete(labels =  c(" Both low",paste0(icp_gene," high\n",onco_gene," low"),
+      paste0(onco_gene," high\n",icp_gene," low"),"Both high"))+
     stat_compare_means(comparisons =
         list( c("1", "2"),c("1", "3"), c("3", "4"), c("2", "4")),
       size=3,method = "wilcox.test")+

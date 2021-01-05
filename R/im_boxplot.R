@@ -1,15 +1,15 @@
 #' Generate a stratified boxplot for immune feature values
 #' @import ggplot2
 #' @import ggpubr
-#' @param cotarget A charachter indicating a single cotarget ID.
-#' @param checkpoint A charachter indicating a single checkpoint ID.
+#' @param onco_gene A charachter indicating a single onco_gene ID.
+#' @param icp_gene A charachter indicating a single immune checkpoint ID.
 #' @param data_expression A numeric matrix or data frame containing gene/protein expressions
 #' @param data_feature A numeric matrix or data frame containing a single immune feature.
 #' @keywords boxplot, immune features, immune checkpoints
 #' @return a stratified boxplot
 #' @details
 #'
-#' Feature data is stratified base on expression quartiles of cotarget and checkpoint. High/Low categories include samples with expression values in lower/upper quartiles correspondingly. Samples with expression values in middle quartiles are discarded. For details of quartile calculation see get_quantile_rank function.
+#' Feature data is stratified base on expression quartiles of onco_gene and icp_gene. High/Low categories include samples with expression values in lower/upper quartiles correspondingly. Samples with expression values in middle quartiles are discarded. For details of quartile calculation see get_quantile_rank function.
 #'
 #' data_expression is formatted with genes/proteins as rows and samples/patients as columns.
 #' For data_expression sample formats see sample_mRNA_data.
@@ -17,17 +17,17 @@
 #' data_feature is formated with samples/patients as rows and immune feature as single column.
 #' For data_feature sample format see sample_Leukocyte_fraction_data.
 #'
-#' @examples im_boxplot(cotarget = "TGFB1",checkpoint="TNFSF4",
+#' @examples im_boxplot(onco_gene = "TGFB1",icp_gene="TNFSF4",
 #'                   data_expression =  sample_mRNA_data,
 #'                   data_feature = sample_Leukocyte_fraction_data)
 #' @export
 
-im_boxplot <- function(cotarget,checkpoint,data_expression,data_feature){
+im_boxplot <- function(onco_gene,icp_gene,data_expression,data_feature){
 
 
-  #Check for co-target and checkpoint expressions---------
+  #Check for onco_gene and immune checkpoint expressions---------
   data_expression <- as.data.frame(data_expression)
-  df_selected <- t(data_expression[rownames(data_expression) %in% c(cotarget,checkpoint),])
+  df_selected <- t(data_expression[rownames(data_expression) %in% c(onco_gene,icp_gene),])
   if(nrow(df_selected)==0){
     stop("ERROR: No gene found.Select genes from expression data")
   }
@@ -57,7 +57,7 @@ im_boxplot <- function(cotarget,checkpoint,data_expression,data_feature){
     theme( axis.text.x=element_text(size=10),
       axis.text.y=element_text(size=10,angle = 90),
       axis.title =element_text(size=10),legend.position ="top")+
-    scale_x_discrete(labels =  c(" Both low",paste0(checkpoint," high\n",cotarget," low"), paste0(cotarget," high\n",checkpoint," low"),"Both high"))+
+    scale_x_discrete(labels =  c(" Both low",paste0(icp_gene," high\n",onco_gene," low"), paste0(onco_gene," high\n",icp_gene," low"),"Both high"))+
     stat_compare_means(comparisons =
         list( c("1", "2"),c("1", "3"), c("3", "4"), c("2", "4")),
       size=5,method = "wilcox.test")+

@@ -4,12 +4,12 @@
 \alias{im_cor}
 \title{Calculate Spearman correlation with immune checkpoints}
 \usage{
-im_cor(cotarget, checkpoint, data_expression, data_feature, add_features)
+im_cor(onco_gene, icp_gene, data_expression, data_feature, add_features)
 }
 \arguments{
-\item{cotarget}{A charachter vector of gene/protein IDs.}
+\item{onco_gene}{A charachter vector of gene/protein IDs.}
 
-\item{checkpoint}{An optional charachter vector of immune checkpoint gene/protein IDs.}
+\item{icp_gene}{An optional charachter vector of immune checkpoint gene/protein IDs.}
 
 \item{data_expression}{A numeric matrix or data frame containing gene/protein expressions.}
 
@@ -24,7 +24,7 @@ A list of dataframes containing spearman correlations and non-FDR adjusted proba
 Calculate Spearman correlation with immune checkpoints
 }
 \details{
-By default (if no checkpoint is specified), icp_gene_list will be used.
+By default (if no icp_gene is specified), icp_gene_list will be used.
 
 data_expression is formatted with genes/proteins as rows and samples/patients as columns.
 For data_expression sample formats see sample_mRNA_data.
@@ -33,8 +33,8 @@ data_feature is formated with samples/patients as rows and immune features as co
 For data_feature sample format see sample_immune_cell_fraction_data.
 }
 \examples{
-im_cor(cotarget =  c("BRAF","CTLA4"),
-                 checkpoint= c("CD274","CTLA4"),
+im_cor(onco_gene =  c("BRAF","CTLA4"),
+                 icp_gene= c("CD274","CTLA4"),
                  data_expression =  sample_mRNA_data,
                  data_feature = sample_immune_cell_fraction_data,
                  add_features=T)

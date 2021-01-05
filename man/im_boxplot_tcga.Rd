@@ -4,12 +4,12 @@
 \alias{im_boxplot_tcga}
 \title{Generate a stratified boxplot for immune feature values}
 \usage{
-im_boxplot_tcga(cotarget, checkpoint, cohort, Immune_Feature, logtrans)
+im_boxplot_tcga(onco_gene, icp_gene, cohort, Immune_Feature, logtrans)
 }
 \arguments{
-\item{cotarget}{A charachter indicating a single cotarget Hugo symbol.}
+\item{onco_gene}{A charachter indicating a single onco_gene Hugo symbol.}
 
-\item{checkpoint}{A charachter indicating a single checkpoint Hugo symbol.}
+\item{icp_gene}{A charachter indicating a single immune checkpoint Hugo symbol.}
 
 \item{cohort}{a single TCGA disease}
 
@@ -24,10 +24,10 @@ a list of multiple dataframes of correlation coefficients and p.values
 Generate a stratified boxplot for immune feature values
 }
 \details{
-Feature data is stratified base on expression quartiles of cotarget and checkpoint. High/Low categories include samples with expression values in lower/upper quartiles correspondingly. Samples with expression values in middle quartiles are discarded. For details of quartile calculation see get_quantile_rank function.
+Feature data is stratified base on expression quartiles of onco_gene and icp_gene. High/Low categories include samples with expression values in lower/upper quartiles correspondingly. Samples with expression values in middle quartiles are discarded. For details of quartile calculation see get_quantile_rank function.
 }
 \examples{
-im_boxplot_tcga(cotarget = "BRAF", checkpoint="CD274",
+im_boxplot_tcga(onco_gene = "BRAF", icp_gene="CD274",
 cohort="acc", Immune_Feature="Mast.Cells.Activated",logtrans=TRUE)
 }
 \keyword{boxplots,}

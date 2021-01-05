@@ -2,25 +2,25 @@
 #' @import dplyr
 #' @import cBioPortalData
 #' @import tidyr
-#' @param cotarget  A charachter vector of gene Hugo symbols.
-#' @param checkpoint An optional charachter vector of immune checkpoint gene/protein IDs.
+#' @param onco_gene  A charachter vector of gene Hugo symbols.
+#' @param icp_gene An optional charachter vector of immune checkpoint gene/protein IDs.
 #' @param cohort a charachter vector of TCGA diseases
 #' @keywords correlation, immunouoncology features, gene expression
 #' @return a list of dataframes containing Spearman correlations and non-FDR adjusted probability values.
 #' @details
 #'
-#' im_cor_tcga uses gene expressions from cbioportal data, 2018 tcga pancan atlas to find correlation and probaility values between cotargets and immune checkpoints and immuno-oncology features as listed in TCGA_immune_features_list.
+#' im_cor_tcga uses gene expressions from cbioportal data, 2018 tcga pancan atlas to find correlation and probaility values between onco_genes and immune checkpoints and immuno-oncology features as listed in TCGA_immune_features_list.
 #'
-#' By default (if no checkpoint is specified), icp_gene_list will be used.
+#' By default (if no icp_gene is specified), icp_gene_list will be used.
 #'
 #' For TCGA disease list see TCGA_disease_list
 #'
 #' A non-FDR-adjusted p.value is reported for each correlation value to allow for easier adjustments by user.
 #'
-#' @examples im_cor_tcga(cotarget=c("BRAF"),checkpoint=c("CD274","CTLA4"),cohort=c("acc","gbm"))
+#' @examples im_cor_tcga(onco_gene=c("BRAF"),icp_gene=c("CD274","CTLA4"),cohort=c("acc","gbm"))
 #' @export
 
-im_cor_tcga<-function(cotarget,checkpoint,cohort){
+im_cor_tcga<-function(onco_gene,icp_gene,cohort){
 
   cohort <- tolower(cohort)
   results <- list()
@@ -35,11 +35,11 @@ im_cor_tcga<-function(cotarget,checkpoint,cohort){
     df <- df@assays@data@listData[[1]]
     rownames(df)<- plyr::mapvalues(rownames(df),df2$Entrez_Gene_Id,df2$Hugo_Symbol,
       warn_missing = F)
-    if(length(cotarget)==1){
-      df_selected <- as.data.frame(df[rownames(df) %in% cotarget,])
-      colnames(df_selected) <- cotarget
+    if(length(onco_gene)==1){
+      df_selected <- as.data.frame(df[rownames(df) %in% onco_gene,])
+      colnames(df_selected) <- onco_gene
     }else{
-      df_selected <- t(df[rownames(df) %in% cotarget,])
+      df_selected <- t(df[rownames(df) %in% onco_gene,])
     }
     if(nrow(df_selected)==0){
       stop("ERROR: No valid Hugo symbol found")
@@ -47,19 +47,19 @@ im_cor_tcga<-function(cotarget,checkpoint,cohort){
 
 
     # Calculate correlations with immune checkpoints -----------------------
-    if(missing(checkpoint)){
-      checkpoint <- icp_gene_list
+    if(missing(icp_gene)){
+      icp_gene <- icp_gene_list
     }
-    df_icp <- t(df[rownames(df) %in% checkpoint,])
+    df_icp <- t(df[rownames(df) %in% icp_gene,])
     dft_cor <- psych::corr.test(df_selected,df_icp,method="spearman",adjust = "none")
     df_rho <- as.data.frame(dft_cor$r)
-    df_rho$cotarget <- rownames(df_rho)
-    df_rho <- gather(df_rho, checkpoint,rho,-cotarget)
+    df_rho$onco_gene <- rownames(df_rho)
+    df_rho <- gather(df_rho, icp_gene,rho,-onco_gene)
     df_padj <- as.data.frame(dft_cor$p)
-    df_padj$cotarget <- rownames(df_padj)
-    df_padj <- gather(df_padj, checkpoint,padj,-cotarget)
-    icp_cor <- merge(df_rho,df_padj,by=c("cotarget","checkpoint"))
-    colnames(icp_cor)[1:2]<- c("Co-targets","Immune checkpoints")
+    df_padj$onco_gene <- rownames(df_padj)
+    df_padj <- gather(df_padj, icp_gene,padj,-onco_gene)
+    icp_cor <- merge(df_rho,df_padj,by=c("onco_gene","icp_gene"))
+    colnames(icp_cor)[1:2]<- c("onco_gene","Immune checkpoints")
 
 
     #MANDATORY: add ID column for the rest of the code--------------------
@@ -74,7 +74,7 @@ im_cor_tcga<-function(cotarget,checkpoint,cohort){
     dft1 <- as.matrix(df_EMT[,c(2:(ncol(df_EMT)-1))])
     dft2 <- as.matrix(df_EMT$EMTscore)
     dft_cor <- psych::corr.test(dft1,dft2,method="spearman",adjust = "none")
-    EMT_cor <- data.frame("Co-targets"=cotarget,"rho"=dft_cor$r,"padj"=dft_cor$p)
+    EMT_cor <- data.frame("onco_gene"=onco_gene,"rho"=dft_cor$r,"padj"=dft_cor$p)
 
     # Calculate correlation with Angiogenesis score-----------------------
     cohort_AG <- get_angio_score(df)
@@ -83,7 +83,7 @@ im_cor_tcga<-function(cotarget,checkpoint,cohort){
     dft1 <- as.matrix(df_AG[,c(2:(ncol(df_AG)-1))])
     dft2 <- as.matrix(df_AG$AGscore)
     dft_cor <- psych::corr.test(dft1,dft2,method="spearman",adjust = "none")
-    AG_cor <- data.frame("Co-targets"=cotarget,"rho"=dft_cor$r,"padj"=dft_cor$p)
+    AG_cor <- data.frame("onco_gene"=onco_gene,"rho"=dft_cor$r,"padj"=dft_cor$p)
 
     # Calculate correlation with IFNG-----------------------
     cohort_IFNG <- get_ifng_score(df)
@@ -92,7 +92,7 @@ im_cor_tcga<-function(cotarget,checkpoint,cohort){
     dft1 <- as.matrix(df_IFNG[,c(2:(ncol(df_IFNG)-1))])
     dft2 <- as.matrix(df_IFNG$IFNGscore)
     dft_cor <- psych::corr.test(dft1,dft2,method="spearman",adjust = "none")
-    IFNG_cor <- data.frame("Co-targets"=cotarget,"rho"=dft_cor$r,"padj"=dft_cor$p)
+    IFNG_cor <- data.frame("onco_gene"=onco_gene,"rho"=dft_cor$r,"padj"=dft_cor$p)
 
     # Calculate correlation with Tumor mutation burden -----------------------
     df_TMB <- merge(df_selected,TCGA_TMB,by="Tumor_Sample_ID")
@@ -107,7 +107,7 @@ im_cor_tcga<-function(cotarget,checkpoint,cohort){
     df_padj$gene <- rownames(df_padj)
     df_padj <- gather(df_padj, TMB,padj,-gene)
     TMB_cor <- merge(df_rho,df_padj,by=c("gene","TMB"))
-    TMB_cor <- data.frame("Co-targets"=cotarget,"rho"=dft_cor$r,"padj"=dft_cor$p)
+    TMB_cor <- data.frame("onco_gene"=onco_gene,"rho"=dft_cor$r,"padj"=dft_cor$p)
 
     # Calculate correlation with Leukocyte fraction -----------------------
     df_inf <- merge(df_selected,TCGA_Leukocyte_fraction,by="Tumor_Sample_ID")
@@ -115,7 +115,7 @@ im_cor_tcga<-function(cotarget,checkpoint,cohort){
     dft1 <- as.matrix(df_inf[,c(2:(ncol(df_inf)-1))])
     dft2 <- as.matrix(df_inf$Leukocyte_fraction)
     dft_cor <- psych::corr.test(dft1,dft2,method="spearman",adjust = "none")
-    infiltration_cor <- data.frame("Co-targets"=cotarget,"rho"=dft_cor$r,"padj"=dft_cor$p)
+    infiltration_cor <- data.frame("onco_gene"=onco_gene,"rho"=dft_cor$r,"padj"=dft_cor$p)
 
 
     # Calculate correlations with immune cell types -----------------------
@@ -136,7 +136,7 @@ im_cor_tcga<-function(cotarget,checkpoint,cohort){
     df_padj$gene <- rownames(df_padj)
     df_padj <- gather(df_padj, ict,pvalue,-gene)
     ict_cor <- merge(df_rho,df_padj,by=c("gene","ict"))
-    colnames(ict_cor)[1:2]<- c("Co-targets","Immune cell types")
+    colnames(ict_cor)[1:2]<- c("onco_gene","Immune cell types")
 
     # Output -----------------------
     results[[cohort[cohortID]]] <- c(list("Immune checkpoints"=icp_cor,"Immune cell types"=ict_cor,"Leukocyte fraction"=infiltration_cor,"EMT score"=EMT_cor, "Angiogenesis score"=AG_cor,"IFNG"=IFNG_cor))

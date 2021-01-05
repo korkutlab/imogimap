@@ -1,14 +1,16 @@
-#' Calculates EMT score
-#' Calculates EMT score from a gene list
-#' @param  pdf a formated mRNA data frame
-#' @keywords immune checkpoints
-#' @return a dataframe of correlation coefficient and p.values
+#' Calculates Epithelial Mesenchymal transition (EMT) score
+#' @param  pdf A numeric data frame or matrix with samples as columns and gene/proteins as rows.
+#' @keywords Epithelial Mesenchymal transition, pathway score
+#' @return a dataframe of EMT scores for each sample
+#' @details
+#' To calculate EMT score, gene expressions in EMT_gene_list are weighted by their sign facor to account for the direction of the effect on EMT (See EMT_gene_list for list of genes and their direction of effect). The EMT_score is defined as  mean value of modified expressions. Scores are then mean-centered and normalized by standard deviation based on distribution of scores in all samples.
+#'
 #' @examples get_emt_score(pdf=sample_mRNA_data)
 #' @export
 #'
 #'
 get_emt_score=function(pdf){
-
+  pdf <- as.matrix(pdf)
   missing_EMT <- EMT_gene_list[-which(EMT_gene_list$genes %in% rownames(pdf)),]$gene
   if(length(missing_EMT)>0){
     warning(length(missing_EMT)," missing EMT signature genes:  \n  ",

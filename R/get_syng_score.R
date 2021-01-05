@@ -1,15 +1,15 @@
 #' finds a statistical synergistic score for the combinatorial association of gene pairs on a feature
 #'
 #' @param fdata A numeric data frame with 3 columns: A numeric indicating value of an immune feature and two integers, each interpreted as a coded label for the expression level of a gene. Each row of fdata is a different sample or experiment.
-#' @param method a charachter string indicating which synergy score method to be used. One of "HSA" or "Bliss". Default is HSA.
-#' @keywords synergy scoring, HSA, Bliss
+#' @param method a charachter string indicating which synergy score method to be used. one of "max" or "independence". Default is "max".
+#' @keywords synergy scoring
 #' @return A data frame containing synergy scores
 #' @details
 #'
 #'  fdata is a numeric data frame with 3 columns: The first column contains the numeric value of a single immune feature. The second and third columns are any of the coded labels 1 or 4, representing low or high expression levels of two genes as outputed by get_quantile_rank. For details of quantile startification see get_quantile_rank.
 #' For synergy score calculations, fdata is stratified based on coded labels of the last two columns. Groups are labled as low-low, low-high, high-low and high-high representing the expression levels of the corresponding two genes in each group. Median values of the feature column are then determined for each group.
 #'
-#' Synergy scores are defined as the deviation of immune feature's median value in high-high group from the its expected median as estimated using one of the "HSA" or "Bliss" models. Lets define ma and mb as the difference between the levels of immune feature in low-low group and low-high/high-low groups respectively. The expected median of high-high group is then defined as max(ma , mb) in "HSA" model and as ma+mb-ma*mb in "Bliss" model. Synergy score is then calculated as the difference between mc and the expected median. Scores are called synergistic if mc exceeds the expected median. Antagonistic scores are ignored. The value of the synergy score are multipled by 100 and a sign factor depending on the dirrection of the effect. By default synergy score will be zero if median values change in opposite directions. Differences in median values that are smaller that combined standard errors are considered as zero.
+#' Synergy scores are defined as the deviation of immune feature's median value in high-high group from the its expected median as estimated using one of the "max" or "independence" models. Lets define ma and mb as the difference between the levels of immune feature in low-low group and low-high/high-low groups respectively. The expected median of high-high group is then defined as max(ma , mb) in "max" model and as ma+mb-ma*mb in "independence" model. Synergy score is then calculated as the difference between mc and the expected median. Scores are called synergistic if mc exceeds the expected median. Antagonistic scores are ignored. The value of the synergy score are multipled by 100 and a sign factor depending on the dirrection of the effect. By default synergy score will be zero if median values change in opposite directions. Differences in median values that are smaller that combined standard errors are considered as zero.
 #'
 #'
 #'
@@ -22,10 +22,10 @@
 get_syng_score=function(fdata,method){
 
   if(nrow(fdata)<2){
-    sscoreij <- data.frame(Gene=colnames(fdata)[2],
-      ICP=colnames(fdata)[3],
+    sscoreij <- data.frame(agent1=colnames(fdata)[2],
+      agent2=colnames(fdata)[3],
       Immune_Feature=colnames(fdata)[1],
-      CScore= NA)
+      Synergy_score= NA)
   }else{
     fdata$state <- as.integer((fdata[,2]*2+fdata[,3])/3)
     dft_LL <- fdata[fdata$state==1,1]
@@ -74,17 +74,16 @@ get_syng_score=function(fdata,method){
         mc <- abs(mc)
 
         if( missing(method) ){
-          method=="HSA"
+          method=="max"
         }
-        method <-  toupper(method)
 
-        if(method=="HSA" ){
+        if(method=="max" ){
           me <- mc - max(ma,mb)
         }else{
-          if(method=="BLISS"){
+          if(method=="independence"){
             me <- mc- (ma + mb - ma*mb)
           }else{
-            stop("ERROR: Method is not  HSA or BLISS.")
+            stop("ERROR: Method is not found. Please choose a method from:  max or independence.")
           }
         }
         if( me < 0 ){
@@ -94,8 +93,8 @@ get_syng_score=function(fdata,method){
         }
       }
     }
-    sscoreij <- data.frame(Co_target=colnames(fdata)[2],
-      Immune_checkpoint=colnames(fdata)[3],
+    sscoreij <- data.frame(agent1=colnames(fdata)[2],
+      agent2=colnames(fdata)[3],
       Immune_feature=colnames(fdata)[1],
       Synergy_score=CS)
   }

@@ -4,12 +4,12 @@
 \alias{im_boxplot}
 \title{Generate a stratified boxplot for immune feature values}
 \usage{
-im_boxplot(cotarget, checkpoint, data_expression, data_feature)
+im_boxplot(onco_gene, icp_gene, data_expression, data_feature)
 }
 \arguments{
-\item{cotarget}{A charachter indicating a single cotarget ID.}
+\item{onco_gene}{A charachter indicating a single onco_gene ID.}
 
-\item{checkpoint}{A charachter indicating a single checkpoint ID.}
+\item{icp_gene}{A charachter indicating a single immune checkpoint ID.}
 
 \item{data_expression}{A numeric matrix or data frame containing gene/protein expressions}
 
@@ -22,7 +22,7 @@ a stratified boxplot
 Generate a stratified boxplot for immune feature values
 }
 \details{
-Feature data is stratified base on expression quartiles of cotarget and checkpoint. High/Low categories include samples with expression values in lower/upper quartiles correspondingly. Samples with expression values in middle quartiles are discarded. For details of quartile calculation see get_quantile_rank function.
+Feature data is stratified base on expression quartiles of onco_gene and icp_gene. High/Low categories include samples with expression values in lower/upper quartiles correspondingly. Samples with expression values in middle quartiles are discarded. For details of quartile calculation see get_quantile_rank function.
 
 data_expression is formatted with genes/proteins as rows and samples/patients as columns.
 For data_expression sample formats see sample_mRNA_data.
@@ -31,7 +31,7 @@ data_feature is formated with samples/patients as rows and immune feature as sin
 For data_feature sample format see sample_Leukocyte_fraction_data.
 }
 \examples{
-im_boxplot(cotarget = "TGFB1",checkpoint="TNFSF4",
+im_boxplot(onco_gene = "TGFB1",icp_gene="TNFSF4",
                   data_expression =  sample_mRNA_data,
                   data_feature = sample_Leukocyte_fraction_data)
 }

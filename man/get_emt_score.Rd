@@ -2,23 +2,27 @@
 % Please edit documentation in R/get_emt_score.R
 \name{get_emt_score}
 \alias{get_emt_score}
-\title{Calculates EMT score
-Calculates EMT score from a gene list}
+\title{Calculates Epithelial Mesenchymal transition (EMT) score}
 \usage{
 get_emt_score(pdf)
 }
 \arguments{
-\item{pdf}{a formated mRNA data frame}
+\item{pdf}{A numeric data frame or matrix with samples as columns and gene/proteins as rows.}
 }
 \value{
-a dataframe of correlation coefficient and p.values
+a dataframe of EMT scores for each sample
 }
 \description{
-Calculates EMT score
-Calculates EMT score from a gene list
+Calculates Epithelial Mesenchymal transition (EMT) score
+}
+\details{
+To calculate EMT score, gene expressions in EMT_gene_list are weighted by their sign facor to account for the direction of the effect on EMT (See EMT_gene_list for list of genes and their direction of effect). The EMT_score is defined as  mean value of modified expressions. Scores are then mean-centered and normalized by standard deviation based on distribution of scores in all samples.
 }
 \examples{
 get_emt_score(pdf=sample_mRNA_data)
 }
-\keyword{checkpoints}
-\keyword{immune}
+\keyword{Epithelial}
+\keyword{Mesenchymal}
+\keyword{pathway}
+\keyword{score}
+\keyword{transition,}

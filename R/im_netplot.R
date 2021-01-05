@@ -1,29 +1,30 @@
 #' Convert SIF to to igraph network
-#' @importFrom igraph graph.edgelist E E<- set_edge_attr
+#' @importFrom igraph graph.edgelist E E<- set_edge_attr V V<- degree
 #' @param df A dataframe as outputed by im_syng_tcga or im_syng
 #' @param Immune_Feature a charachter string indicating name of animmune feature.
-#' @param checkpoint An optional character vector of immune checkpoints for color coding vertex. default is icp_gene_list
+#' @param icp_gene An optional character vector of immune checkpoints for color coding vertex. default is icp_gene_list
 #' @param cohort An optional charachter string indicating a single TCGA disease.
 #' @param cutoff A numeric indicating cut-off for absolute values of synergy scores.
 #' @param seed A single value, interpreted as an integer, or NULL (see set.seed for details).
 #' @return A plotted igraph object showing network of synergistic (red) and antagonistic (blue) associations.
-#' @examples df <- im_syng_tcga(cotarget = icp_gene_list,checkpoint = icp_gene_list,cohort = "brca")
+#' @examples
+#' df <- im_syng_tcga(onco_gene = icp_gene_list,icp_gene = icp_gene_list,cohort = "acc")
 #' im_netplot(df, Immune_Feature = "EMTscore",cutoff = 5, seed = 1234)
 #' @details
 #'
-#' im_netplot egenrate and plots network from synergy-score data frame. vertexes are gene names in dataframe and edges are synergistic (red) and antagonistic (blue) associations. Edges with absolute values lower that the cut-off wil be removed from the graph.
+#' im_netplot constructs and plots network from synergy score data frame. Immune-checkpoints/onco-genes are depicted as black/white vertices, and positive/negative synergistic interactions are depicted as red/blue edges. Thickness of an edge is determined by the absolute value of the score, and the size of each vertex is determined by its degree. Edges with absolute values lower that the cut-off wil be removed from the graph.
 #'
 #' seed is an integer that is the starting point from which random numbers are generated in igraph. Seed value is used for the reproducibility of plot layout. different seed numbers will generate different
 #' @export
 #'
 
-im_netplot<- function(df, checkpoint, cohort, Immune_Feature, cutoff,seed) {
+im_netplot<- function(df, icp_gene, cohort, Immune_Feature, cutoff,seed) {
 
   if(missing(cutoff)){
-    cutoff <- 2
+    cutoff <- 5
   }
-  if(missing(checkpoint)){
-    checkpoint <- icp_gene_list
+  if(missing(icp_gene)){
+    icp_gene <- icp_gene_list
   }
   if(!missing(cohort)){
    df <- df[df$Disease==cohort,]
@@ -52,18 +53,18 @@ im_netplot<- function(df, checkpoint, cohort, Immune_Feature, cutoff,seed) {
   cg <- igraph::edge.betweenness.community(g)
   ew <-  4*E(g)$Synergy_score/max( E(g)$Synergy_score)+1
   ecol <- ifelse(E(g)$Synergy_type=="Synergistic","red","blue")
-  ecol <- alpha(ecol,0.7)
-  V(g)$color <- ifelse(names(V(g)) %in% checkpoint,"tan2","plum2")
+  ecol <- alpha(ecol,0.4)
+  V(g)$color <- ifelse(names(V(g)) %in% icp_gene,"black","white")
   vsize <- 4*degree(g)/max(degree(g))+1
   dq <- quantile(degree(g),probs = c(0,0.3,0.6,1))
-  vcex <- ifelse(degree(g)<dq[2],0.7,ifelse(degree(g)<dq[3],1,1.3))
+  vcex <- ifelse(degree(g)<dq[2],1,ifelse(degree(g)<dq[3],1.3,1.5))
   set.seed(seed)
   par(mar=rep(0,4))
   p <- plot(g,
     vertex.size = vsize,
     vertex.label.family = "Helvetica",
     vertex.label.cex=vcex,
-    vertex.label.dist=.1,
+    vertex.label.dist=1,
     edge.color = ecol,
     edge.width = ew,
     mark.groups = by(seq_along(cg$membership), cg$membership, invisible))

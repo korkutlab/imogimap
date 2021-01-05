@@ -1,13 +1,16 @@
 #' Calculates Angiogenesis score
-#' @param  pdf a formated mRNA data frame
-#' @keywords immune checkpoints
-#' @return a dataframe of correlation coefficient and p.values
+#' @param  pdf A numeric data frame or matrix with samples as columns and gene/proteins as rows.
+#' @keywords  Angiogenesis, pathway score
+#' @return a dataframe of Angiogenesis scores for each sample
+#' @details
+#'  The angiogenesis score is defined as mean value of gene expressions in AG_gene_list. Scores are mean-centered and normalized by standard deviation based on distribution of scores in all samples.
+#'
 #' @examples get_angio_score(pdf=sample_mRNA_data)
 #' @export
 #'
 #'
 get_angio_score=function(pdf){
-
+  pdf <- as.matrix(pdf)
   missing_genes <- AG_gene_list[-which(AG_gene_list %in% rownames(pdf))]
   if(length(missing_genes)>0){
     warning(length(missing_genes)," missing Angiogenesis signature genes:  \n  ",

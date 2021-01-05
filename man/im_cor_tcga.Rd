@@ -4,12 +4,12 @@
 \alias{im_cor_tcga}
 \title{Find Spearman correlation of co-target genes with immuno-oncology features using cbioportal data}
 \usage{
-im_cor_tcga(cotarget, checkpoint, cohort)
+im_cor_tcga(onco_gene, icp_gene, cohort)
 }
 \arguments{
-\item{cotarget}{A charachter vector of gene Hugo symbols.}
+\item{onco_gene}{A charachter vector of gene Hugo symbols.}
 
-\item{checkpoint}{An optional charachter vector of immune checkpoint gene/protein IDs.}
+\item{icp_gene}{An optional charachter vector of immune checkpoint gene/protein IDs.}
 
 \item{cohort}{a charachter vector of TCGA diseases}
 }
@@ -20,16 +20,16 @@ a list of dataframes containing Spearman correlations and non-FDR adjusted proba
 Find Spearman correlation of co-target genes with immuno-oncology features using cbioportal data
 }
 \details{
-im_cor_tcga uses gene expressions from cbioportal data, 2018 tcga pancan atlas to find correlation and probaility values between cotargets and immune checkpoints and immuno-oncology features as listed in TCGA_immune_features_list.
+im_cor_tcga uses gene expressions from cbioportal data, 2018 tcga pancan atlas to find correlation and probaility values between onco_genes and immune checkpoints and immuno-oncology features as listed in TCGA_immune_features_list.
 
-By default (if no checkpoint is specified), icp_gene_list will be used.
+By default (if no icp_gene is specified), icp_gene_list will be used.
 
 For TCGA disease list see TCGA_disease_list
 
 A non-FDR-adjusted p.value is reported for each correlation value to allow for easier adjustments by user.
 }
 \examples{
-im_cor_tcga(cotarget=c("BRAF"),checkpoint=c("CD274","CTLA4"),cohort=c("acc","gbm"))
+im_cor_tcga(onco_gene=c("BRAF"),icp_gene=c("CD274","CTLA4"),cohort=c("acc","gbm"))
 }
 \keyword{correlation,}
 \keyword{expression}

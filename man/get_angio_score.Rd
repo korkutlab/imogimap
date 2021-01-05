@@ -7,16 +7,20 @@
 get_angio_score(pdf)
 }
 \arguments{
-\item{pdf}{a formated mRNA data frame}
+\item{pdf}{A numeric data frame or matrix with samples as columns and gene/proteins as rows.}
 }
 \value{
-a dataframe of correlation coefficient and p.values
+a dataframe of Angiogenesis scores for each sample
 }
 \description{
 Calculates Angiogenesis score
 }
+\details{
+The angiogenesis score is defined as mean value of gene expressions in AG_gene_list. Scores are mean-centered and normalized by standard deviation based on distribution of scores in all samples.
+}
 \examples{
 get_angio_score(pdf=sample_mRNA_data)
 }
-\keyword{checkpoints}
-\keyword{immune}
+\keyword{Angiogenesis,}
+\keyword{pathway}
+\keyword{score}

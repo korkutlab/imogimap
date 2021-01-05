@@ -2,25 +2,25 @@
 % Please edit documentation in R/get_ifng_score.R
 \name{get_ifng_score}
 \alias{get_ifng_score}
-\title{Calculates Z score for IFNG
-Calculates Z score, the mean-centered and normalized by standard deviation
-expression values for IFNG within the specified dataset}
+\title{Calculates a score for IFNG expression}
 \usage{
 get_ifng_score(pdf)
 }
 \arguments{
-\item{pdf}{a formated mRNA data frame}
+\item{pdf}{A numeric data frame or matrix with samples as columns and gene/proteins as rows.}
 }
 \value{
-a dataframe of correlation coefficient and p.values
+a dataframe of IFNG score for each sample
 }
 \description{
-Calculates Z score for IFNG
-Calculates Z score, the mean-centered and normalized by standard deviation
-expression values for IFNG within the specified dataset
+Calculates a score for IFNG expression
+}
+\details{
+To calculate IFNG score, IFNG expression is mean-centered and normalized by standard deviation based on distribution of  expression in all samples.
 }
 \examples{
 get_ifng_score(pdf=sample_mRNA_data)
 }
-\keyword{checkpoints}
-\keyword{immune}
+\keyword{IFNG,}
+\keyword{expression}
+\keyword{gene/protein}
