@@ -1,4 +1,4 @@
-#' Convert SIF to to igraph network
+#' Creates and plot an igraph network from dataframe
 #' @importFrom igraph graph.edgelist E E<- set_edge_attr V V<- degree
 #' @param df A dataframe as outputed by im_syng_tcga or im_syng
 #' @param Immune_Feature a charachter string indicating name of animmune feature.
@@ -20,8 +20,11 @@
 
 im_netplot<- function(df, icp_gene, cohort, Immune_Feature, cutoff,seed) {
 
+  if(missing(seed)){
+    seed<- 1
+  }
   if(missing(cutoff)){
-    cutoff <- 5
+    cutoff <- 0.05
   }
   if(missing(icp_gene)){
     icp_gene <- icp_gene_list
@@ -38,7 +41,7 @@ im_netplot<- function(df, icp_gene, cohort, Immune_Feature, cutoff,seed) {
   df$Synergy_type <- ifelse(sign(df$Synergy_score)==1, "Synergistic", "antagonistic")
   df$Synergy_score <- abs(df$Synergy_score)
 
-  df <- df[,c("Co_target","Synergy_type","Synergy_score","Immune_checkpoint")]
+  df <- df[,c("agent1","Synergy_type","Synergy_score","agent2")]
   colnames(df)<- c("gene_A", "Synergy_type","Synergy_score", "gene_B")
 
   df <- df[complete.cases(df),]
@@ -51,20 +54,22 @@ im_netplot<- function(df, icp_gene, cohort, Immune_Feature, cutoff,seed) {
   g <- set_edge_attr(g, "Synergy_score", index=E(g), df[, "Synergy_score"])
 
   cg <- igraph::edge.betweenness.community(g)
-  ew <-  4*E(g)$Synergy_score/max( E(g)$Synergy_score)+1
+  ew <-  20*E(g)$Synergy_score/max( E(g)$Synergy_score)+1
   ecol <- ifelse(E(g)$Synergy_type=="Synergistic","red","blue")
   ecol <- alpha(ecol,0.4)
-  V(g)$color <- ifelse(names(V(g)) %in% icp_gene,"black","white")
+  V(g)$color <- ifelse(names(V(g)) %in% icp_gene,"grey","white")
   vsize <- 4*degree(g)/max(degree(g))+1
   dq <- quantile(degree(g),probs = c(0,0.3,0.6,1))
-  vcex <- ifelse(degree(g)<dq[2],1,ifelse(degree(g)<dq[3],1.3,1.5))
+  vcex <- ifelse(degree(g)<dq[2],2,ifelse(degree(g)<dq[3],3,4))
   set.seed(seed)
   par(mar=rep(0,4))
-  p <- plot(g,
+
+  p<- plot(g,
     vertex.size = vsize,
     vertex.label.family = "Helvetica",
+    vertex.label.font = 2,
     vertex.label.cex=vcex,
-    vertex.label.dist=1,
+    vertex.label.dist=.5,
     edge.color = ecol,
     edge.width = ew,
     mark.groups = by(seq_along(cg$membership), cg$membership, invisible))

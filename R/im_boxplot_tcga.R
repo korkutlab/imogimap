@@ -128,23 +128,25 @@ im_boxplot_tcga<-function(onco_gene,icp_gene,cohort,Immune_Feature,logtrans){
   df_feature2<-merge(df_feature,xx,by.x="state",by.y="group")
   df_feature2$out<-apply(df_feature2,1,function(x) x[Immune_Feature] %in% x$outliers)
 
-  p<-ggplot(df_feature2, aes(x=state,y=get(Immune_Feature))) +
-    labs(title="", x="", y=Immune_Feature)+
-    geom_boxplot(width=0.5, show.legend = T, lwd=0.5,
+
+  ggplot(df_feature2, aes(x=state,y=get(Immune_Feature))) +
+    labs(title="", x="", y="IFNG expression")+
+    geom_boxplot(width=0.5, show.legend = T, lwd=1,
       outlier.shape = NA,border="grey")+
     geom_jitter(aes(col=out) ,position = position_jitter(width=0.1),
-      cex=1, pch=19, alpha=1)+
+      cex=2, pch=19, alpha=1)+
     scale_color_manual(values=c("black","red"),guide="none")+
     scale_x_discrete(labels =  c(" Both low",paste0(icp_gene," high\n",onco_gene," low"),
       paste0(onco_gene," high\n",icp_gene," low"),"Both high"))+
+    theme_bw()+
     stat_compare_means(comparisons =
         list( c("1", "2"),c("1", "3"), c("3", "4"), c("2", "4")),
-      size=3,method = "wilcox.test")+
-    theme( axis.text.x=element_text(size=15),
-      axis.text.y=element_text(size=10,angle = 90),
-      axis.title =element_text(size=10),legend.position ="top")+
-    theme(legend.text=element_text(size=10))+
-    theme_bw()+
+      size=10,method = "wilcox.test",
+      bracket.size=1,vjust=1.5)+
+    theme( axis.text.x=element_text(size=25,colour = "black"),
+      axis.text.y=element_text(size=25,angle = 90),
+      axis.title =element_text(size=25),legend.position ="top")+
+    theme(legend.text=element_text(size=25))+
     coord_trans(y=transvalue)
 
 

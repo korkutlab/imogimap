@@ -1,4 +1,4 @@
-#' Find combinatorial association of immunotherapy co-targets with all tumor intrinsic features.
+#' Find combinatorial association of immunotherapy co-targets with tumor intrinsic features as listed in TCGA_immune_features_list.
 #'
 #' @import dplyr
 #' @import cBioPortalData
@@ -61,7 +61,7 @@ im_syng_tcga<-function(onco_gene, icp_gene, cohort, method, feature, add_pvalue,
     rownames(data_expression)<- plyr::mapvalues(rownames(data_expression),df2$Entrez_Gene_Id,df2$Hugo_Symbol,
       warn_missing = F)
 
-    cBioPortalData::removeCache(cohort_study)
+    #cBioPortalData::removeCache(cohort_study)
 
     message("Ranking Gene expressions...")
     #Check for co-target expressions---------------
@@ -125,8 +125,8 @@ im_syng_tcga<-function(onco_gene, icp_gene, cohort, method, feature, add_pvalue,
     cohort_IFNG$IFNGscore <- ( tanh( cohort_IFNG$IFNGscore ) + 1 ) / 2
     cohort_AG$AGscore <- ( tanh( cohort_AG$AGscore ) + 1 ) / 2
     df_lf <- TCGA_TMB
-    df_lf$TMB_Non.silent_per_Mb <- tanh(  df_lf$TMB_Non.silent_per_Mb )
-    df_lf$TMB_Silent_per_Mb <- tanh(  df_lf$TMB_Silent_per_Mb )
+    df_lf$TMB_Non.silent_per_Mb <- tanh(  df_lf$TMB_Non.silent_per_Mb/10 )
+    df_lf$TMB_Silent_per_Mb <- tanh(  df_lf$TMB_Silent_per_Mb/10 )
 
     #Merge all features-------------------------------
     dft <- as.data.frame(merge(cohort_EMT , cohort_AG, by="Tumor_Sample_ID"))
@@ -328,7 +328,7 @@ im_syng_tcga<-function(onco_gene, icp_gene, cohort, method, feature, add_pvalue,
         Synergy_score=numeric())
 
       #Calculate synergy scores for features -----------------------
-
+      message("Calculating scynergy scores for immune features ...")
       for(pair_ID in 1:N_perm){
         gene_ID1 <- which(colnames(df_all)==all_perms[pair_ID,1])
         gene_ID2 <- which(colnames(df_all)==all_perms[pair_ID,2])
@@ -348,7 +348,7 @@ im_syng_tcga<-function(onco_gene, icp_gene, cohort, method, feature, add_pvalue,
 
         }
       }
-
+      message("Calculating scynergy scores for immune cell fractions ...")
       #Calculate synergy scores for immune cell features -----------------------
       for(pair_ID in 1:N_perm){
         gene_ID1 <- which(colnames(df_all2)==all_perms[pair_ID,1])

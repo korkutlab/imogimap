@@ -81,7 +81,7 @@ get_syng_score=function(fdata,method){
           me <- mc - max(ma,mb)
         }else{
           if(method=="independence"){
-            me <- mc- (ma + mb - ma*mb)
+            me <- mc-(ma + mb - ma*mb)
           }else{
             stop("ERROR: Method is not found. Please choose a method from:  max or independence.")
           }
@@ -89,7 +89,7 @@ get_syng_score=function(fdata,method){
         if( me < 0 ){
           CS<- NA
         }else{
-          CS <- CS_sign * me * 100
+          CS <- CS_sign * me
         }
       }
     }

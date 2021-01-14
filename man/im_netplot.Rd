@@ -2,7 +2,7 @@
 % Please edit documentation in R/im_netplot.R
 \name{im_netplot}
 \alias{im_netplot}
-\title{Convert SIF to to igraph network}
+\title{Creates and plot an igraph network from dataframe}
 \usage{
 im_netplot(df, icp_gene, cohort, Immune_Feature, cutoff, seed)
 }
@@ -23,7 +23,7 @@ im_netplot(df, icp_gene, cohort, Immune_Feature, cutoff, seed)
 A plotted igraph object showing network of synergistic (red) and antagonistic (blue) associations.
 }
 \description{
-Convert SIF to to igraph network
+Creates and plot an igraph network from dataframe
 }
 \details{
 im_netplot constructs and plots network from synergy score data frame. Immune-checkpoints/onco-genes are depicted as black/white vertices, and positive/negative synergistic interactions are depicted as red/blue edges. Thickness of an edge is determined by the absolute value of the score, and the size of each vertex is determined by its degree. Edges with absolute values lower that the cut-off wil be removed from the graph.
