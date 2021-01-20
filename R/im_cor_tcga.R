@@ -35,6 +35,9 @@ im_cor_tcga<-function(onco_gene,icp_gene,cohort){
     df <- df@assays@data@listData[[1]]
     rownames(df)<- plyr::mapvalues(rownames(df),df2$Entrez_Gene_Id,df2$Hugo_Symbol,
       warn_missing = F)
+
+    #cBioPortalData::removeCache(cohort_study)
+
     if(length(onco_gene)==1){
       df_selected <- as.data.frame(df[rownames(df) %in% onco_gene,])
       colnames(df_selected) <- onco_gene

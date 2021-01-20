@@ -36,6 +36,7 @@ im_boxplot_tcga<-function(onco_gene,icp_gene,cohort,Immune_Feature,logtrans){
   if(nrow(df_selected)==0){
     stop("ERROR: No gene found. Select a gene name from your mRNA data")
   }
+  #cBioPortalData::removeCache(cohort_study)
 
   if(Immune_Feature=="EMTscore"){
     df_feature <- get_emt_score(df)

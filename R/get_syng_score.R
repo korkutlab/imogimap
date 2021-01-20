@@ -24,7 +24,7 @@ get_syng_score=function(fdata,method){
   if(nrow(fdata)<2){
     sscoreij <- data.frame(agent1=colnames(fdata)[2],
       agent2=colnames(fdata)[3],
-      Immune_Feature=colnames(fdata)[1],
+      Immune_feature=colnames(fdata)[1],
       Synergy_score= NA)
   }else{
     fdata$state <- as.integer((fdata[,2]*2+fdata[,3])/3)

@@ -61,7 +61,7 @@ im_syng_tcga<-function(onco_gene, icp_gene, cohort, method, feature, add_pvalue,
     rownames(data_expression)<- plyr::mapvalues(rownames(data_expression),df2$Entrez_Gene_Id,df2$Hugo_Symbol,
       warn_missing = F)
 
-    cBioPortalData::removeCache(cohort_study)
+    #cBioPortalData::removeCache(cohort_study)
 
     message("Ranking Gene expressions...")
     #Check for co-target expressions---------------
