@@ -101,7 +101,8 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, add_features,
     if(nrow(df_EMT)==0){
       warning("No EMT signature marker found.\n")
     }else{
-      df_EMT$EMTscore <- ( tanh( df_EMT$EMTscore ) + 1 ) / 2
+      sd_EMT <- sd(df_EMT$EMTscore,na.rm = T)
+      df_EMT$EMTscore <- ( tanh( df_EMT$EMTscore/sd_EMT ) + 1 ) / 2
       data_feature <- merge(df_EMT,data_feature,by="Tumor_Sample_ID")
     }
 
@@ -109,7 +110,8 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, add_features,
     if(nrow(df_ang)==0){
       warning("No angiogenesis signature marker found.\n")
     }else{
-      df_ang$AGscore <- ( tanh( df_ang$AGscore ) + 1 ) / 2
+      sd_AG <- sd(df_ang$AGscore,na.rm = T)
+      df_ang$AGscore <- ( tanh( df_ang$AGscore/sd_AG ) + 1 ) / 2
       data_feature <- merge(df_ang,data_feature,by="Tumor_Sample_ID")
     }
 
@@ -117,7 +119,8 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, add_features,
     if(nrow(df_ang)==0){
       warning("No IFNG expression found.\n")
     }else{
-      df_ifng$IFNGscore <- ( tanh( df_ifng$IFNGscore ) + 1 ) / 2
+      sd_IFNG <- sd(df_ifng$IFNGscore,na.rm = T)
+      df_ifng$IFNGscore <- ( tanh( df_ifng$IFNGscore/sd_IFNG ) + 1 ) / 2
       data_feature <- merge(df_ifng,data_feature,by="Tumor_Sample_ID")
     }
   }

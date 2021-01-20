@@ -121,9 +121,12 @@ im_syng_tcga<-function(onco_gene, icp_gene, cohort, method, feature, add_pvalue,
     cohort_AG <- get_angio_score(data_expression)
 
     #Normalize features--------------------------------------
-    cohort_EMT$EMTscore <- ( tanh( cohort_EMT$EMTscore ) + 1 ) / 2
-    cohort_IFNG$IFNGscore <- ( tanh( cohort_IFNG$IFNGscore ) + 1 ) / 2
-    cohort_AG$AGscore <- ( tanh( cohort_AG$AGscore ) + 1 ) / 2
+    sd_EMT <- sd(cohort_EMT$EMTscore,na.rm = T)
+    sd_IFNG <- sd(cohort_IFNG$IFNGscore,na.rm = T)
+    sd_AG <- sd(cohort_AG$AGscore,na.rm = T)
+    cohort_EMT$EMTscore <- ( tanh( cohort_EMT$EMTscore/sd_EMT ) + 1 ) / 2
+    cohort_IFNG$IFNGscore <- ( tanh( cohort_IFNG$IFNGscore/sd_IFNG ) + 1 ) / 2
+    cohort_AG$AGscore <- ( tanh( cohort_AG$AGscore/sd_AG ) + 1 ) / 2
     df_lf <- TCGA_TMB
     df_lf$TMB_Non.silent_per_Mb <- tanh(  df_lf$TMB_Non.silent_per_Mb/10 )
     df_lf$TMB_Silent_per_Mb <- tanh(  df_lf$TMB_Silent_per_Mb/10 )
