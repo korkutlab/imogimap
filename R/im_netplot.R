@@ -37,7 +37,9 @@ im_netplot<- function(df, icp_gene, cohort, Immune_Feature, cutoff,seed) {
 
   df <- df[df$Immune_feature== Immune_Feature,]
   df <- df[abs(df$Synergy_score) > cutoff,]
-
+  if(nrow(df)==0){
+    stop("ERROR: There is no data to show. Try decreasing cutoff.")
+  }
   df$Synergy_type <- ifelse(sign(df$Synergy_score)==1, "Synergistic", "antagonistic")
   df$Synergy_score <- abs(df$Synergy_score)
 
