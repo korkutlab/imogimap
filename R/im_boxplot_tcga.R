@@ -129,7 +129,7 @@ im_boxplot_tcga<-function(onco_gene,icp_gene,cohort,Immune_Feature,logtrans){
   df_feature2$out<-apply(df_feature2,1,function(x) x[Immune_Feature] %in% x$outliers)
 
 
-  ggplot(df_feature2, aes(x=state,y=get(Immune_Feature))) +
+  p<-ggplot(df_feature2, aes(x=state,y=get(Immune_Feature))) +
     labs(title="", x="", y="IFNG expression")+
     geom_boxplot(width=0.5, show.legend = T, lwd=1,
       outlier.shape = NA,border="grey")+
@@ -143,13 +143,11 @@ im_boxplot_tcga<-function(onco_gene,icp_gene,cohort,Immune_Feature,logtrans){
         list( c("1", "2"),c("1", "3"), c("3", "4"), c("2", "4")),
       size=10,method = "wilcox.test",
       bracket.size=1,vjust=1.5)+
-    theme( axis.text.x=element_text(size=25,colour = "black"),
+    theme( axis.text.x=element_text(size=25),
       axis.text.y=element_text(size=25,angle = 90),
       axis.title =element_text(size=25),legend.position ="top")+
     theme(legend.text=element_text(size=25))+
     coord_trans(y=transvalue)
-
-
   return(p)
 }
 

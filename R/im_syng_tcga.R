@@ -61,7 +61,7 @@ im_syng_tcga<-function(onco_gene, icp_gene, cohort, method, feature, add_pvalue,
     rownames(data_expression)<- plyr::mapvalues(rownames(data_expression),df2$Entrez_Gene_Id,df2$Hugo_Symbol,
       warn_missing = F)
 
-    #cBioPortalData::removeCache(cohort_study)
+    cBioPortalData::removeCache(cohort_study)
 
     message("Ranking Gene expressions...")
     #Check for co-target expressions---------------
@@ -194,7 +194,7 @@ im_syng_tcga<-function(onco_gene, icp_gene, cohort, method, feature, add_pvalue,
       N_feature <- as.numeric(ncol(data_feature))-1
       N_imcell_feature <- as.numeric(ncol(TCGA_IMCell_fraction))-1
 
-      message("Calculating scynergy scores for feature:")
+      message("Calculating synergy scores for feature:")
       #Get synergy score and p.value for each feature -----------
       for( i in 1:N_feature){
         message(colnames(df_bank_merged)[i+1]," ...")
@@ -328,7 +328,7 @@ im_syng_tcga<-function(onco_gene, icp_gene, cohort, method, feature, add_pvalue,
         Synergy_score=numeric())
 
       #Calculate synergy scores for features -----------------------
-      message("Calculating scynergy scores for immune features ...")
+      message("Calculating synerrgy scores for immune features ...")
       for(pair_ID in 1:N_perm){
         gene_ID1 <- which(colnames(df_all)==all_perms[pair_ID,1])
         gene_ID2 <- which(colnames(df_all)==all_perms[pair_ID,2])
@@ -348,7 +348,7 @@ im_syng_tcga<-function(onco_gene, icp_gene, cohort, method, feature, add_pvalue,
 
         }
       }
-      message("Calculating scynergy scores for immune cell fractions ...")
+      message("Calculating synerrgy scores for immune cell fractions ...")
       #Calculate synergy scores for immune cell features -----------------------
       for(pair_ID in 1:N_perm){
         gene_ID1 <- which(colnames(df_all2)==all_perms[pair_ID,1])
