@@ -1,6 +1,6 @@
 #' Generate a stratified boxplot for immune feature values
 #' @import dplyr
-#' @import cBioPortalData
+#' @import curatedTCGAData
 #' @import ggplot2
 #' @import ggpubr
 #' @param onco_gene A charachter indicating a single onco_gene Hugo symbol.
@@ -25,13 +25,10 @@ im_boxplot_tcga<-function(onco_gene,icp_gene,cohort,Immune_Feature,logtrans){
   results <- list()
 
   #Read data -----------------------
-  cohort_study <- paste0(cohort,"_tcga_pan_can_atlas_2018")
-  df <- cBioDataPack(cohort_study,ask=F)@ExperimentList@listData
-  df <- df$RNA_Seq_v2_expression_median
-  df2 <- df@elementMetadata@listData
-  df <- df@assays@data@listData[[1]]
-  rownames(df)<- plyr::mapvalues(rownames(df),df2$Entrez_Gene_Id,df2$Hugo_Symbol,
-    warn_missing = F)
+  df <-curatedTCGAData::curatedTCGAData( diseaseCode = cohort,
+    assays = c("RNASeq2GeneNorm"), dry.run = F)@ExperimentList@listData[[1]]
+  df <- df@assays$data@listData[[1]]
+  colnames(df)<-  substr(colnames(df), 1, 15)
   df_selected <- as.data.frame(t(df[rownames(df) %in% c(onco_gene,icp_gene),]))
   if(nrow(df_selected)==0){
     stop("ERROR: No gene found. Select a gene name from your mRNA data")

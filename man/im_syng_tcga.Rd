@@ -8,6 +8,7 @@ im_syng_tcga(
   onco_gene,
   icp_gene,
   cohort,
+  sample_list,
   method,
   feature,
   add_pvalue,
@@ -19,9 +20,11 @@ im_syng_tcga(
 
 \item{icp_gene}{An optional character vector of immune checkpoint gene Hugo symbols.}
 
-\item{cohort}{a list of TCGA diseases}
+\item{cohort}{A list of TCGA diseases}
 
-\item{method}{a charachter string indicating which synergy score to be used. one of "max" or "independence". Default is "max".}
+\item{sample_list}{An optional charachter vector indicating a list of TCGA samples. If provided, cohortwill be ignored}
+
+\item{method}{A charachter string indicating which synergy score to be used. one of "max" or "independence". Default is "max".}
 
 \item{add_pvalue}{An optional logical indicating if a random bootstrapping value should be calculated. Default is FALSE.}
 
@@ -30,7 +33,7 @@ im_syng_tcga(
 \item{data_feature}{An optional numeric matrix or data frame containing normalized immune features.}
 }
 \value{
-a dataframe of synergy scores and bootstrapping pvalues
+A dataframe of synergy scores and bootstrapping pvalues
 }
 \description{
 Find combinatorial association of immunotherapy co-targets with tumor intrinsic features as listed in TCGA_immune_features_list.

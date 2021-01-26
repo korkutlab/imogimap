@@ -1,16 +1,17 @@
 #' Find combinatorial association of immunotherapy co-targets with tumor intrinsic features as listed in TCGA_immune_features_list.
 #'
 #' @import dplyr
-#' @import cBioPortalData
+#' @import curatedTCGAData
 #' @param onco_gene A character vector of gene Hugo symbols.
 #' @param icp_gene An optional character vector of immune checkpoint gene Hugo symbols.
-#' @param cohort a list of TCGA diseases
-#' @param method a charachter string indicating which synergy score to be used. one of "max" or "independence". Default is "max".
+#' @param cohort A list of TCGA diseases
+#' @param sample_list An optional charachter vector indicating a list of TCGA samples. If provided, cohortwill be ignored
+#' @param method A charachter string indicating which synergy score to be used. one of "max" or "independence". Default is "max".
 #' @param data_feature  An optional numeric matrix or data frame containing normalized immune features.
 #' @param add_pvalue An optional logical indicating if a random bootstrapping value should be calculated. Default is FALSE.
 #' @param N_iteration Number of iterrations for random bootstrapping
 #' @keywords Synergy scoring, immune feature, immune checkpoint, bootstrapping, TCGA
-#' @return a dataframe of synergy scores and bootstrapping pvalues
+#' @return A dataframe of synergy scores and bootstrapping pvalues
 #' @details
 #'
 #' im_syng_tcga uses expression data from cbioportal data, 2018  tcga pancan atlas to find combinatorial association of immunotherapy co-targets and immune checkpoints with immuno-oncology features as listed in TCGA_immune_features_list
@@ -26,7 +27,7 @@
 #' @examples im_syng_tcga(onco_gene=c("TP53","TGFB1"), cohort=c("acc","gbm"),add_pvalue=TRUE, N_iteration=1000)
 #' @export
 
-im_syng_tcga<-function(onco_gene, icp_gene, cohort, method, feature, add_pvalue, N_iteration){
+im_syng_tcga<-function(onco_gene, icp_gene, cohort, sample_list, method, feature, add_pvalue, N_iteration){
 
   #Check inputs
   if(missing(method)){
@@ -53,15 +54,11 @@ im_syng_tcga<-function(onco_gene, icp_gene, cohort, method, feature, add_pvalue,
 
     #Read data------------------------------------
     disease <- cohort[cohortID]
-    cohort_study <- paste0(disease,"_tcga_pan_can_atlas_2018")
-    df <- cBioPortalData::cBioDataPack(cohort_study,ask = F)@ExperimentList@listData
-    df <- df$RNA_Seq_v2_expression_median
-    df2 <- df@elementMetadata@listData
-    data_expression <- df@assays@data@listData[[1]]
-    rownames(data_expression)<- plyr::mapvalues(rownames(data_expression),df2$Entrez_Gene_Id,df2$Hugo_Symbol,
-      warn_missing = F)
+    df <-curatedTCGAData::curatedTCGAData( diseaseCode = disease,
+      assays = c("RNASeq2GeneNorm"), dry.run = F)@ExperimentList@listData[[1]]
 
-    #cBioPortalData::removeCache(cohort_study)
+    data_expression <- df@assays$data@listData[[1]]
+    colnames(data_expression)<-  substr(colnames(data_expression), 1, 15)
 
     message("Ranking Gene expressions...")
     #Check for co-target expressions---------------

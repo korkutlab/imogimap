@@ -1,6 +1,6 @@
 #' Find Spearman correlation of co-target genes with immuno-oncology features using cbioportal data
 #' @import dplyr
-#' @import cBioPortalData
+#' @import curatedTCGAData
 #' @import tidyr
 #' @param onco_gene  A charachter vector of gene Hugo symbols.
 #' @param icp_gene An optional charachter vector of immune checkpoint gene/protein IDs.
@@ -28,15 +28,10 @@ im_cor_tcga<-function(onco_gene,icp_gene,cohort){
   for(cohortID in 1:length(cohort)){
 
     # Read data -----------------------
-    cohort_study <- paste0(cohort[cohortID],"_tcga_pan_can_atlas_2018")
-    df <- cBioDataPack(cohort_study,ask = F)@ExperimentList@listData
-    df <- df$RNA_Seq_v2_expression_median
-    df2 <- df@elementMetadata@listData
-    df <- df@assays@data@listData[[1]]
-    rownames(df)<- plyr::mapvalues(rownames(df),df2$Entrez_Gene_Id,df2$Hugo_Symbol,
-      warn_missing = F)
-
-    #cBioPortalData::removeCache(cohort_study)
+    df <-curatedTCGAData::curatedTCGAData( diseaseCode = cohort[cohortID],
+      assays = c("RNASeq2GeneNorm"), dry.run = F)@ExperimentList@listData[[1]]
+    df <- df@assays$data@listData[[1]]
+    colnames(df)<-  substr(colnames(df), 1, 15)
 
     if(length(onco_gene)==1){
       df_selected <- as.data.frame(df[rownames(df) %in% onco_gene,])
@@ -65,7 +60,7 @@ im_cor_tcga<-function(onco_gene,icp_gene,cohort){
     colnames(icp_cor)[1:2]<- c("onco_gene","Immune checkpoints")
 
 
-    #MANDATORY: add ID column for the rest of the code--------------------
+    #MANDATORY: add ID column for the rest of the code-----------
     df_selected <- as.data.frame(df_selected)
     df_selected$Tumor_Sample_ID <- rownames(df_selected)
 
