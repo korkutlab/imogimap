@@ -6,6 +6,7 @@
 #' @param onco_gene A charachter indicating a single onco_gene Hugo symbol.
 #' @param icp_gene A charachter indicating a single immune checkpoint Hugo symbol.
 #' @param cohort a single TCGA disease
+#' @param sample_list An optional charachter vector of TCGA samples barcodes indicating a subset of samples within a cohort. All barcodes in sample_list must be 15 charachter long and belong to the same cohort.
 #' @param Immune_Feauture an immune feature name as listed in TCGA_immune_features_list.
 #' @param logtrans An optional logical indicating if y axis should be displayed in logarithmic scale. Default is FALSE.
 #' @keywords boxplots, immune features, immune checkpoints, cbioportal data
@@ -29,6 +30,13 @@ im_boxplot_tcga<-function(onco_gene,icp_gene,cohort,Immune_Feature,logtrans){
     assays = c("RNASeq2GeneNorm"), dry.run = F)@ExperimentList@listData[[1]]
   df <- df@assays$data@listData[[1]]
   colnames(df)<-  substr(colnames(df), 1, 15)
+
+  if(!missing(sample_list)){
+    df<-df[,sample_list ]
+    if(ncol(df==0)){
+      stop("ERROR: barcodes not found.")
+    }
+  }
   df_selected <- as.data.frame(t(df[rownames(df) %in% c(onco_gene,icp_gene),]))
   if(nrow(df_selected)==0){
     stop("ERROR: No gene found. Select a gene name from your mRNA data")

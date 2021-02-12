@@ -22,7 +22,7 @@ im_syng_tcga(
 
 \item{cohort}{A list of TCGA diseases}
 
-\item{sample_list}{An optional charachter vector indicating a list of TCGA samples. If provided, cohortwill be ignored}
+\item{sample_list}{An optional charachter vector of TCGA samples barcodes indicating a subset of samples within a cohort.}
 
 \item{method}{A charachter string indicating which synergy score to be used. one of "max" or "independence". Default is "max".}
 
@@ -44,6 +44,8 @@ im_syng_tcga uses expression data from cbioportal data, 2018  tcga pancan atlas 
 For synergy score calculations all features are normalized to be on \link{0,1} range. For details of synergy score calculations see get_syng_score function.
 
 By default (if no icp_gene is specified), icp_gene_list will be used.
+
+All barcodes in sample_list must be 15 charachter long and belong to the same cohort. When sample_list is provided, cohort should be the disease cohort that they belong to, otherwise only the first element of the cohort list will be used.
 
 The optional data_feature must be normalized to have a range between \link{0,1}.
 

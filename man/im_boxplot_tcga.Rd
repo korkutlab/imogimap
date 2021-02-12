@@ -15,6 +15,8 @@ im_boxplot_tcga(onco_gene, icp_gene, cohort, Immune_Feature, logtrans)
 
 \item{logtrans}{An optional logical indicating if y axis should be displayed in logarithmic scale. Default is FALSE.}
 
+\item{sample_list}{An optional charachter vector of TCGA samples barcodes indicating a subset of samples within a cohort. All barcodes in sample_list must be 15 charachter long and belong to the same cohort.}
+
 \item{Immune_Feauture}{an immune feature name as listed in TCGA_immune_features_list.}
 }
 \value{

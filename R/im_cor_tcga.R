@@ -5,6 +5,7 @@
 #' @param onco_gene  A charachter vector of gene Hugo symbols.
 #' @param icp_gene An optional charachter vector of immune checkpoint gene/protein IDs.
 #' @param cohort a charachter vector of TCGA diseases
+#' @param sample_list An optional charachter vector of TCGA samples barcodes indicating a subset of samples within a cohort.
 #' @keywords correlation, immunouoncology features, gene expression
 #' @return a list of dataframes containing Spearman correlations and non-FDR adjusted probability values.
 #' @details
@@ -15,6 +16,8 @@
 #'
 #' For TCGA disease list see TCGA_disease_list
 #'
+#'All barcodes in sample_list must be 15 charachter long and belong to the same cohort. When sample_list is provided, cohort should be the disease cohort that they belong to, otherwise only the first element of the cohort list will be used.
+#'
 #' A non-FDR-adjusted p.value is reported for each correlation value to allow for easier adjustments by user.
 #'
 #' @examples im_cor_tcga(onco_gene=c("BRAF"),icp_gene=c("CD274","CTLA4"),cohort=c("acc","gbm"))
@@ -22,6 +25,9 @@
 
 im_cor_tcga<-function(onco_gene,icp_gene,cohort){
 
+  if(!missing(sample_list)){
+    cohort <- cohort[1]
+  }
   cohort <- tolower(cohort)
   results <- list()
 
@@ -33,6 +39,12 @@ im_cor_tcga<-function(onco_gene,icp_gene,cohort){
     df <- df@assays$data@listData[[1]]
     colnames(df)<-  substr(colnames(df), 1, 15)
 
+    if(!missing(sample_list)){
+      df<-df[,sample_list ]
+      if(ncol(df==0)){
+        stop("ERROR: barcodes not found.")
+      }
+    }
     if(length(onco_gene)==1){
       df_selected <- as.data.frame(df[rownames(df) %in% onco_gene,])
       colnames(df_selected) <- onco_gene
@@ -42,7 +54,6 @@ im_cor_tcga<-function(onco_gene,icp_gene,cohort){
     if(nrow(df_selected)==0){
       stop("ERROR: No valid Hugo symbol found")
     }
-
 
     # Calculate correlations with immune checkpoints -----------------------
     if(missing(icp_gene)){

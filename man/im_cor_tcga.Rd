@@ -12,6 +12,8 @@ im_cor_tcga(onco_gene, icp_gene, cohort)
 \item{icp_gene}{An optional charachter vector of immune checkpoint gene/protein IDs.}
 
 \item{cohort}{a charachter vector of TCGA diseases}
+
+\item{sample_list}{An optional charachter vector of TCGA samples barcodes indicating a subset of samples within a cohort.}
 }
 \value{
 a list of dataframes containing Spearman correlations and non-FDR adjusted probability values.
@@ -25,6 +27,8 @@ im_cor_tcga uses gene expressions from cbioportal data, 2018 tcga pancan atlas t
 By default (if no icp_gene is specified), icp_gene_list will be used.
 
 For TCGA disease list see TCGA_disease_list
+
+All barcodes in sample_list must be 15 charachter long and belong to the same cohort. When sample_list is provided, cohort should be the disease cohort that they belong to, otherwise only the first element of the cohort list will be used.
 
 A non-FDR-adjusted p.value is reported for each correlation value to allow for easier adjustments by user.
 }

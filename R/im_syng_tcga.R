@@ -5,7 +5,7 @@
 #' @param onco_gene A character vector of gene Hugo symbols.
 #' @param icp_gene An optional character vector of immune checkpoint gene Hugo symbols.
 #' @param cohort A list of TCGA diseases
-#' @param sample_list An optional charachter vector indicating a list of TCGA samples. If provided, cohortwill be ignored
+#' @param sample_list An optional charachter vector of TCGA samples barcodes indicating a subset of samples within a cohort.
 #' @param method A charachter string indicating which synergy score to be used. one of "max" or "independence". Default is "max".
 #' @param data_feature  An optional numeric matrix or data frame containing normalized immune features.
 #' @param add_pvalue An optional logical indicating if a random bootstrapping value should be calculated. Default is FALSE.
@@ -19,6 +19,8 @@
 #' For synergy score calculations all features are normalized to be on [0,1] range. For details of synergy score calculations see get_syng_score function.
 #'
 #' By default (if no icp_gene is specified), icp_gene_list will be used.
+#'
+#' All barcodes in sample_list must be 15 charachter long and belong to the same cohort. When sample_list is provided, cohort should be the disease cohort that they belong to, otherwise only the first element of the cohort list will be used.
 #'
 #' The optional data_feature must be normalized to have a range between [0,1].
 #'
@@ -47,9 +49,11 @@ im_syng_tcga<-function(onco_gene, icp_gene, cohort, sample_list, method, feature
     feature <- as.data.frame(feature)
     feature$Tumor_Sample_ID <- rownames(feauture)
   }
-
+  if(!missing(sample_list)){
+    cohort <- cohort[1]
+  }
   cohort <- tolower(cohort)
-
+  df_syng <- c()
   for(cohortID in 1:length(cohort)){
 
     #Read data------------------------------------
@@ -59,7 +63,12 @@ im_syng_tcga<-function(onco_gene, icp_gene, cohort, sample_list, method, feature
 
     data_expression <- df@assays$data@listData[[1]]
     colnames(data_expression)<-  substr(colnames(data_expression), 1, 15)
-
+    if(!missing(sample_list)){
+      data_expression<-data_expression[,sample_list ]
+      if(ncol(data_expression==0)){
+        stop("ERROR: barcodes not found.")
+      }
+    }
     message("Ranking Gene expressions...")
     #Check for co-target expressions---------------
     if(length(onco_gene)==1){
@@ -68,11 +77,15 @@ im_syng_tcga<-function(onco_gene, icp_gene, cohort, sample_list, method, feature
     }else{
       df_selected <- t(data_expression[rownames(data_expression ) %in% onco_gene,])
     }
-    onco_gene_sub <- colnames(df_selected)
     if(nrow(df_selected)==0){
       stop("ERROR: No valid Hugo symbol found")
     }
-
+    df_selected <- df_selected[, colSums(df_selected != 0) > 0]
+    if(ncol(df_selected)==0){
+      warning("Onco_gene's have zero expression in ", disease )
+      next
+    }
+    onco_gene_sub <- colnames(df_selected)
     #Check for immune checkpoint expressions--------
     if(missing(icp_gene)){
       icp_gene <- icp_gene_list
