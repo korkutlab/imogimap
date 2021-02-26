@@ -5,7 +5,7 @@
 \alias{EMT_gene_list}
 \title{EMT signature genes}
 \format{
-A data frame with 77 rows and 2 variables:
+A data frame with 77 rows and 3 columns:
 \describe{
 \item{\code{Gene}}{character Gene hugo symbol}
 \item{\code{Group}}{character Epithelial vs Mesenchymal}

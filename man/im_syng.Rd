@@ -12,13 +12,14 @@ im_syng(
   add_features,
   method,
   add_pvalue,
-  N_iteration
+  N_iteration,
+  sensitivity
 )
 }
 \arguments{
-\item{onco_gene}{A charachter vector of gene IDs.}
+\item{onco_gene}{A character vector of gene IDs.}
 
-\item{icp_gene}{An optional charachter vector of immune checkpoint gene/protein IDs.}
+\item{icp_gene}{An optional character vector of immune checkpoint gene/protein IDs.}
 
 \item{data_expression}{A non-negative numeric matrix or data frame containing gene/protein expressions in linear scale.}
 
@@ -26,11 +27,13 @@ im_syng(
 
 \item{add_features}{An optional logical indicating if EMT score, angiogenesis score and IFNG expression should be added to immune features. Default is TRUE.}
 
-\item{method}{a charachter string indicating which synergy score to be used. one of "max" or "independence". Default is "max".}
+\item{method}{A character string indicating which synergy score to be used. one of "max" or "independence". Default is "max".}
 
-\item{add_pvalue}{An optional logical indicating if a prandom bootstrapping value should be calculated. Default is FALSE.}
+\item{add_pvalue}{An optional logical indicating if a random bootstrapping value should be calculated. Default is FALSE.}
 
-\item{N_iteration}{Number of iterrations for random bootstrapping}
+\item{N_iteration}{Number of iterations for random bootstrapping for pvalue calculation and sensitivity analysis. Default is 1000.}
+
+\item{sensitivity}{An optional logical indicating if a sensitivity analysis should be done. Default is FALSE.}
 }
 \value{
 a dataframes of synergy scores and bootstrapping pvalues
@@ -46,18 +49,20 @@ By default (if no icp_gene is specified), icp_gene_list will be used.
 data_expression is formatted with genes/proteins as rows and samples/patients as columns.
 For data_expression sample formats see sample_mRNA_data.
 
-data_feature is formated with samples/patients as rows and immune features as columns.
+data_feature is formatted with samples/patients as rows and immune features as columns.
 For data_feature sample format see sample_immune_cell_fraction_data.
 
-A p.value is computed using random bootstraping with replacement from the distibution of synergy scores for each immune checkpoint and-immune feature pair. The default values of N_iteration is 1000.
+A p.value is computed using random bootstrapping with replacement from the distribution of synergy scores for each immune checkpoint and-immune feature pair. The default values of N_iteration is 1000.
 }
 \examples{
 im_syng(onco_gene =  c("BRAF"),
                   icp_gene= c("CD274","CTLA4"),
                   data_expression =  sample_mRNA_data,
                   data_feature = sample_Leukocyte_fraction_data,
-                  add_features=T,add_pvalue=T,
-                  N_iteration=1000)
+                  add_features=T,
+                  add_pvalue=T,
+                  N_iteration=1000,
+                  sensitivity=T)
 }
 \keyword{Synergy,}
 \keyword{bootstrapping}

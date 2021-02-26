@@ -12,7 +12,8 @@ im_syng_tcga(
   method,
   feature,
   add_pvalue,
-  N_iteration
+  N_iteration,
+  sensitivity
 )
 }
 \arguments{
@@ -22,34 +23,38 @@ im_syng_tcga(
 
 \item{cohort}{A list of TCGA diseases}
 
-\item{sample_list}{An optional charachter vector of TCGA samples barcodes indicating a subset of samples within a cohort.}
+\item{sample_list}{An optional character vector of TCGA samples barcodes indicating a subset of samples within a cohort.}
 
-\item{method}{A charachter string indicating which synergy score to be used. one of "max" or "independence". Default is "max".}
+\item{method}{A character string indicating which synergy score to be used. one of "max" or "independence". Default is "max".}
 
-\item{add_pvalue}{An optional logical indicating if a random bootstrapping value should be calculated. Default is FALSE.}
+\item{N_iteration}{Number of iterations for random bootstrapping for pvalue calculation and sensitivity analysis. Default is 1000.}
 
-\item{N_iteration}{Number of iterrations for random bootstrapping}
+\item{sensitivity}{An optional logical indicating if a sensitivity analysis should be done. Default is FALSE.}
 
 \item{data_feature}{An optional numeric matrix or data frame containing normalized immune features.}
+
+\item{pvalue}{An optional logical indicating if a random bootstrapping value should be calculated. Default is FALSE.}
 }
 \value{
-A dataframe of synergy scores and bootstrapping pvalues
+A dataframe of synergy scores and bootstrapping pvalues.
 }
 \description{
 Find combinatorial association of immunotherapy co-targets with tumor intrinsic features as listed in TCGA_immune_features_list.
 }
 \details{
-im_syng_tcga uses expression data from cbioportal data, 2018  tcga pancan atlas to find combinatorial association of immunotherapy co-targets and immune checkpoints with immuno-oncology features as listed in TCGA_immune_features_list
+im_syng_tcga uses RNASeq2GeneNorm data from curatedTCGAData to find combinatorial association of immunotherapy co-targets and immune checkpoints with immuno-oncology features as listed in TCGA_immune_features_list
 
 For synergy score calculations all features are normalized to be on \link{0,1} range. For details of synergy score calculations see get_syng_score function.
 
 By default (if no icp_gene is specified), icp_gene_list will be used.
 
-All barcodes in sample_list must be 15 charachter long and belong to the same cohort. When sample_list is provided, cohort should be the disease cohort that they belong to, otherwise only the first element of the cohort list will be used.
+All barcodes in sample_list must be 15 character long and belong to the same cohort. When sample_list is provided, cohort should be the disease cohort that they belong to, otherwise only the first element of the cohort list will be used.
 
 The optional data_feature must be normalized to have a range between \link{0,1}.
 
-A p.value is computed using random bootstraping with replacement from the distibution of synergy scores for each immune checkpointand-immune feature pair. The default values of N_iteration is 1000.
+A p.value is computed using random bootstrapping with replacement from the distribution of synergy scores for each immune checkpoint and immune feature pair.
+
+Sensitivity analysis reports a sensitivity index which is a variance in synergy score using 90\% of samples.
 }
 \examples{
 im_syng_tcga(onco_gene=c("TP53","TGFB1"), cohort=c("acc","gbm"),add_pvalue=TRUE, N_iteration=1000)

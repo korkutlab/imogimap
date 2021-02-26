@@ -1,13 +1,3 @@
-#' @title TCGA EMT scores
-#' @description Epithelial–mesenchymal transition score for TCGA data. Higher EMT scores correspond to higher expression of mesenchymal genes.
-#' @format A data frame with 9120 rows and 3 variables:
-#' \describe{
-#'   \item{\code{Tumor_Sample_ID}}{character TCGA 15-charachter Tumor sample ID}
-#'   \item{\code{EMTscore}}{double  EMT score}
-#'}
-#' @source from Tong Pan
-"TCGA_EMT"
-
 #' @title TCGA Leukocyte fractions
 #' @description Leukocyte fraction of samples in TCGA data
 #' @format A data frame with 8775 rows and 3 variables:
@@ -20,7 +10,7 @@
 
 #' @title EMT signature genes
 #' @description  A set of 77 unique genes as the pan-cancer EMT signature
-#' @format A data frame with 77 rows and 2 variables:
+#' @format A data frame with 77 rows and 3 columns:
 #' \describe{
 #'   \item{\code{Gene}}{character Gene hugo symbol}
 #'   \item{\code{Group}}{character Epithelial vs Mesenchymal}
@@ -28,6 +18,26 @@
 #'}
 #' @source \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4737991/#SD1}
 "EMT_gene_list"
+
+#' @title Angiogenesis signature genes
+#' @description  A set of 41 unique gene Hugo IDs as the core human Angiogenesis signature
+#' @format A vector of characters with length 41:
+#' \describe{
+#'   \item{\code{Gene}}{character Gene hugo symbol}
+#'}
+#' @source \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3743050/}
+"AG_gene_list"
+
+#' @title Tumor mutation burden
+#' @description  Silent and non-silent tumor mutation burden per MB for TCGA samples
+#' @format A data frame with 10123 rows and 3 columns:
+#' \describe{
+#'   \item{\code{Tumor_Sample_ID}}{character TCGA 15-charachter Tumor sample ID}
+#'   \item{\code{TMB_Non.silent_per_Mb}}{numeric non silent tumor mutation burden}
+#'   \item{\code{TMB_Silent_per_Mb}}{numeric silent tumor mutation burden}
+#'}
+#' @source \url{http://somewhere.important.com/}
+"TCGA_TMB"
 
 #' @title Immune cell type fractions for TCGA data
 #' @description CIBERSORT fraction of each 21 immune cell type within immune population. Note that The values are not absolute values and are normalized by the sum of all 21 types as provided by CIBERSORT.
