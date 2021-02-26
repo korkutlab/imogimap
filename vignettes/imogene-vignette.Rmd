@@ -1,0 +1,81 @@
+---
+title: "How to use imogene"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{imogene-vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE,comment = "#>")
+knitr::opts_chunk$set(fig.width = 4, fig.height = 4) 
+options(tibble.print_min = 4L, tibble.print_max = 4L)
+```
+
+```{r setup}
+library(imogene)
+```
+
+imogene (Immuno-Oncology GENE expression associations)
+
+## Introduction
+
+Imogene calculates statistical synergy scores based on gene expression profiles in multi-sample data to quantify combinatorial effects of oncogenes and immune checkpoints on immune related phenotype.
+
+## Example use of TCGA data
+
+ imogene uses `curatedTCGAData` API functions to access RNASeq2GeneNorm expressions.
+ 
+ As an example, let us explore TGFb cytokines combinatorial interactions with immune checkpoints and their effects on all immune pheotypes/features as listed in `TCGA_immune_features_list`. First we define gene lists using Hugo IDs. a pre-defined list of immune checkpoints, `icp_gene_list`, is included as default for immune checkpoints:
+ 
+```
+my_onco <- c("TGFB1","TGFB2","TGFB3")
+my_icp <- icp_gene_list
+```
+Then we define disease lists using any of the TCGA abbreviated  disease names as listed in  `TCGA_disease_list`:
+
+```
+my_cohort <- c("luad","lusc")
+
+```
+Now we use `im_syng_tcga` function to get synergy scores. The rest of parameters are optional, with defualt values as below: 
+```
+my_syng_df <-  im_syng_tcga(onco_gene  = my_onco,
+         icp_gene = my_icp, 
+         cohort = my_cohort, 
+         method = "independence",
+         add_pvalue = F, 
+         N_iteration = 1000, 
+         sensitivity = F)
+```
+
+We have the option to choose one of the two available synergy scoring methods and determine whether we want to include specificity and robustness analysis. Specificity and robustness measures are calculated  by random bootstrapping, and we can increase or decrease the number of bootstrapping iterations, `N_iteration`, to gain more accuracy or save time.  
+
+Other optional inputs of `im_syng_tcga` are: `sample_list` that allow us to define a curated set of TCGA samples, and `feature` that allow us to provide additional immune phenotypes/features.
+
+The output contains  synergy scores for all pairs of genes, as well as specificity p.values and robustness variances that are used to identify noteworthy interactions on all the immune features listed in `TCGA_immune_features_list`. 
+
+synergy outputs can be visualized as an `igraph` graphical network model for each specific phenotype using `im_netplot` function and saved as an image:
+
+```
+jpeg("syng_network.jpeg",width=1000,height=1000)
+im_netplot(df = my_syng_df ,
+           Immune_Feature = "IFNGscore",
+           cutoff = 0.35,
+           cohort = "luad" ,
+           icp_gene = my_icp,
+           seed = 123)
+dev.off()
+```
+`im_netplot` function directly uses the output of `im_syng_tcga` function.A unique immune feature from the output needs to be specified. We have the option to specify a sub-group of our disease cohorts, or make a single network for all the cohorts in the output. We are also able to change the cutoff value for synergy scores. Synergy scores with their absolute value below the cut-off won't be displayed.  We may want to input our immune checkpoint list if it differs from imogene's default `icp_gene_list`. `im_netplot` uses this list to color code onco-genes and immune checkpoints differently. Finally by changing `seed` we can change the plots layout and make it reproducible.
+
+
+imogene also visualizes data that has been used in calculation of an individual synergy scores. To do this we can use `im_boxplot_tcga` function:
+
+```
+im_boxplot_tcga(onco_gene = "TGFB1", icp_gene = "CD270",cohort = "luad",
+Immune_Feature = "IFNGscore")
+```
+
+`im_boxplot_tcga`, accepts single and unique values for each of the input parameters, with `onco_gene` and `icp_gene` being gene's Hugo ID,and `cohort` any of the TCGa abbreviated disease names, and  `Immune_Feature` any of the features in `TCGA_immune_features_list`. The result is a boxplot of immune feature values, stratified based on gene pair expression values.
