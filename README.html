@@ -195,7 +195,7 @@ summary {
 <h1>imogene</h1>
 <!-- badges: start -->
 <!-- badges: end -->
-<p>The goal of imogene is to calculates statistical synergy scores based on gene expression profiles in multi-sample data to quantify combinatorial effects of oncogenes and immune checkpoints on immune related phenotype.</p>
+<p>The goal of imogene is to calculate statistical synergy scores based on mRNA expression profiles of multi-sample data to quantify combinatorial effects of single onco-genes or tumor intrinsic onco-genic pathways and immune checkpoints on immune related phenotype in tumor microenvironment.</p>
 <div id="installation" class="section level2">
 <h2>Installation</h2>
 <p>You can install the released version of imogene from GitHub with:</p>
@@ -205,7 +205,7 @@ summary {
 <h2>Usage</h2>
 <p>This is a basic example of how to use imogene with TCGA data</p>
 <pre class="r"><code>library(imogene)
-# List Hugo ID&#39;s for onco-genes that you are interested in
+# List Hugo ID&#39;s for a single onco-gene or list or genes defining an onco-genic pathway  signature
 my_onco &lt;- c(&quot;TGFB1&quot;,&quot;TGFB2&quot;,&quot;TGFB3&quot;)
 
 # List Hugo ID&#39;s for immune checkpoints that you are interested in. icp_gene_list can be used as default
@@ -215,14 +215,58 @@ my_icp &lt;- icp_gene_list
 TCGA_disease_list
 my_cohort &lt;- c(&quot;luad&quot;,&quot;lusc&quot;)
 
-#Calulate synergy scores, and optional pvalues, and variances
+#Calulate synergy scores, and optional pvalues, and variances, for combinatorial effects of all gene pairs on all immune phenotypes as listed in TCGA_immune_features_list
 my_syng_df &lt;-  im_syng_tcga(onco_gene  = my_onco,
          icp_gene = my_icp, 
          cohort = my_cohort, 
          method = &quot;independence&quot;,
          add_pvalue = F, 
          N_iteration = 1000, 
-         sensitivity = F)</code></pre>
+         sensitivity = F)
+
+#Generate stratified boxplot that represents data used to get a single synergy score.
+im_boxplot_tcga(onco_gene = &quot;TGFB1&quot;, icp_gene = &quot;CD270&quot;,cohort = &quot;luad&quot;,
+Immune_Feature = &quot;IFNGscore&quot;)</code></pre>
+<p>This is a basic example of how to use imogene with user’s data</p>
+<pre class="r"><code>library(imogene)
+# Use sample_mRNA_data directly or as formatting guide for expression data
+my_expressions &lt;- sample_mRNA_data
+
+# Use sample_Leukocyte_fraction_data directly or as formatting guide for immune feature/phenotype data
+my_features &lt;- sample_Leukocyte_fraction_data
+
+# List gene ID&#39;s for onco-genes that you are interested in, as listed in your data
+my_onco &lt;- c(&quot;TGFB1&quot;,&quot;TGFB2&quot;,&quot;TGFB3&quot;)
+
+# List gene ID&#39;s for immune checkpoints that you are interested in. icp_gene_list can be used as default.
+my_icp &lt;- icp_gene_list
+
+# Calulate synergy scores, and optional pvalues, and variances, for combinatorial effects of all gene pairs on immune features. 
+df &lt;- im_syng( onco_gene = my_onco,
+             icp_gene = my_icp,
+             data_expression = my_expressions ,
+             data_feature = my_features,
+             add_features = F,
+             add_pvalue = T,
+             N_iteration = 1000,
+            sensitivity = T)
+
+ 
+#Generate stratified boxplot that represents data used to get a single synergy score.
+im_boxplot(cotarget = &quot;TGFB1&quot;, 
+  icp_gene = &quot;CD276&quot;,
+  data_expression = sample_mRNA_data,
+  data_feature = sample_Leukocyte_fraction_data)</code></pre>
+<p>This is a basic example of generating graphical network for synergy scores.</p>
+<pre class="r"><code>#Generate graphical network based on synergy scores for a single immune feature
+jpeg(&quot;syng_network.jpeg&quot;,width=1000,height=1000)
+im_netplot(df = my_syng_df ,
+           Immune_Feature = &quot;IFNGscore&quot;,
+           cutoff = 0.35,
+           cohort = &quot;luad&quot; ,
+           icp_gene = my_icp,
+           seed = 123)
+dev.off()</code></pre>
 </div>
 </div>
 
