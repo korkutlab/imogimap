@@ -1,4 +1,4 @@
-#' imogene:  Immuno-oncology gene expression assessment.
+#' imogene: Immuno-oncology gene expression assessment.
 #'
 #' The imogene package provides three categories of functions:
 #'

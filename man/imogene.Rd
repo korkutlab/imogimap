@@ -3,7 +3,7 @@
 \docType{package}
 \name{imogene}
 \alias{imogene}
-\title{imogene:  Immuno-oncology gene expression assessment.}
+\title{imogene: Immuno-oncology gene expression assessment.}
 \description{
 The imogene package provides three categories of functions:
 }
