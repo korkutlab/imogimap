@@ -295,7 +295,7 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, sample_list, method, featu
       df_bank_qr2$PATIENT_BARCODE <- substr(df_bank_qr2$Tumor_Sample_ID, 1, 12)
       df_bank_qr2$Tumor_Sample_ID <- NULL
       df_bank_qr2 <- df_bank_qr2 %>% group_by(PATIENT_BARCODE) %>%
-        mutate(across(cols = everything(),.fns = ~median(.x, na.rm = TRUE))) %>% distinct
+        mutate(across(.cols = everything(),.fns = ~median(.x, na.rm = TRUE))) %>% distinct
       df_bank_qr2 <- df_bank_qr2[,c("PATIENT_BARCODE",
                                     c(setdiff(colnames(df_bank_qr2), "PATIENT_BARCODE")))]
 
@@ -512,7 +512,7 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, sample_list, method, featu
         df_sub_qr2$PATIENT_BARCODE <- substr(df_sub_qr2$Tumor_Sample_ID, 1, 12)
         df_sub_qr2$Tumor_Sample_ID <- NULL
         df_sub_qr2 <- df_sub_qr2 %>% group_by(PATIENT_BARCODE) %>%
-          mutate(across(cols = everything(),.fns = ~median(.x, na.rm = TRUE))) %>% distinct
+          mutate(across(.cols = everything(),.fns = ~median(.x, na.rm = TRUE))) %>% distinct
         df_sub_qr2 <- df_sub_qr2[,c("PATIENT_BARCODE",
                                       c(setdiff(colnames(df_sub_qr2), "PATIENT_BARCODE")))]
         df_sub_qr2 <- as.data.frame(df_sub_qr2)

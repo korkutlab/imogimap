@@ -73,7 +73,7 @@ im_boxplot_tcga<-function(onco_gene,icp_gene,cohort,Immune_Feature,logtrans){
               df_feature <- df_feature[,c(tmpID,tmp)]
               df_selected$PATIENT_BARCODE <- substr(rownames(df_selected), 1, 12)
               df_selected <- df_selected %>% group_by(PATIENT_BARCODE) %>%
-                mutate(across(cols = everything(),.fns = ~median(.x, na.rm = TRUE))) %>%  distinct
+                mutate(across(.cols = everything(),.fns = ~median(.x, na.rm = TRUE))) %>%  distinct
               df_selected <- as.data.frame(df_selected)
               rownames(df_selected) <- df_selected$PATIENT_BARCODE
               df_selected$PATIENT_BARCODE <- NULL
