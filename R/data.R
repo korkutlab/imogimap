@@ -23,7 +23,7 @@
 #' @description  A set of 41 unique gene Hugo IDs as the core human Angiogenesis signature
 #' @format A vector of characters with length 41:
 #' \describe{
-#'   \item{\code{Gene}}{character Gene hugo symbol}
+#'   Each character is a gene hugo symbol
 #'}
 #' @source \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3743050/}
 "AG_gene_list"
@@ -69,4 +69,47 @@
 #'}
 #' @source \url{https://cibersort.stanford.edu}
 "TCGA_IMCell_fraction"
+
+#' @title Default list of immune checkpoints
+#' @description List of 29 immune checkpoints
+#' @format A vector of characters
+#' \describe{
+#'   Each character is a gene hugo symbol
+#'}
+#' @source \url{https://www.cancerresearch.org/archive/clinical-accelerator-(2)/drug-agent-target-list}
+"icp_gene_list"
+
+#' @title Sample data set for immune cell fraction data
+#' @description Data frame containing immune cell fractions for a subset of TCGA cohorts to serve as formatting guide for user-curated data or in test runs.
+#' @format A data frame with of with 78 rows and 22 columns. Row names are a patient IDs and column names are cell types.
+#' @source \url{https://cibersort.stanford.edu}
+"sample_immune_cell_fraction_data"
+
+
+#' @title Sample Leukocyte fraction data
+#' @description Data frame containing Leukocyte fractions for a subset of TCGA cohorts to serve as formatting guide for user-curated data or in test runs.
+#' @format A data frame with of with 76 rows and 1 column. Row names are a patient IDs.
+#' @source \url{http://somewhere.important.com/}
+"sample_Leukocyte_fraction_data"
+
+
+#' @title Sample mRNA expression data
+#' @description Data frame containing RNASeq2GeneNorm expressions for a subset of TCGA cohorts to serve as formatting guide for user-curated data or in test runs.
+#' @format A data frame with of with 19958 rows and 78 columns. Row names are gene Hugo IDs and column names are patient IDs.
+#' @source \code{\link[curatedTCGAData]{curatedTCGAData}}
+"sample_mRNA_data"
+
+
+
+#' @title TCGA disease names
+#' @description TCGA abbreviated disease names to be used as input in TCGA functions.
+#' @format A character vector of length 32
+#' @source \code{\link[curatedTCGAData]{curatedTCGAData}}
+"TCGA_disease_list"
+
+
+#' @title TCGA immune features list
+#' @description Lists immune feature names that are default to TCGA functions.
+#' @format A character vector of length 28
+"TCGA_immune_features_list"
 

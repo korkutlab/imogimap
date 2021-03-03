@@ -7,7 +7,7 @@
 \format{
 A vector of characters with length 41:
 \describe{
-\item{\code{Gene}}{character Gene hugo symbol}
+Each character is a gene hugo symbol
 }
 }
 \source{

@@ -16,7 +16,7 @@ A numeric dataframes with quartile ranking group IDs
 Stratify each column of data using quantile values.
 }
 \details{
-The generic function get_quantile_rank startifies each column of a numeric data frame or matrix based on quartile or median values of its distribution. By default, quartile values will be used to stratify data into groups 1,2,3 and 4, with 1 representing the group with values below the first quartile and 4 representing the group with values higher than the fourth quantile. When there are duplications in quartile values, median values will be automatically used for stratification. In this case data will be devided into two groups with group 1 containing values lower than or equal to the median and  group 4 containing values higher than median respectively.
+The generic function get_quantile_rank stratifies each column of a numeric data frame or matrix based on quartile or median values of its distribution. By default, quartile values will be used to stratify data into groups 1,2,3 and 4, with 1 representing the group with values below the first quartile and 4 representing the group with values higher than the fourth quantile. When there are duplication in quartile values, median values will be automatically used for stratification. In this case data will be divided into two groups with group 1 containing values lower than or equal to the median and  group 4 containing values higher than median respectively.
 }
 \examples{
 get_quantile_rank(df=sample_mRNA_data)
