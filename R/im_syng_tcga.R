@@ -31,7 +31,7 @@
 #' @examples im_syng_tcga(onco_gene=c("TP53","TGFB1"), cohort=c("acc","gbm"),add_pvalue=TRUE, N_iteration=1000)
 #' @export
 
-im_syng_tcga<-function(onco_gene, icp_gene, cohort, sample_list, method, feature, add_pvalue, N_iteration, sensitivity){
+im_syng_tcga <- function(onco_gene, icp_gene, cohort, sample_list, method, feature, add_pvalue, N_iteration, sensitivity){
 
   df_syng <- data.frame(Disease=character(),
                         agent1=character(),
@@ -128,6 +128,7 @@ im_syng_tcga<-function(onco_gene, icp_gene, cohort, sample_list, method, feature
       next
     }
     icp_gene_sub <- colnames(df_icp)
+
     #Construct quantile ranking matrices for each sample
     #-----------------------------------------------
     df_selected <- scale(log2(df_selected+1),center = T,scale = T)
@@ -144,7 +145,7 @@ im_syng_tcga<-function(onco_gene, icp_gene, cohort, sample_list, method, feature
     df_select_qr2$PATIENT_BARCODE <- substr(df_select_qr2$Tumor_Sample_ID, 1, 12)
     df_select_qr2$Tumor_Sample_ID <- NULL
     df_select_qr2 <- df_select_qr2 %>% group_by(PATIENT_BARCODE) %>%
-      mutate(across(cols = everything(),.fns = ~median(.x, na.rm = TRUE))) %>% distinct
+      mutate(across(.cols = everything(),.fns = ~median(.x, na.rm = TRUE))) %>% distinct
     df_select_qr2 <- df_select_qr2[,c("PATIENT_BARCODE",
                                       c(setdiff(colnames(df_select_qr2), "PATIENT_BARCODE")))]
 
@@ -152,13 +153,13 @@ im_syng_tcga<-function(onco_gene, icp_gene, cohort, sample_list, method, feature
     df_icp_qr2$PATIENT_BARCODE <- substr(df_icp_qr2$Tumor_Sample_ID, 1, 12)
     df_icp_qr2$Tumor_Sample_ID <- NULL
     df_icp_qr2 <- df_icp_qr2 %>% group_by(PATIENT_BARCODE) %>%
-      mutate(across(cols = everything(),.fns = ~median(.x, na.rm = TRUE))) %>% distinct
+      mutate(across(.cols = everything(),.fns = ~median(.x, na.rm = TRUE))) %>% distinct
     df_icp_qr2 <- df_icp_qr2[,c("PATIENT_BARCODE",
                                 c(setdiff(colnames(df_icp_qr2), "PATIENT_BARCODE")))]
     df_all2 <- merge(df_select_qr2,df_icp_qr2)
 
-
     message("Calculating features...")
+
     #Get features-----------------------------------
     #-----------------------------------------------
 
