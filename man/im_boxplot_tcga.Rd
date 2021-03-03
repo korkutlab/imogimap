@@ -2,7 +2,7 @@
 % Please edit documentation in R/im_boxplot_tcga.R
 \name{im_boxplot_tcga}
 \alias{im_boxplot_tcga}
-\title{Generate a stratified boxplot for immune feature values}
+\title{Generates a stratified boxplot for immune feature values based of a two genes.}
 \usage{
 im_boxplot_tcga(onco_gene, icp_gene, cohort, Immune_Feature, logtrans)
 }
@@ -23,7 +23,7 @@ im_boxplot_tcga(onco_gene, icp_gene, cohort, Immune_Feature, logtrans)
 a list of multiple dataframes of correlation coefficients and p.values
 }
 \description{
-Generate a stratified boxplot for immune feature values
+Generates a stratified boxplot for immune feature values based of a two genes.
 }
 \details{
 Feature data is stratified base on expression quartiles of onco_gene and icp_gene. High/Low categories include samples with expression values in lower/upper quartiles correspondingly. Samples with expression values in middle quartiles are discarded. For details of quartile calculation see get_quantile_rank function.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/im_cor_tcga.R
 \name{im_cor_tcga}
 \alias{im_cor_tcga}
-\title{Find Spearman correlation of co-target genes with immuno-oncology features using cbioportal data}
+\title{Finds Spearman correlation of co-target genes with immuno-oncology features using cbioportal data}
 \usage{
 im_cor_tcga(onco_gene, icp_gene, cohort)
 }
@@ -19,7 +19,7 @@ im_cor_tcga(onco_gene, icp_gene, cohort)
 a list of dataframes containing Spearman correlations and non-FDR adjusted probability values.
 }
 \description{
-Find Spearman correlation of co-target genes with immuno-oncology features using cbioportal data
+Finds Spearman correlation of co-target genes with immuno-oncology features using cbioportal data
 }
 \details{
 im_cor_tcga uses gene expressions from cbioportal data, 2018 tcga pancan atlas to find correlation and probaility values between onco_genes and immune checkpoints and immuno-oncology features as listed in TCGA_immune_features_list.

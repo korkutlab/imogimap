@@ -1,0 +1,37 @@
+#' imogene:  Immuno-oncology gene expression assessment. 
+#'
+#' The imogene package provides three categories of functions:
+#' 
+#' @section Functions to use public data:
+#' 
+#' The following functions use \code{\link[curatedTCGAData]{curatedTCGAData}} to obtain publicly available RNASeq2GeneNorm data from The Cancer Genome Atlas (TCGA).
+#'  
+#' \itemize{
+##'  \item{\code{\link[imogene]{im_syng_tcga}}:}{ Finds combinatorial association of immunotherapy co-targets with tumor intrinsic features as listed in TCGA_immune_features_list.}
+##'  \item{\code{\link[imogene]{im_boxplot_tcga}}:}{ Generates a stratified boxplot of immune feature values based on two genes}
+#'   \item{\code{\link[imogene]{im_cor_tcga}}:}{ Finds Spearman correlation of co-target genes with immuno-oncology feature}
+#'}
+#' @section  Functions to use with user-curated data:
+#'
+#'The following functions accept user-curated expression data as input.
+#'  
+#' \itemize{
+#'  \item{\code{\link[imogene]{im_syng}}:}{ Finds combinatorial association of immunotherapy co-targets with tumor intrinsic features as listed in TCGA_immune_features_list.}
+#'  \item{\code{\link[imogene]{im_boxplot}}:}{ Generates a stratified boxplot of immune feature values based on two genes}
+#'   \item{\code{\link[imogene]{im_cor}}:}{ Finds Spearman correlation of co-target genes with immuno-oncology feature}
+#'}
+#'
+#'@section Functions for output visualization and helper functions:
+#' \itemize{
+#' \item{\code{\link[imogene]{im_netplot}}:}{ Creates and plot an igraph network from dataframe as outputed }
+#' \item{\code{\link[imogene]{get_angio_score}}:}{ Calculates angiogenesis score}
+#' \item{\code{\link[imogene]{get_emt_score}}:}{ Calculates EMT score}
+#' \item{\code{\link[imogene]{get_ifng_score}}:}{ Calculates IFNG score}
+#' \item{\code{\link[imogene]{get_quantile_rank}}:}{ Stratify each column using quantile values.}
+#' 
+#' }
+#'
+#' @docType package
+#' @name imogene
+NULL
+#> NULL

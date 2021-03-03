@@ -1,4 +1,4 @@
-#' Find Spearman correlation of co-target genes with immuno-oncology features using cbioportal data
+#' Finds Spearman correlation of co-target genes with immuno-oncology features using cbioportal data
 #' @import dplyr
 #' @import curatedTCGAData
 #' @import tidyr

@@ -1,4 +1,4 @@
-#' Generate a stratified boxplot for immune feature values
+#' Generates a stratified boxplot for immune feature values based of a two genes.
 #' @import dplyr
 #' @import curatedTCGAData
 #' @import ggplot2

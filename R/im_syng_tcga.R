@@ -1,4 +1,4 @@
-#' Find combinatorial association of immunotherapy co-targets with tumor intrinsic features as listed in TCGA_immune_features_list.
+#' Finds combinatorial association of immunotherapy co-targets with tumor intrinsic features as listed in TCGA_immune_features_list.
 #'
 #' @import dplyr
 #' @import curatedTCGAData

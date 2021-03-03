@@ -2,7 +2,7 @@
 % Please edit documentation in R/im_syng_tcga.R
 \name{im_syng_tcga}
 \alias{im_syng_tcga}
-\title{Find combinatorial association of immunotherapy co-targets with tumor intrinsic features as listed in TCGA_immune_features_list.}
+\title{Finds combinatorial association of immunotherapy co-targets with tumor intrinsic features as listed in TCGA_immune_features_list.}
 \usage{
 im_syng_tcga(
   onco_gene,
@@ -39,7 +39,7 @@ im_syng_tcga(
 A dataframe of synergy scores and bootstrapping pvalues.
 }
 \description{
-Find combinatorial association of immunotherapy co-targets with tumor intrinsic features as listed in TCGA_immune_features_list.
+Finds combinatorial association of immunotherapy co-targets with tumor intrinsic features as listed in TCGA_immune_features_list.
 }
 \details{
 im_syng_tcga uses RNASeq2GeneNorm data from curatedTCGAData to find combinatorial association of immunotherapy co-targets and immune checkpoints with immuno-oncology features as listed in TCGA_immune_features_list
