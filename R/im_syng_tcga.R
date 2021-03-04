@@ -15,7 +15,7 @@
 #' @return A dataframe of synergy scores and bootstrapping pvalues.
 #' @details
 #'
-#' im_syng_tcga uses RNASeq2GeneNorm data from curatedTCGAData to find combinatorial association of immunotherapy co-targets and immune checkpoints with immuno-oncology features as listed in TCGA_immune_features_list
+#' im_syng_tcga uses RNASeq2GeneNorm expression data, as provided by \code{\pkg{curatedTCGAData}}, to find combinatorial association of immunotherapy co-targets and immune checkpoints with immuno-oncology features as listed in TCGA_immune_features_list
 #'
 #' For synergy score calculations all features are normalized to be on [0,1] range. For details of synergy score calculations see get_syng_score function.
 #'
@@ -514,7 +514,7 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, sample_list, method, featu
         df_sub_qr2 <- df_sub_qr2 %>% group_by(PATIENT_BARCODE) %>%
           mutate(across(.cols = everything(),.fns = ~median(.x, na.rm = TRUE))) %>% distinct
         df_sub_qr2 <- df_sub_qr2[,c("PATIENT_BARCODE",
-                                      c(setdiff(colnames(df_sub_qr2), "PATIENT_BARCODE")))]
+                                    c(setdiff(colnames(df_sub_qr2), "PATIENT_BARCODE")))]
         df_sub_qr2 <- as.data.frame(df_sub_qr2)
 
         for(pair_ID in 1:N_syng_complete1 ){
@@ -546,8 +546,8 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, sample_list, method, featu
           df_feature <- TCGA_IMCell_fraction[ , c( 1, mark_feature)]
 
           dft <- df_sub_qr2[ , c(1 ,
-                                which(colnames(df_sub_qr2)==gene_ID1),
-                                which(colnames(df_sub_qr2)==gene_ID2))]
+                                 which(colnames(df_sub_qr2)==gene_ID1),
+                                 which(colnames(df_sub_qr2)==gene_ID2))]
           dft <- dft[dft[ , 2] %in% c(1 , 4) , ]
           dft <- dft[dft[ , 3] %in% c(1 , 4) , ]
           dft <- merge(df_feature , dft , by="PATIENT_BARCODE")
@@ -562,7 +562,7 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, sample_list, method, featu
       }
       df_syng_complete <- rbind(df_syng_complete1,df_syng_complete2)
       df_syng_complete$variance <-
-      df_syng_complete$sum2 / df_syng_complete$N - (df_syng_complete$sum/df_syng_complete$N)^2
+        df_syng_complete$sum2 / df_syng_complete$N - (df_syng_complete$sum/df_syng_complete$N)^2
       df_syng_complete$sum <- NULL
       df_syng_complete$sum2 <- NULL
       df_syng_complete$N <- NULL

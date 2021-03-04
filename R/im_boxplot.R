@@ -11,11 +11,13 @@
 #'
 #' Feature data is stratified base on expression quartiles of onco_gene and icp_gene. High/Low categories include samples with expression values in lower/upper quartiles correspondingly. Samples with expression values in middle quartiles are discarded. For details of quartile calculation see get_quantile_rank function.
 #'
-#' data_expression is formatted with genes/proteins as rows and samples/patients as columns.
-#' For data_expression sample formats see sample_mRNA_data.
+#'Pvalues are calculated using Wilcoxon test.
 #'
-#' data_feature is formated with samples/patients as rows and immune feature as single column.
-#' For data_feature sample format see sample_Leukocyte_fraction_data.
+#' data_expression is formatted with genes/proteins as rows and samples/patients as columns.
+#' For data_expression sample formats see \code{\link[imogene]{sample_mRNA_data}}.
+#'
+#' data_feature is formatted with samples/patients as rows and immune feature as single column.
+#' For data_feature sample format see \code{\link[imogene]{sample_Leukocyte_fraction_data}}.
 #'
 #' @examples im_boxplot(onco_gene = "TGFB1",icp_gene="TNFSF4",
 #'                   data_expression =  sample_mRNA_data,

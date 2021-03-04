@@ -2,22 +2,22 @@
 #' @import dplyr
 #' @import tibble
 #' @import tidyr
-#' @param onco_gene A charachter vector of gene/protein IDs.
-#' @param icp_gene An optional charachter vector of immune checkpoint gene/protein IDs.
+#' @param onco_gene A character vector of gene/protein IDs.
+#' @param icp_gene An optional character vector of immune checkpoint gene/protein IDs.
 #' @param data_expression A numeric matrix or data frame containing gene/protein expressions.
 #' @param data_feature An optional numeric matrix or data frame containing immune features.
 #' @param add_features An optional logical indicating if EMT score, angiogenesis score and IFNG expression should be added to immune features. Default is TRUE.
 #' @keywords Spearman correlation,immune features, immune checkpoints
-#' @return A list of dataframes containing spearman correlations and non-FDR adjusted probability values.
+#' @return A list of dataframes containing Spearman correlations and non-FDR adjusted probability values.
 #' @details
 #'
 #' By default (if no icp_gene is specified), icp_gene_list will be used.
 #'
 #' data_expression is formatted with genes/proteins as rows and samples/patients as columns.
-#' For data_expression sample formats see sample_mRNA_data.
+#' For data_expression sample formats see see \code{\link[imogene]{sample_mRNA_data}}.
 #'
-#' data_feature is formated with samples/patients as rows and immune features as columns.
-#' For data_feature sample format see sample_immune_cell_fraction_data.
+#' data_feature is formatted with samples/patients as rows and immune features as columns.
+#' For data_feature sample format see \code{\link[imogene]{sample_Leukocyte_fraction_data}}.
 #'
 #' @examples im_cor(onco_gene =  c("BRAF","CTLA4"),
 #'                  icp_gene= c("CD274","CTLA4"),

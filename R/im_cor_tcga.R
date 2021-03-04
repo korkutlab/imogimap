@@ -10,13 +10,13 @@
 #' @return a list of dataframes containing Spearman correlations and non-FDR adjusted probability values.
 #' @details
 #'
-#' im_cor_tcga uses gene expressions from cbioportal data, 2018 tcga pancan atlas to find correlation and probaility values between onco_genes and immune checkpoints and immuno-oncology features as listed in TCGA_immune_features_list.
+#' im_cor_tcga uses NASeq2GeneNorm expression data, as provided by \code{\pkg{curatedTCGAData}}, to find correlation  between onco_genes and immune checkpoints and immuno-oncology features as listed in TCGA_immune_features_list.
 #'
 #' By default (if no icp_gene is specified), icp_gene_list will be used.
 #'
 #' For TCGA disease list see TCGA_disease_list
 #'
-#'All barcodes in sample_list must be 15 charachter long and belong to the same cohort. When sample_list is provided, cohort should be the disease cohort that they belong to, otherwise only the first element of the cohort list will be used.
+#'All barcodes in sample_list must be 15 character long and belong to the same cohort. When sample_list is provided, cohort should be the disease cohort that they belong to, otherwise only the first element of the cohort list will be used.
 #'
 #' A non-FDR-adjusted p.value is reported for each correlation value to allow for easier adjustments by user.
 #'

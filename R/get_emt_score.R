@@ -3,7 +3,7 @@
 #' @keywords Epithelial Mesenchymal transition, pathway score
 #' @return a dataframe of EMT scores for each sample
 #' @details
-#' To calculate EMT score, gene expressions in EMT_gene_list are weighted by their sign facor to account for the direction of the effect on EMT (See EMT_gene_list for list of genes and their direction of effect). The EMT_score is defined as  mean value of modified expressions. Scores are then mean-centered and normalized by standard deviation based on distribution of scores in all samples.
+#' To calculate EMT score, gene expressions in EMT_gene_list are weighted by their sign factor to account for the direction of the effect on EMT (See EMT_gene_list for list of genes and their direction of effect). The EMT_score is defined as  mean value of modified expressions. Scores are then mean-centered and normalized by standard deviation based on distribution of scores in all samples.
 #'
 #' @examples get_emt_score(pdf=sample_mRNA_data)
 #' @export
