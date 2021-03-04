@@ -7,9 +7,9 @@
 im_cor(onco_gene, icp_gene, data_expression, data_feature, add_features)
 }
 \arguments{
-\item{onco_gene}{A charachter vector of gene/protein IDs.}
+\item{onco_gene}{A character vector of gene/protein IDs.}
 
-\item{icp_gene}{An optional charachter vector of immune checkpoint gene/protein IDs.}
+\item{icp_gene}{An optional character vector of immune checkpoint gene/protein IDs.}
 
 \item{data_expression}{A numeric matrix or data frame containing gene/protein expressions.}
 
@@ -18,7 +18,7 @@ im_cor(onco_gene, icp_gene, data_expression, data_feature, add_features)
 \item{add_features}{An optional logical indicating if EMT score, angiogenesis score and IFNG expression should be added to immune features. Default is TRUE.}
 }
 \value{
-A list of dataframes containing spearman correlations and non-FDR adjusted probability values.
+A list of dataframes containing Spearman correlations and non-FDR adjusted probability values.
 }
 \description{
 Calculate Spearman correlation with immune checkpoints
@@ -27,10 +27,10 @@ Calculate Spearman correlation with immune checkpoints
 By default (if no icp_gene is specified), icp_gene_list will be used.
 
 data_expression is formatted with genes/proteins as rows and samples/patients as columns.
-For data_expression sample formats see sample_mRNA_data.
+For data_expression sample formats see see \code{\link[imogene]{sample_mRNA_data}}.
 
-data_feature is formated with samples/patients as rows and immune features as columns.
-For data_feature sample format see sample_immune_cell_fraction_data.
+data_feature is formatted with samples/patients as rows and immune features as columns.
+For data_feature sample format see \code{\link[imogene]{sample_Leukocyte_fraction_data}}.
 }
 \examples{
 im_cor(onco_gene =  c("BRAF","CTLA4"),

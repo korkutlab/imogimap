@@ -7,15 +7,15 @@
 im_boxplot_tcga(onco_gene, icp_gene, cohort, Immune_Feature, logtrans)
 }
 \arguments{
-\item{onco_gene}{A charachter indicating a single onco_gene Hugo symbol.}
+\item{onco_gene}{A character indicating a single onco_gene Hugo symbol.}
 
-\item{icp_gene}{A charachter indicating a single immune checkpoint Hugo symbol.}
+\item{icp_gene}{A character indicating a single immune checkpoint Hugo symbol.}
 
 \item{cohort}{a single TCGA disease}
 
 \item{logtrans}{An optional logical indicating if y axis should be displayed in logarithmic scale. Default is FALSE.}
 
-\item{sample_list}{An optional charachter vector of TCGA samples barcodes indicating a subset of samples within a cohort. All barcodes in sample_list must be 15 charachter long and belong to the same cohort.}
+\item{sample_list}{An optional character vector of TCGA samples barcodes indicating a subset of samples within a cohort. All barcodes in sample_list must be 15 character long and belong to the same cohort.}
 
 \item{Immune_Feauture}{an immune feature name as listed in TCGA_immune_features_list.}
 }
@@ -26,15 +26,19 @@ a list of multiple dataframes of correlation coefficients and p.values
 Generates a stratified boxplot for immune feature values based of a two genes.
 }
 \details{
-Feature data is stratified base on expression quartiles of onco_gene and icp_gene. High/Low categories include samples with expression values in lower/upper quartiles correspondingly. Samples with expression values in middle quartiles are discarded. For details of quartile calculation see get_quantile_rank function.
+Feature data is stratified based on expression quartiles of onco_gene and icp_gene. High/Low categories include samples with expression values in lower/upper quartiles correspondingly. Samples with expression values in middle quartiles are discarded. For details of quartile calculation see \code{\link[imogene]{get_quantile_rank}} function.
+
+Pvalues are calculated using Wilcoxon test.
 }
 \examples{
 im_boxplot_tcga(onco_gene = "BRAF", icp_gene="CD274",
 cohort="acc", Immune_Feature="Mast.Cells.Activated",logtrans=TRUE)
 }
+\seealso{
+get_quantile_rank
+}
+\keyword{TCGA}
 \keyword{boxplots,}
-\keyword{cbioportal}
 \keyword{checkpoints,}
-\keyword{data}
 \keyword{features,}
 \keyword{immune}

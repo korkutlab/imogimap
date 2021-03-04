@@ -42,7 +42,7 @@ A dataframe of synergy scores and bootstrapping pvalues.
 Finds combinatorial association of immunotherapy co-targets with tumor intrinsic features as listed in TCGA_immune_features_list.
 }
 \details{
-im_syng_tcga uses RNASeq2GeneNorm data from curatedTCGAData to find combinatorial association of immunotherapy co-targets and immune checkpoints with immuno-oncology features as listed in TCGA_immune_features_list
+im_syng_tcga uses RNASeq2GeneNorm expression data, as provided by \code{\pkg{curatedTCGAData}}, to find combinatorial association of immunotherapy co-targets and immune checkpoints with immuno-oncology features as listed in TCGA_immune_features_list
 
 For synergy score calculations all features are normalized to be on \link{0,1} range. For details of synergy score calculations see get_syng_score function.
 

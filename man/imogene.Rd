@@ -35,6 +35,7 @@ The following functions accept user-curated expression data as input.
 
 \itemize{
 \item{\code{\link[imogene]{im_netplot}}:}{ Creates and plot an igraph network from dataframe as outputed }
+\item{\code{\link[imogene]{get_syng_score}}:}{ Calculates synergy score for a stratified data}
 \item{\code{\link[imogene]{get_angio_score}}:}{ Calculates angiogenesis score}
 \item{\code{\link[imogene]{get_emt_score}}:}{ Calculates EMT score}
 \item{\code{\link[imogene]{get_ifng_score}}:}{ Calculates IFNG score}
