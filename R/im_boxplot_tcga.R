@@ -137,7 +137,7 @@ im_boxplot_tcga<-function(onco_gene,icp_gene,cohort,Immune_Feature,sample_list,l
 
 
   p<-ggplot(df_feature2, aes(x=state,y=get(Immune_Feature))) +
-    labs(title="", x="", y="IFNG expression")+
+    labs(title="", x="", y=Immune_Feature)+
     geom_boxplot(width=0.5, show.legend = T, lwd=1,
       outlier.shape = NA,border="grey")+
     geom_jitter(aes(col=out) ,position = position_jitter(width=0.1),
