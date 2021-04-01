@@ -72,7 +72,7 @@ get_syng_score=function(fdata,method){
       }
 
       if(sign(mb+SEM_b)==sign(mb-SEM_b)){
-        sign_b <- sign(ma)
+        sign_b <- sign(mb)
       }else{
         sign_b <- NA
       }
