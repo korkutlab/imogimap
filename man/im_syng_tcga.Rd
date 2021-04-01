@@ -2,7 +2,7 @@
 % Please edit documentation in R/im_syng_tcga.R
 \name{im_syng_tcga}
 \alias{im_syng_tcga}
-\title{Finds combinatorial association of immunotherapy co-targets with tumor intrinsic features as listed in TCGA_immune_features_list.}
+\title{Finds combinatorial association of immunotherapy co-targets with tumor intrinsic features as listed in TCGA_immune_features_list. Columns of the outputted data.frame contain synergy scores as well as p.values and a variances to measure strength, significance and sensitivity of the effects. Each row represents the combinatorial effect of two genes on an immune feature in a selected cohort.}
 \usage{
 im_syng_tcga(
   onco_gene,
@@ -27,7 +27,7 @@ im_syng_tcga(
 
 \item{method}{A character string indicating which synergy score to be used. one of "max" or "independence". Default is "max".}
 
-\item{N_iteration}{Number of iterations for random bootstrapping for pvalue calculation and sensitivity analysis. Default is 1000.}
+\item{N_iteration}{Number of iterations for random bootstrapping for p.value calculation and sensitivity analysis. Default is 1000.}
 
 \item{sensitivity}{An optional logical indicating if a sensitivity analysis should be done. Default is FALSE.}
 
@@ -36,10 +36,10 @@ im_syng_tcga(
 \item{pvalue}{An optional logical indicating if a random bootstrapping value should be calculated. Default is FALSE.}
 }
 \value{
-A dataframe of synergy scores and bootstrapping pvalues.
+A data.frame of synergy scores and bootstrapping p.values.
 }
 \description{
-Finds combinatorial association of immunotherapy co-targets with tumor intrinsic features as listed in TCGA_immune_features_list.
+Finds combinatorial association of immunotherapy co-targets with tumor intrinsic features as listed in TCGA_immune_features_list. Columns of the outputted data.frame contain synergy scores as well as p.values and a variances to measure strength, significance and sensitivity of the effects. Each row represents the combinatorial effect of two genes on an immune feature in a selected cohort.
 }
 \details{
 im_syng_tcga uses RNASeq2GeneNorm expression data, as provided by \code{\pkg{curatedTCGAData}}, to find combinatorial association of immunotherapy co-targets and immune checkpoints with immuno-oncology features as listed in TCGA_immune_features_list

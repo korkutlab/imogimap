@@ -4,7 +4,14 @@
 \alias{im_boxplot_tcga}
 \title{Generates a stratified boxplot for immune feature values based of a two genes.}
 \usage{
-im_boxplot_tcga(onco_gene, icp_gene, cohort, Immune_Feature, logtrans)
+im_boxplot_tcga(
+  onco_gene,
+  icp_gene,
+  cohort,
+  Immune_Feature,
+  sample_list,
+  logtrans
+)
 }
 \arguments{
 \item{onco_gene}{A character indicating a single onco_gene Hugo symbol.}
@@ -13,9 +20,9 @@ im_boxplot_tcga(onco_gene, icp_gene, cohort, Immune_Feature, logtrans)
 
 \item{cohort}{a single TCGA disease}
 
-\item{logtrans}{An optional logical indicating if y axis should be displayed in logarithmic scale. Default is FALSE.}
-
 \item{sample_list}{An optional character vector of TCGA samples barcodes indicating a subset of samples within a cohort. All barcodes in sample_list must be 15 character long and belong to the same cohort.}
+
+\item{logtrans}{An optional logical indicating if y axis should be displayed in logarithmic scale. Default is FALSE.}
 
 \item{Immune_Feauture}{an immune feature name as listed in TCGA_immune_features_list.}
 }

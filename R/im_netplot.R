@@ -34,7 +34,7 @@ im_netplot<- function(df, icp_gene, cohort, Immune_Feature, cutoff,seed) {
    df <- df[df$Disease==cohort,]
   }
 
-  df <- df[complete.cases(df),]
+  df <- df[!(is.na(df$Synergy_score)),]
 
   df <- df[df$Immune_feature== Immune_Feature,]
   df <- df[abs(df$Synergy_score) > cutoff,]

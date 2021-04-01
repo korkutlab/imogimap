@@ -22,7 +22,7 @@ get_quantile_rank<-function(df){
       if(!any(duplicated(df_breaks))){
         3*as.integer(cut(x,df_breaks,include.lowest=TRUE))-2
       }else{
-        ifelse(x<df_breaks[2],1,4)
+        ifelse(x < df_breaks[2],1,4)
       }
     }
   })

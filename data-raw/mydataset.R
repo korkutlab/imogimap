@@ -1,4 +1,4 @@
-# Creates esential datasets from raw-data
+# Creates essential data sets from raw-data
 
 library(data.table)
 

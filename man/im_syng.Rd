@@ -31,12 +31,12 @@ im_syng(
 
 \item{add_pvalue}{An optional logical indicating if a random bootstrapping value should be calculated. Default is FALSE.}
 
-\item{N_iteration}{Number of iterations for random bootstrapping for pvalue calculation and sensitivity analysis. Default is 1000.}
+\item{N_iteration}{Number of iterations for random bootstrapping for p.value calculation and sensitivity analysis. Default is 1000.}
 
 \item{sensitivity}{An optional logical indicating if a sensitivity analysis should be done. Default is FALSE.}
 }
 \value{
-a dataframes of synergy scores and bootstrapping pvalues
+a data.frames of synergy scores and bootstrapping p.values
 }
 \description{
 Find combinatorial association of immunotherapy co-targets with tumor intrinsic features.
