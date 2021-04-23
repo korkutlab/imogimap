@@ -29,7 +29,7 @@ im_boxplot_tcga<-function(onco_gene,icp_gene,cohort,Immune_Feature,sample_list,l
 
   #Read data -----------------------
   df <-curatedTCGAData::curatedTCGAData( diseaseCode = cohort,
-    assays = c("RNASeq2GeneNorm"), dry.run = F)@ExperimentList@listData[[1]]
+                                         assays = c("RNASeq2GeneNorm"), dry.run = F)@ExperimentList@listData[[1]]
   df <- df@assays$data@listData[[1]]
   colnames(df)<-  substr(colnames(df), 1, 15)
 
@@ -97,15 +97,67 @@ im_boxplot_tcga<-function(onco_gene,icp_gene,cohort,Immune_Feature,sample_list,l
   df_feature <- as.data.frame(df_feature)
   df_feature <- df_feature[df_feature[,3] %in% c(1,4),]
   df_feature <- df_feature[df_feature[,4] %in% c(1,4),]
+
+  #Find if expression or inhibition of genes positively impact feature
+  my_score <- find_a_synergy(df_feature[,-1],method = "max")
+  if(is.na(my_score$Synergy_score)){
+    effect_onco <- "Expressed"
+    effect_icp <- "Expressed"
+  }else{
+    effect_onco <- my_score$agent1_expression
+    effect_icp <- my_score$agent2_expression
+  }
+  #Flip labels if inhibition of genes positively impact feature
+  if(effect_onco=="Inhibited"){
+    df_feature[df_feature[,3]==4,3] <- 0
+    df_feature[df_feature[,3]==1,3] <- 4
+    df_feature[df_feature[,3]==0,3] <- 1
+
+  }
+  if(effect_icp=="Inhibited"){
+    df_feature[df_feature[,4]==4,4] <- 0
+    df_feature[df_feature[,4]==1,4] <- 4
+    df_feature[df_feature[,4]==0,4] <- 1
+  }
+
+  #Define labels
   df_feature$state <- as.factor(as.integer((df_feature[,3]*2+df_feature[,4])/3))
 
+  if(effect_onco=="Expressed" && effect_icp=="Expressed"){
+    mylabels <-   c("Both low",
+                    paste0(icp_gene," high\n",onco_gene," low"),
+                    paste0(onco_gene," high\n",icp_gene," low"),
+                    "Both high")
+  }else{
+    if(effect_onco=="Inhibited" && effect_icp=="Inhibited"){
+      mylabels <- c("Both high",
+                    paste0(onco_gene," high\n",icp_gene," low"),
+                    paste0(icp_gene," high\n",onco_gene," low"),
+                    "Both low")
+    }else{
+      if(effect_onco=="Inhibited" && effect_icp=="Expressed"){
+        mylabels <- c( paste0(icp_gene," low\n",onco_gene," high"),
+                       "Both low",
+                       "Both high",
+                       paste0(onco_gene," low\n",icp_gene," high"))
+      }else{
+        mylabels <- c(paste0(onco_gene," low\n",icp_gene," high"),
+                      "Both high",
+                      "Both low",
+                      paste0(icp_gene," low\n",onco_gene," high"))
 
+      }
+    }
+  }
   #Plot-------------------------------------------
   if(missing(logtrans)){
     logtrans<-FALSE
   }
   if(logtrans){
     transvalue <- "log2"
+    df_feature[df_feature[,2]==0,2]<-NA
+    plot_min <- min(df_feature[,2],na.rm=T)
+    df_feature[is.na(df_feature[,2]),2] <- plot_min
   }else{
     transvalue <- "identity"
   }
@@ -113,19 +165,16 @@ im_boxplot_tcga<-function(onco_gene,icp_gene,cohort,Immune_Feature,sample_list,l
   p<-ggplot(df_feature, aes(x=state,y=get(Immune_Feature),col="grey")) +
     labs(title="", x="", y=Immune_Feature)+
     geom_boxplot(width=0.5, show.legend = T,
-      outlier.size = 1.0, lwd=0.5, outlier.colour = "red",outlier.shape = 21)+
+                 outlier.size = 1.0, lwd=0.5,
+                 outlier.colour = "red",outlier.shape = 21)+
     geom_jitter(position = position_jitter(width=0.1), cex=1, pch=19, alpha=1)+
     theme( axis.text.x=element_text(size=10),
-      axis.text.y=element_text(size=10,angle = 90),
-      axis.title =element_text(size=10),legend.position ="top")+
-    scale_x_discrete(labels =
-        c(" Both low",
-          paste0(icp_gene," high\n",onco_gene," low"),
-          paste0(onco_gene," high\n",icp_gene," low"),
-          "Both high"))+
+           axis.text.y=element_text(size=10,angle = 90),
+           axis.title =element_text(size=10),legend.position ="top")+
+    scale_x_discrete(labels = mylabels)+
     stat_compare_means(comparisons =
-        list( c("1", "2"),c("1", "3"), c("3", "4"), c("2", "4")),
-      size=5,method = "wilcox.test")+
+                         list( c("1", "2"),c("1", "3"), c("3", "4"), c("2", "4")),
+                       size=5,method = "wilcox.test")+
     theme(legend.text=element_text(size=10))+
     theme_bw()+
     coord_trans(y=transvalue)
@@ -136,23 +185,22 @@ im_boxplot_tcga<-function(onco_gene,icp_gene,cohort,Immune_Feature,sample_list,l
   df_feature2$out<-apply(df_feature2,1,function(x) x[Immune_Feature] %in% x$outliers)
 
 
-  p<-ggplot(df_feature2, aes(x=state,y=get(Immune_Feature))) +
+  p <- ggplot(df_feature2, aes(x=state,y=get(Immune_Feature))) +
     labs(title="", x="", y=Immune_Feature)+
     geom_boxplot(width=0.5, show.legend = T, lwd=1,
-      outlier.shape = NA,border="grey")+
+                 outlier.shape = NA,border="grey")+
     geom_jitter(aes(col=out) ,position = position_jitter(width=0.1),
-      cex=2, pch=19, alpha=1)+
+                cex=2, pch=19, alpha=1)+
     scale_color_manual(values=c("black","red"),guide="none")+
-    scale_x_discrete(labels =  c(" Both low",paste0(icp_gene," high\n",onco_gene," low"),
-      paste0(onco_gene," high\n",icp_gene," low"),"Both high"))+
+    scale_x_discrete(labels =  mylabels)+
     theme_bw()+
     stat_compare_means(comparisons =
-        list( c("1", "2"),c("1", "3"), c("3", "4"), c("2", "4")),
-      size=10,method = "wilcox.test",
-      bracket.size=1,vjust=1.5)+
+                         list( c("1", "2"),c("1", "3"), c("3", "4"), c("2", "4")),
+                       size=10,method = "wilcox.test",
+                       bracket.size=1,vjust=1.5)+
     theme( axis.text.x=element_text(size=25),
-      axis.text.y=element_text(size=25,angle = 90),
-      axis.title =element_text(size=25),legend.position ="top")+
+           axis.text.y=element_text(size=25,angle = 90),
+           axis.title =element_text(size=25),legend.position ="top")+
     theme(legend.text=element_text(size=25))+
     coord_trans(y=transvalue)
   return(p)

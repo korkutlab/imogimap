@@ -20,7 +20,6 @@ Given a cohort of samples, calculates immune features within the cohort and tran
 }
 \examples{
 get_features(pdf=sample_mRNA_data)
-
 }
 \keyword{Immune}
 \keyword{Probability}

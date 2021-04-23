@@ -31,7 +31,7 @@ im_netplot<- function(df, icp_gene, cohort, Immune_Feature, cutoff,seed) {
     icp_gene <- icp_gene_list
   }
   if(!missing(cohort)){
-   df <- df[df$Disease==cohort,]
+    df <- df[df$Disease==cohort,]
   }
 
   df <- df[!(is.na(df$Synergy_score)),]
@@ -68,14 +68,14 @@ im_netplot<- function(df, icp_gene, cohort, Immune_Feature, cutoff,seed) {
   par(mar=rep(0,4))
 
   p<- plot(g,
-    vertex.size = vsize,
-    vertex.label.family = "Helvetica",
-    vertex.label.font = 2,
-    vertex.label.cex=vcex,
-    vertex.label.dist=.5,
-    edge.color = ecol,
-    edge.width = ew,
-    mark.groups = by(seq_along(cg$membership), cg$membership, invisible))
+           vertex.size = vsize,
+           vertex.label.family = "Helvetica",
+           vertex.label.font = 2,
+           vertex.label.cex=vcex,
+           vertex.label.dist=.5,
+           edge.color = ecol,
+           edge.width = ew,
+           mark.groups = by(seq_along(cg$membership), cg$membership, invisible))
 
   return(p)
 }

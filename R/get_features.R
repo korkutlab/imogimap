@@ -6,7 +6,7 @@
 #' Given a cohort of samples, calculates immune features within the cohort and transforms their values using probability integral transform. The resulting feature values will have a standard uniform distribution between [0,1]
 #'
 #' @examples get_features(pdf=sample_mRNA_data)
-#'
+#' @export
 
 get_features=function(pdf){
 
@@ -19,23 +19,39 @@ get_features=function(pdf){
 
   #Transform features-----------------------------
   #-----------------------------------------------
-  sd_EMT <- sd(cohort_EMT$EMTscore,na.rm = T)
-  sd_IFNG <- sd(cohort_IFNG$IFNGscore,na.rm = T)
-  sd_AG <- sd(cohort_AG$AGscore,na.rm = T)
-  cohort_EMT$EMTscore <- ( tanh( cohort_EMT$EMTscore/sd_EMT ) + 1 ) / 2
-  cohort_IFNG$IFNGscore <- ( tanh( cohort_IFNG$IFNGscore/sd_IFNG ) + 1 ) / 2
-  cohort_AG$AGscore <- ( tanh( cohort_AG$AGscore/sd_AG ) + 1 ) / 2
+  if(nrow(cohort_EMT) > 0){
+    sd_EMT <- sd(cohort_EMT$EMTscore,na.rm = T)
+    cohort_EMT$EMTscore <- ( tanh( cohort_EMT$EMTscore/sd_EMT ) + 1 ) / 2
+  }else{
+    cohort_EMT<-data.frame("Tumor_Sample_ID"=colnames(pdf),"EMTscore"=NA)}
 
-  df_tmb$TMB_Non.silent_per_Mb <- tanh(  df_tmb$TMB_Non.silent_per_Mb/10 )
-  df_tmb$TMB_Silent_per_Mb <- tanh(  df_tmb$TMB_Silent_per_Mb/10 )
+  if(nrow(cohort_IFNG) > 0){
+    sd_IFNG <- sd(cohort_IFNG$IFNGscore,na.rm = T)
+    cohort_IFNG$IFNGscore <- ( tanh( cohort_IFNG$IFNGscore/sd_IFNG ) + 1 ) / 2
+  }else{
+    cohort_IFNG<-data.frame("Tumor_Sample_ID"=colnames(pdf),"IFNGscore"=NA)}
 
+  if(nrow(cohort_AG) > 0){
+    sd_AG <- sd(cohort_AG$AGscore,na.rm = T)
+    cohort_AG$AGscore <- ( tanh( cohort_AG$AGscore/sd_AG ) + 1 ) / 2
+  }else{
+    cohort_AG<-data.frame("Tumor_Sample_ID"=colnames(pdf),"AGscore"=NA)}
+
+  if(nrow(df_tmb) > 0){
+    df_tmb$TMB_Non.silent_per_Mb <- tanh(  df_tmb$TMB_Non.silent_per_Mb/10 )
+    df_tmb$TMB_Silent_per_Mb <- tanh(  df_tmb$TMB_Silent_per_Mb/10 )
+  }else{
+    df_tmb<-data.frame("Tumor_Sample_ID"=colnames(pdf),"TMB_Non.silent_per_Mb"=NA,"TMB_Silent_per_Mb"=NA)}
+
+  if(nrow(df_lf) == 0){df_lf <- data.frame("Tumor_Sample_ID"=colnames(pdf),"Leukocyte_fraction"=NA)}
 
   #Merge all features-----------------------------
   #-----------------------------------------------
-  dft <- as.data.frame(merge(cohort_EMT , cohort_AG, by="Tumor_Sample_ID"))
-  dft <- as.data.frame(merge(dft , cohort_IFNG, by="Tumor_Sample_ID"))
-  dft<- as.data.frame(merge(dft , df_lf, by="Tumor_Sample_ID"))
-  dft <- as.data.frame(merge(dft , df_tmb, by="Tumor_Sample_ID"))
+
+  dft <- as.data.frame(merge(cohort_EMT , cohort_AG, by="Tumor_Sample_ID",all=T))
+  dft <- as.data.frame(merge(dft , cohort_IFNG, by="Tumor_Sample_ID",all=T))
+  dft<- as.data.frame(merge(dft , df_lf, by="Tumor_Sample_ID",all=T))
+  dft <- as.data.frame(merge(dft , df_tmb, by="Tumor_Sample_ID",all=T))
 
 
   return(dft)
