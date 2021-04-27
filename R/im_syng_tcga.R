@@ -294,7 +294,7 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, sample_list, method, featu
     df_syng <- as.data.table(df_syng)
     data.table::setkey(df_syng, Disease, agent1,agent2,Immune_feature)
 
-    message("\nSynergy calculation completed! ")
+    message("\nSynergy calculation completed!\n ")
 
 
     #Check if p.value should be calculated-----------------------
@@ -304,7 +304,7 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, sample_list, method, featu
     if(add_pvalue){
 
       if(missing(N_iteration)){
-        N_iteration <- 10000
+        N_iteration <- 1000
       }
 
       #Build unique permutations----------------------
@@ -395,8 +395,12 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, sample_list, method, featu
               syng_dist_t <- vector()
               for(k in 3:bank_size2){
                 dft <- df_bank_sub2[,c(1,2,k)]
-                dft <- dft[dft[,3] %in% c(1,4),]
-                syng_dist_t[k-2] <- find_a_synergy(fdata = dft,method = method,oncogene1 = gene_effect)$Synergy_score
+                dft <- dft[dft[,3] %in% c(1,4),,drop=F]
+                if(nrow(dft)>0){
+                  syng_dist_t[k-2] <- find_a_synergy(fdata = dft,
+                                                     method = method,
+                                                     oncogene1 = gene_effect)$Synergy_score
+                }
               }
               syng_dist_t <- syng_dist_t[complete.cases(syng_dist_t)]
               syng_dist[[j]] <- syng_dist_t
@@ -462,15 +466,19 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, sample_list, method, featu
 
               gene_mark <- as.numeric( which( df_bank_sub1_cols == sub_genes$gene[ j]))
               df_bank_sub2 <- df_bank_sub1[ , c(1, gene_mark, bank_mark : bank_size)]
-              df_bank_sub2 <- df_bank_sub2[ df_bank_sub2[ , 2 ] %in% c( 1, 4), ]
+              df_bank_sub2 <- df_bank_sub2[ df_bank_sub2[ , 2 ] %in% c( 1, 4),,drop=F ]
               bank_size2 <- as.numeric( ncol( df_bank_sub2 ))
               gene_effect <- sub_genes$effect[j]
 
               syng_dist_t <- vector()
               for(k in 3:(bank_size2)){
                 dft <- df_bank_sub2[,c(1,2,k)]
-                dft <- dft[dft[,3] %in% c(1,4),]
-                syng_dist_t[k-2] <- find_a_synergy(fdata = dft,method = method,oncogene1 = gene_effect)$Synergy_score
+                dft <- dft[dft[,3] %in% c(1,4),,drop=F]
+                if(nrow(dft)>0){
+                  syng_dist_t[k-2] <- find_a_synergy(fdata = dft,
+                                                     method = method,
+                                                     oncogene1 = gene_effect)$Synergy_score
+                }else{ syng_dist_t[k-2] <- NA }
               }
               syng_dist_t <- syng_dist_t[complete.cases(syng_dist_t)]
               syng_dist[[j]] <- syng_dist_t
@@ -510,7 +518,7 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, sample_list, method, featu
       if(missing(N_iteration)){
         N_iteration <- 1000
       }
-      message("Calculating sensitivity variance. Iterating ", N_iteration, " times:")
+      message("\nCalculating sensitivity variance. Iterating ", N_iteration, " times:")
 
 
       #Define parameters
@@ -564,9 +572,9 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, sample_list, method, featu
 
           dft <- data_expression[,colnames(data_expression) %in% rownames(df_sub)]
           data_feature <- get_features(dft)
-          #if(!missing(feature)){
-          # data_feature <- as.data.frame(merge(data_feature , feature, by="Tumor_Sample_ID"))
-          #}
+          if(!missing(feature)){
+            data_feature <- as.data.frame(merge(data_feature , feature, by="Tumor_Sample_ID"))
+          }
           rownames(data_feature)<- data_feature$Tumor_Sample_ID
           data_feature<- as.matrix(data_feature[,-1])
 
@@ -576,9 +584,11 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, sample_list, method, featu
 
 
           for(pair_ID in 1:N_syng_complete1 ){
-            tmp_df <- df_syng_complete1[pair_ID]
+            tmp_df <- df_syng_complete1[pair_ID,]
             gene_ID1 <- tmp_df$agent1
             gene_ID2 <- tmp_df$agent2
+            effect1 <- tmp_df$agent1_expression
+            effect2 <- tmp_df$agent2_expression
             feature_ID <- tmp_df$Immune_feature
             mark_feature <- as.integer( which( colnames( data_feature) == feature_ID))
             df_feature <- as.matrix(data_feature[ , mark_feature,drop=F])
@@ -591,7 +601,10 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, sample_list, method, featu
             dft <- cbind(df_feature[match(rownames(dft),rownames(df_feature)),,drop=F], dft)
             dft <- dft[complete.cases(dft),]
 
-            dfts <- find_a_synergy(dft,method)$Synergy_score
+            dfts <- find_a_synergy(fdata = dft,
+                                   method = method,
+                                   oncogene1 = effect1,
+                                   oncogene2 = effect2)$Synergy_score
 
             df_syng_complete1$sum[pair_ID] <- sum(df_syng_complete1$sum[pair_ID],
                                                   dfts, na.rm = T)
@@ -604,6 +617,8 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, sample_list, method, featu
             tmp_df <- df_syng_complete2[pair_ID]
             gene_ID1 <- tmp_df$agent1
             gene_ID2 <- tmp_df$agent2
+            effect1 <- tmp_df$agent1_expression
+            effect2 <- tmp_df$agent2_expression
             feature_ID <- tmp_df$Immune_feature
             mark_feature <- as.integer( which( colnames(data_cell) == feature_ID))
             df_feature <- as.matrix(data_cell[ , mark_feature,drop=F])
@@ -614,7 +629,10 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, sample_list, method, featu
             dft <- dft[dft[ , 2] %in% c(1 , 4) , ]
             dft <- cbind(df_feature[match(rownames(dft),rownames(df_feature)),,drop=F], dft)
             dft <- dft[complete.cases(dft),]
-            dfts <- find_a_synergy(dft,method)$Synergy_score
+            dfts <- find_a_synergy(fdata = dft,
+                                   method = method,
+                                   oncogene1 = effect1,
+                                   oncogene2 = effect2)$Synergy_score
 
             df_syng_complete2$sum[pair_ID] <- sum(df_syng_complete2$sum[pair_ID],
                                                   dfts, na.rm = T)

@@ -6,7 +6,6 @@ setwd(current_dir)
 
 #List of TCGA diseases
 dft <- read.csv("TCGA_disease.csv")
-dft <- dft[-1,]
 TCGA_disease_list  <- dft$x
 
 #List of Immune Checkpoints
@@ -91,7 +90,7 @@ TCGA_immune_features_list <- dft
 #Creates data
 
 setwd("../")
-usethis::use_data(  TCGA_Leukocyte_fraction,TCGA_IMCell_fraction,overwrite = T)
+usethis::use_data(  TCGA_disease_list,overwrite = T)
 
 usethis::use_data(
   TCGA_Leukocyte_fraction,

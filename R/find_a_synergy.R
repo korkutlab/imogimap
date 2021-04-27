@@ -147,13 +147,12 @@ find_a_synergy=function(fdata,method,oncogene1,oncogene2){
         }
       }
     }
+    sscoreij <- data.frame(agent1=colnames(fdata)[2],
+                           agent2=colnames(fdata)[3],
+                           Immune_feature=colnames(fdata)[1],
+                           Synergy_score=CS,
+                           agent1_expression=agent1_expression,
+                           agent2_expression=agent2_expression)
   }
-  sscoreij <- data.frame(agent1=colnames(fdata)[2],
-                         agent2=colnames(fdata)[3],
-                         Immune_feature=colnames(fdata)[1],
-                         Synergy_score=CS,
-                         agent1_expression=agent1_expression,
-                         agent2_expression=agent2_expression)
-
   return(sscoreij)
 }
