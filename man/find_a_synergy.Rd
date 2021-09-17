@@ -11,9 +11,9 @@ find_a_synergy(fdata, method, oncogene1, oncogene2)
 
 \item{method}{a character string indicating which synergy score method to be used. one of "max" or "independence". Default is "max".}
 
-\item{oncogene1}{A factor indicating oncogenic properties of gene1. One of 1,-1,or NA. Default is NA}
+\item{oncogene1}{An optional factor indicating assumed expression of gene1 in relation to IAP. One of "Expressed","Inhibited",or NA. Default is NA}
 
-\item{oncogene2}{A factor indicating oncogenic properties of gene2. One of 1,-1,or NA. Default is NA}
+\item{oncogene2}{An optional factor indicating assumed expression of  gene2. One of 1,-1,or NA. Default is NA}
 }
 \value{
 A data frame containing: A numeric synergy score measuring synergistic impact of two genes on a feature, and two characters indicating whether expression or inhibition of each gene positively impacts feature. Returns NA if no synergistic interaction is found.
@@ -24,13 +24,15 @@ Finds a statistical synergistic score for a data frame containing values of an i
 \details{
 fdata is a numeric matrix with 3 columns: The first column contains the numeric value of a single immune feature. The second and third columns are any of the coded labels 1 or 4, representing low or high expression levels of two genes as outputted by get_quantile_rank. Column-names should be names of feature and two genes accordingly. For details of quantile stratification see get_quantile_rank.
 
-For synergy score calculations, input data is stratified based on  its last two columns. Groups are labeled as low-low (LL), low-high (LH), high-low(HL), and high-high(HH) representing the expression levels of the corresponding two genes in each group. Groups are then reordered four times: (LL LH HL HH) (HH HL LH LL) (LH LL HH HL) and (HL HH LL LH) and the right-most group is recognized as the base group for synergy score calculation. The order of groups in each permutation makes a unique assumption about whether each of the genes is an oncogene or a tumor suppressor (See publication for more details). If oncogene1 or oncogene2 values are provided, one of the four permutations will be chosen accordingly.
+For synergy score calculations, input data is stratified based on  its last two columns. Groups are labeled as low-low (LL), low-high (LH), high-low(HL), and high-high(HH) representing the expression levels of the corresponding two genes in each group. Groups are then reordered four times: (LL LH HL HH) (HH HL LH LL) (LH LL HH HL) and (HL HH LL LH). The right-most group is recognized as the base group and the left-most group is recognized as the impacted group for synergy score calculation. The order of groups in each permutation makes a unique assumption about whether each of the genes is an oncogene or a tumor suppressor (See publication for more details). If oncogene1 or oncogene2 values are provided, one of the four permutations will be chosen accordingly.
 
-Oncogene1 and oncogene2 force our prior knowledge on oncogenic properties of genes, and determine which groups should be taken as base-groups. For example, a value of 1 for oncogene1 means groups with low(L) expression of gene1 can be chosen as base groups (one of LL or LH) and only the two permutations with these base groups will be chosen. If Oncogene1 and oncogene2 are missing, all four permutations will be assessed as described above.
+Oncogene1 and oncogene2 force our prior knowledge on expression of single genes in in relation to IAP, and determine which groups should be taken as base-groups. If a gene is marked as "Expressed" it means it is expressed at higher IAP levels. If a gene is marked as "Inhibited" it indicates its lack of expression at higher IAP levels. Hence  groups with low(L) expression of gene are chosen as base groups (one of LL or LH) and only the two permutations with these base groups will be chosen.  Hence  groups with high(H) expression of gene are chosen as base groups (one of HH or LH) and only the two permutations with these base groups will be chosen.If Oncogene1 and oncogene2 are missing, all four permutations will be assessed as described above.
 
 A synergy score is calculated for each permutation. The score with the maximum absolute value is chosen as the synergy score and the corresponding permutation order determines the oncogenic properties of two genes.  For details of synergy score calculations see calculate_syng_score.
 
-A data frame is returned that contains: Feature and genes name, a numeric synergy score measuring synergistic impact of two genes on a feature, and two characters indicating whether expression or inhibition of each gene positively impacts feature. If no synergistic impact is found,score will be set to NA.
+Three pvalues are calculated using Wilcoxon.test by comparing means of the target group with the other three groups. The maximum of the three pvalue is taken as the significance Pvalue of the score
+
+A data frame is returned that contains: Feature and genes name, a numeric synergy score measuring synergistic association of two genes on a feature, a numeric representing significance pvalue, and two characters indicating whether expression or inhibition of each gene positively associates with feature. If no synergistic association is found,score will be set to NA.
 }
 \examples{
 dft <- TCGA_EMT$EMTscore

@@ -2,18 +2,19 @@
 % Please edit documentation in R/im_syng_tcga.R
 \name{im_syng_tcga}
 \alias{im_syng_tcga}
-\title{Finds combinatorial association of immunotherapy co-targets with tumor intrinsic features as listed in TCGA_immune_features_list. Columns of the outputted data.frame contain synergy scores as well as p.values and a variances to measure strength, significance and sensitivity of the effects. Each row represents the combinatorial effect of two genes on an immune feature in a selected cohort.}
+\title{Calculation and statistical assessment of synergistic associations using TCGA data.}
 \usage{
 im_syng_tcga(
   onco_gene,
   icp_gene,
   cohort,
-  sample_list,
+  select_iap,
   method,
-  feature,
-  add_pvalue,
-  N_iteration,
-  sensitivity
+  specificity,
+  N_iteration_specificity,
+  sensitivity,
+  N_iteration_sensitivity,
+  sample_list
 )
 }
 \arguments{
@@ -23,41 +24,43 @@ im_syng_tcga(
 
 \item{cohort}{A list of TCGA diseases}
 
-\item{sample_list}{An optional character vector of TCGA samples barcodes indicating a subset of samples within a cohort.}
+\item{select_iap}{An optional  character vector or numeric matrix or data.frame.}
 
-\item{method}{A character string indicating which synergy score to be used. one of "max" or "independence". Default is "max".}
+\item{method}{A character string indicating which synergy score to be used. one of "max" or "independence".
+Default is "max".}
 
-\item{N_iteration}{Number of iterations for random bootstrapping for p.value calculation and sensitivity analysis. Default is 1000.}
+\item{specificity}{An optional logical indicating if specificity analysis should be done. Default is FALSE.}
+
+\item{N_iteration_specificity}{Number of iterations for random sampling for specificity p.value calculation.
+Default is 1000.}
 
 \item{sensitivity}{An optional logical indicating if a sensitivity analysis should be done. Default is FALSE.}
 
-\item{data_feature}{An optional numeric matrix or data frame containing normalized immune features.}
+\item{N_iteration_sensitivity}{Number of iterations for random sampling for sensitivity analysis.
+Default is 1000.}
 
-\item{pvalue}{An optional logical indicating if a random bootstrapping value should be calculated. Default is FALSE.}
+\item{sample_list}{An optional character vector of TCGA samples barcodes indicating a subset of samples within a cohort.}
 }
 \value{
 A data.frame of synergy scores and bootstrapping p.values.
 }
 \description{
-Finds combinatorial association of immunotherapy co-targets with tumor intrinsic features as listed in TCGA_immune_features_list. Columns of the outputted data.frame contain synergy scores as well as p.values and a variances to measure strength, significance and sensitivity of the effects. Each row represents the combinatorial effect of two genes on an immune feature in a selected cohort.
+Takes a list of Tumor-intrinsic pathway(TIP) genes and returns their combinatorial association with immune checkpoint(ICP) genes by evaluating their synergistic impact on immune-associated phenotypes(IAP) using RNASeq2GeneNorm expressions as provided by \code{\pkg{curatedTCGAData}} in a selected disease cohort.
 }
 \details{
-im_syng_tcga uses RNASeq2GeneNorm expression data, as provided by \code{\pkg{curatedTCGAData}}, to find combinatorial association of immunotherapy co-targets and immune checkpoints with immuno-oncology features as listed in TCGA_immune_features_list
+If no icp_gene is specified, the default icp_gene_list will be used.
+If select_iap is a character vector, it must be any sub-list of IAP names as listed in TCGA_immune_features_list. If a numeric matrix or data.frame, each column represents a user-defined IAP and must have a range between \link{0,1}. If select_iap is missing all IAPs listed in TCGA_immune_features_list will be considered for analysis.
 
-For synergy score calculations all features are normalized to be on \link{0,1} range. For details of synergy score calculations see find_a_synergy function.
+For synergy score calculations all features are normalized to be on \link{0,1} range. For details of synergy score and significance pvalue calculations see \code{find_a_synergy} function.
 
-By default (if no icp_gene is specified), icp_gene_list will be used.
+A specificity p.value is computed using random sampling with replacement from two null models, generated from one of the two genes against a set of genes randomly selected from the genome. Two P-values are calculated for the synergistic interaction of the pair against the two null models. The highest of the two P-values is used to assess the specificity of the interaction against the whole genome. The number of randomly selected genes in each null model is determined by N_iteration_specificity.
+
+Sensitivity (Robustness) score defined as normalized root mean square deviation of scores calculated over 70\% of samples, selected via random sampling. The number of sub-sample iterations is determined by N_iteration_sensitivity.
 
 All barcodes in sample_list must be 15 character long and belong to the same cohort. When sample_list is provided, cohort should be the disease cohort that they belong to, otherwise only the first element of the cohort list will be used.
-
-The optional data_feature must be normalized to have a range between \link{0,1}.
-
-A p.value is computed using random bootstrapping with replacement from the distribution of synergy scores for each immune checkpoint and immune feature pair.
-
-Sensitivity analysis reports a sensitivity index which is a variance in synergy score using 90\% of samples.
 }
 \examples{
-im_syng_tcga(onco_gene=c("TP53","TGFB1"), cohort=c("acc","gbm"),add_pvalue=TRUE, N_iteration=1000)
+im_syng_tcga(onco_gene=c("TGFB1","SERPINB9"), cohort=c("ucec","skcm"))
 }
 \keyword{Synergy}
 \keyword{TCGA}

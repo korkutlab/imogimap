@@ -11,9 +11,10 @@ im_syng(
   data_feature,
   add_features,
   method,
-  add_pvalue,
-  N_iteration,
-  sensitivity
+  specificity,
+  N_iteration_specificity,
+  sensitivity,
+  N_iteration_sensitivity
 )
 }
 \arguments{
@@ -29,11 +30,15 @@ im_syng(
 
 \item{method}{A character string indicating which synergy score to be used. one of "max" or "independence". Default is "max".}
 
-\item{add_pvalue}{An optional logical indicating if a random bootstrapping value should be calculated. Default is FALSE.}
+\item{specificity}{An optional logical indicating if specificity analysis should be done. Default is FALSE.}
 
-\item{N_iteration}{Number of iterations for random bootstrapping for p.value calculation and sensitivity analysis. Default is 1000.}
+\item{N_iteration_specificity}{Number of iterations for random sampling for specificity p.value calculation.
+Default is 1000.}
 
 \item{sensitivity}{An optional logical indicating if a sensitivity analysis should be done. Default is FALSE.}
+
+\item{N_iteration_sensitivity}{Number of iterations for random sampling for sensitivity analysis.
+Default is 1000.}
 }
 \value{
 a data.frames of synergy scores and bootstrapping p.values
@@ -52,17 +57,17 @@ For data_expression sample formats see sample_mRNA_data.
 data_feature is formatted with samples/patients as rows and immune features as columns.
 For data_feature sample format see sample_immune_cell_fraction_data.
 
-A p.value is computed using random bootstrapping with replacement from the distribution of synergy scores for each immune checkpoint and-immune feature pair. The default values of N_iteration is 1000.
+For synergy score calculations all features are normalized to be on \link{0,1} range. For details of synergy score and significance pvalue calculations see \code{find_a_synergy} function.
+
+A specificity p.value is computed using random sampling with replacement from two null models, generated from one of the two genes against a set of genes randomly selected from the genome. Two P-values are calculated for the synergistic interaction of the pair against the two null models. The highest of the two P-values is used to assess the specificity of the interaction against the whole genome. The number of randomly selected genes in each null model is determined by N_iteration_specificity.
+
+Sensitivity (Robustness) score defined as normalized root mean square deviation of scores calculated over 70\% of samples, selected via random sampling. The number of sub-sample iterations is determined by N_iteration_sensitivity.
 }
 \examples{
 im_syng(onco_gene =  c("BRAF"),
                   icp_gene= c("CD274","CTLA4"),
                   data_expression =  sample_mRNA_data,
-                  data_feature = sample_Leukocyte_fraction_data,
-                  add_features=T,
-                  add_pvalue=T,
-                  N_iteration=1000,
-                  sensitivity=T)
+                  data_feature = sample_Leukocyte_fraction_data)
 }
 \keyword{Synergy,}
 \keyword{bootstrapping}

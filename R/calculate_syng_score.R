@@ -51,7 +51,7 @@ calculate_syng_score=function(m_LL,m_LH,m_HL,m_HH,SEM2_LL,SEM2_LH,SEM2_HL,SEM2_H
     if(method=="max" ){
       me <- mc - max(ma,mb)
     }else{
-      me <- mc-(ma + mb - ma*mb)
+      me <- mc - (ma + mb - ma*mb)
     }
     if( me < 0 ){
       CS<- NA

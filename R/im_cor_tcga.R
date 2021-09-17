@@ -1,12 +1,12 @@
-#' Finds Spearman correlation of co-target genes with immuno-oncology features using cbioportal data
+#' Finds Spearman correlation between an oncogene, an immune checkpoint and immune associated phenotypes.
 #' @import dplyr
 #' @import curatedTCGAData
 #' @import tidyr
-#' @param onco_gene  A charachter vector of gene Hugo symbols.
-#' @param icp_gene An optional charachter vector of immune checkpoint gene/protein IDs.
-#' @param cohort a charachter vector of TCGA diseases
-#' @param sample_list An optional charachter vector of TCGA samples barcodes indicating a subset of samples within a cohort.
-#' @keywords correlation, immunouoncology features, gene expression
+#' @param onco_gene  A character vector of gene Hugo symbols.
+#' @param icp_gene An optional character vector of immune checkpoint gene/protein IDs.
+#' @param cohort a character vector of TCGA diseases
+#' @param sample_list An optional character vector of TCGA samples barcodes indicating a subset of samples within a cohort.
+#' @keywords correlation, immuno-oncology features, gene expression
 #' @return a list of dataframes containing Spearman correlations and non-FDR adjusted probability values.
 #' @details
 #'
@@ -20,10 +20,12 @@
 #'
 #' A non-FDR-adjusted p.value is reported for each correlation value to allow for easier adjustments by user.
 #'
+#'All barcodes in sample_list must be 15 character long and belong to the same cohort. When sample_list is provided, cohort should be the disease cohort that they belong to, otherwise only the first element of the cohort list will be used.
+#'
 #' @examples im_cor_tcga(onco_gene=c("BRAF"),icp_gene=c("CD274","CTLA4"),cohort=c("acc","gbm"))
 #' @export
 
-im_cor_tcga<-function(onco_gene,icp_gene,cohort){
+im_cor_tcga<-function(onco_gene,icp_gene,cohort,sample_list){
 
   if(!missing(sample_list)){
     cohort <- cohort[1]
@@ -59,7 +61,8 @@ im_cor_tcga<-function(onco_gene,icp_gene,cohort){
     if(missing(icp_gene)){
       icp_gene <- icp_gene_list
     }
-    df_icp <- t(df[rownames(df) %in% icp_gene,])
+    df_icp <- as.data.frame(df[rownames(df) %in% icp_gene,])
+    colnames(df_icp) <- icp_gene
     dft_cor <- psych::corr.test(df_selected,df_icp,method="spearman",adjust = "none")
     df_rho <- as.data.frame(dft_cor$r)
     df_rho$onco_gene <- rownames(df_rho)
@@ -130,7 +133,7 @@ im_cor_tcga<-function(onco_gene,icp_gene,cohort){
     # Calculate correlations with immune cell types -----------------------
     df_selected$PATIENT_BARCODE <- substr(df_selected$Tumor_Sample_ID, 1, 12)
     df_selected$Tumor_Sample_ID<-NULL
-    df_selected <- df_selected %>% group_by(PATIENT_BARCODE) %>% mutate(across(cols = everything(),.fns = ~mean(.x, na.rm = TRUE))) %>% distinct
+    df_selected <- df_selected %>% group_by(PATIENT_BARCODE) %>% dplyr::mutate(dplyr::across(cols = c(2),.fns = ~mean(.x, na.rm = TRUE))) %>% distinct
     df_ict <- merge(df_selected,TCGA_IMCell_fraction,by="PATIENT_BARCODE")
     row.names(df_ict) <- df_ict$PATIENT_BARCODE
     df_ict$PATIENT_BARCODE <- NULL

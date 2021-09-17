@@ -39,6 +39,11 @@ im_boxplot_tcga<-function(onco_gene,icp_gene,cohort,Immune_Feature,sample_list,l
       stop("ERROR: barcodes not found.")
     }
   }
+  icp_gene <- ifelse(icp_gene=="VSIR", "C10orf54",
+                     ifelse(icp_gene=="NCR3LG1","DKFZp686O24166",icp_gene))
+  onco_gene <- ifelse(onco_gene=="VSIR", "C10orf54",
+                     ifelse(onco_gene=="NCR3LG1","DKFZp686O24166",onco_gene))
+
   df_selected <- as.data.frame(t(df[rownames(df) %in% c(onco_gene,icp_gene),]))
   if(nrow(df_selected)==0){
     stop("ERROR: No gene found. Select a gene name from your mRNA data")
@@ -195,7 +200,7 @@ im_boxplot_tcga<-function(onco_gene,icp_gene,cohort,Immune_Feature,sample_list,l
     scale_x_discrete(labels =  mylabels)+
     theme_bw()+
     stat_compare_means(comparisons =
-                         list( c("1", "2"),c("1", "3"), c("3", "4"), c("2", "4")),
+                         list( c("1", "4"),c("2", "4"), c("3", "4")),
                        size=10,method = "wilcox.test",
                        bracket.size=1,vjust=1.5)+
     theme( axis.text.x=element_text(size=25),

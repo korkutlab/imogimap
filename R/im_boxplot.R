@@ -36,7 +36,7 @@ im_boxplot <- function(onco_gene,icp_gene,data_expression,data_feature){
 
   #Construct quantile ranking matrices------------------
   df_selected <- scale(df_selected,center = T,scale = T)
-  df_select_qr <- get_qunatile_rank(df_selected)
+  df_select_qr <- get_quantile_rank(df_selected)
 
 
   #Reformat------------------
@@ -61,7 +61,7 @@ im_boxplot <- function(onco_gene,icp_gene,data_expression,data_feature){
       axis.title =element_text(size=10),legend.position ="top")+
     scale_x_discrete(labels =  c(" Both low",paste0(icp_gene," high\n",onco_gene," low"), paste0(onco_gene," high\n",icp_gene," low"),"Both high"))+
     stat_compare_means(comparisons =
-        list( c("1", "2"),c("1", "3"), c("3", "4"), c("2", "4")),
+        list( c("1", "4"), c("2", "4"), c("3", "4")),
       size=5,method = "wilcox.test")+
     theme(legend.text=element_text(size=10))
 
