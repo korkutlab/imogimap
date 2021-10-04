@@ -13,7 +13,7 @@ The goal of imogene is to calculate statistical synergy scores based on mRNA exp
 You can install the released version of imogene from  GitHub with:
 
 ``` r
-install_github('bozorgui/imogene')
+install_github('korkutlab/imogene')
 ```
 
 ## Usage
