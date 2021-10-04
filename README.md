@@ -36,9 +36,8 @@ my_cohort <- c("luad","lusc")
 my_syng_df <-  im_syng_tcga(onco_gene  = my_onco,
          icp_gene = my_icp, 
          cohort = my_cohort, 
-         method = "independence",
-         add_pvalue = F, 
-         N_iteration = 1000, 
+         select_iap = "IFNGscore"
+         specificity = F,
          sensitivity = F)
 
 #Generate stratified boxplot that represents data used to get a single synergy score.
