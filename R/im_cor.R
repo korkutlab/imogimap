@@ -1,7 +1,4 @@
 #' Calculate Spearman correlation with immune checkpoints
-#' @import dplyr
-#' @import tibble
-#' @import tidyr
 #' @param onco_gene A character vector of gene/protein IDs.
 #' @param icp_gene An optional character vector of immune checkpoint gene/protein IDs.
 #' @param data_expression A numeric matrix or data frame containing gene/protein expressions.
@@ -24,6 +21,11 @@
 #'                  data_expression =  sample_mRNA_data,
 #'                  data_feature = sample_immune_cell_fraction_data,
 #'                  add_features=T)
+#' @import dplyr
+#' @import tibble
+#' @import tidyr
+#' @importFrom psych corr.test
+#'
 #' @export
 
 im_cor<-function(onco_gene,icp_gene, data_expression,data_feature,add_features){

@@ -4,12 +4,10 @@
 \name{icp_gene_list}
 \alias{icp_gene_list}
 \title{Default list of immune checkpoints}
-\format{
-A vector of characters
+\format{A vector of characters
 \describe{
 Each character is a gene hugo symbol
-}
-}
+}}
 \source{
 \url{https://www.cancerresearch.org/archive/clinical-accelerator-(2)/drug-agent-target-list}
 }

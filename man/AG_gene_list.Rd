@@ -4,12 +4,10 @@
 \name{AG_gene_list}
 \alias{AG_gene_list}
 \title{Angiogenesis signature genes}
-\format{
-A vector of characters with length 41:
+\format{A vector of characters with length 41:
 \describe{
 Each character is a gene hugo symbol
-}
-}
+}}
 \source{
 \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3743050/}
 }

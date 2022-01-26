@@ -4,14 +4,12 @@
 \name{EMT_gene_list}
 \alias{EMT_gene_list}
 \title{EMT signature genes}
-\format{
-A data frame with 77 rows and 3 columns:
+\format{A data frame with 77 rows and 3 columns:
 \describe{
 \item{\code{Gene}}{character Gene hugo symbol}
 \item{\code{Group}}{character Epithelial vs Mesenchymal}
 \item{\code{signe}}{numeric Negative for Epithelial and Positive for Mesenchymal}
-}
-}
+}}
 \source{
 \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4737991/#SD1}
 }

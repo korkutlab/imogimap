@@ -1,7 +1,5 @@
 #'  Calculation and statistical assessment of synergistic associations using TCGA data.
-#' @import dplyr
-#' @import data.table
-#' @import curatedTCGAData
+#'
 #' @param onco_gene A character vector of gene Hugo symbols.
 #' @param icp_gene An optional character vector of immune checkpoint gene Hugo symbols.
 #' @param cohort A list of TCGA diseases
@@ -40,6 +38,11 @@
 #'All barcodes in sample_list must be 15 character long and belong to the same cohort. When sample_list is provided, cohort should be the disease cohort that they belong to, otherwise only the first element of the cohort list will be used.
 #'
 #' @examples im_syng_tcga(onco_gene=c("TGFB1","SERPINB9"), cohort=c("ucec","skcm"))
+#'
+#' @import dplyr
+#' @importFrom data.table setkey as.data.table
+#' @import curatedTCGAData
+#'
 #' @export
 
 im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, specificity, N_iteration_specificity, sensitivity, N_iteration_sensitivity, sample_list){

@@ -4,9 +4,7 @@
 \name{TCGA_disease_list}
 \alias{TCGA_disease_list}
 \title{TCGA disease names}
-\format{
-A character vector of length 32
-}
+\format{A character vector of length 32}
 \source{
 \code{\link[curatedTCGAData]{curatedTCGAData}}
 }

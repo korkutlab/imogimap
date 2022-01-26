@@ -25,7 +25,9 @@ Imports:
     tibble,
     tidyr,
     curatedTCGAData,
-    igraph
+    igraph,
+    psych,
+    data.table
 Suggests: 
     knitr,
     rmarkdown

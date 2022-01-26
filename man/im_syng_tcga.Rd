@@ -61,6 +61,7 @@ All barcodes in sample_list must be 15 character long and belong to the same coh
 }
 \examples{
 im_syng_tcga(onco_gene=c("TGFB1","SERPINB9"), cohort=c("ucec","skcm"))
+
 }
 \keyword{Synergy}
 \keyword{TCGA}
