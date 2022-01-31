@@ -4,12 +4,14 @@
 \name{TCGA_TMB}
 \alias{TCGA_TMB}
 \title{Tumor mutation burden}
-\format{A data frame with 10123 rows and 3 columns:
+\format{
+A data frame with 10123 rows and 3 columns:
 \describe{
 \item{\code{Tumor_Sample_ID}}{character TCGA 15-charachter Tumor sample ID}
 \item{\code{TMB_Non.silent_per_Mb}}{numeric non silent tumor mutation burden}
 \item{\code{TMB_Silent_per_Mb}}{numeric silent tumor mutation burden}
-}}
+}
+}
 \source{
 \url{http://somewhere.important.com/}
 }

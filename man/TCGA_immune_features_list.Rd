@@ -4,7 +4,9 @@
 \name{TCGA_immune_features_list}
 \alias{TCGA_immune_features_list}
 \title{TCGA immune features list}
-\format{A character vector of length 28}
+\format{
+A character vector of length 28
+}
 \usage{
 TCGA_immune_features_list
 }

@@ -4,7 +4,8 @@
 \name{TCGA_IMCell_fraction}
 \alias{TCGA_IMCell_fraction}
 \title{Immune cell type fractions for TCGA data}
-\format{A data frame with 11080 rows and 23 variables:
+\format{
+A data frame with 11080 rows and 23 variables:
 \describe{
 \item{\code{PATIENT_BARCODE}}{character TCGA patient barcode}
 \item{\code{B.Cells.Memory}}{double fraction of Memory B Cells}
@@ -29,7 +30,8 @@
 \item{\code{Mast.Cells.Resting}}{double Resting Mast Cells}
 \item{\code{Eosinophils}}{double Eosinophils}
 \item{\code{Neutrophils}}{double Neutrophils}
-}}
+}
+}
 \source{
 \url{https://cibersort.stanford.edu}
 }

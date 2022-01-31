@@ -4,11 +4,13 @@
 \name{TCGA_Leukocyte_fraction}
 \alias{TCGA_Leukocyte_fraction}
 \title{TCGA Leukocyte fractions}
-\format{A data frame with 8775 rows and 3 variables:
+\format{
+A data frame with 8775 rows and 3 variables:
 \describe{
 \item{\code{Tumor_Sample_ID}}{character TCGA 15-charachter Tumor sample ID}
 \item{\code{Leukocyte_fraction}}{double Leukocyte fraction of cells}
-}}
+}
+}
 \source{
 \url{http://somewhere.important.com/}
 }

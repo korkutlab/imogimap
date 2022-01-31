@@ -4,7 +4,9 @@
 \name{sample_immune_cell_fraction_data}
 \alias{sample_immune_cell_fraction_data}
 \title{Sample data set for immune cell fraction data}
-\format{A data frame with of with 78 rows and 22 columns. Row names are a patient IDs and column names are cell types.}
+\format{
+A data frame with of with 78 rows and 22 columns. Row names are a patient IDs and column names are cell types.
+}
 \source{
 \url{https://cibersort.stanford.edu}
 }

@@ -4,7 +4,9 @@
 \name{sample_mRNA_data}
 \alias{sample_mRNA_data}
 \title{Sample mRNA expression data}
-\format{A data frame with of with 19958 rows and 78 columns. Row names are gene Hugo IDs and column names are patient IDs.}
+\format{
+A data frame with of with 19958 rows and 78 columns. Row names are gene Hugo IDs and column names are patient IDs.
+}
 \source{
 \code{\link[curatedTCGAData]{curatedTCGAData}}
 }

@@ -4,7 +4,9 @@
 \name{sample_Leukocyte_fraction_data}
 \alias{sample_Leukocyte_fraction_data}
 \title{Sample Leukocyte fraction data}
-\format{A data frame with of with 76 rows and 1 column. Row names are a patient IDs.}
+\format{
+A data frame with of with 76 rows and 1 column. Row names are a patient IDs.
+}
 \source{
 \url{http://somewhere.important.com/}
 }
