@@ -30,7 +30,7 @@ imogimap uses `curatedTCGAData` API functions to access RNASeq2GeneNorm expressi
 As an example, let us explore TGFb cytokines combinatorial interactions with immune checkpoints and their effects on all immune pheotypes/features as listed in `TCGA_immune_features_list`. First we define gene lists using Hugo IDs. a pre-defined list of immune checkpoints, `icp_gene_list`, is included as default for immune checkpoints:
  
 ```{r}
-my_onco <- c("TGFB1","TGFB2","TGFB3")
+my_onco <- c("TGFBR1")
 my_icp <- icp_gene_list
 ```
 Then we define disease lists using any of the TCGA abbreviated  disease names as listed in  `TCGA_disease_list`:
@@ -75,7 +75,7 @@ imogimap also visualizes data that has been used in calculation of an individual
 
 ```{r}
 im_boxplot_tcga(onco_gene = "TGFB1", icp_gene = "CD27",cohort = "luad",
-Immune_Feature = "IFNGscore")
+Immune_phenotype = "IFNGscore")
 ```
 
 `im_boxplot_tcga`, accepts single and unique values for each of the input parameters, with `onco_gene` and `icp_gene` being gene's Hugo ID,and `cohort` any of the TCGa abbreviated disease names, and  `Immune_Feature` any of the features in `TCGA_immune_features_list`. The result is a boxplot of immune feature values, stratified based on gene pair expression values.
