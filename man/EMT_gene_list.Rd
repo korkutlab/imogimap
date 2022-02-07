@@ -7,9 +7,9 @@
 \format{
 A data frame with 77 rows and 3 columns:
 \describe{
-\item{\code{Gene}}{character Gene hugo symbol}
-\item{\code{Group}}{character Epithelial vs Mesenchymal}
-\item{\code{signe}}{numeric Negative for Epithelial and Positive for Mesenchymal}
+\item{\code{genes}}{character Gene hugo symbol}
+\item{\code{group}}{character Epithelial vs Mesenchymal}
+\item{\code{sign}}{numeric Negative for Epithelial and Positive for Mesenchymal}
 }
 }
 \source{

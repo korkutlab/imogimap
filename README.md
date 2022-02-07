@@ -1,27 +1,27 @@
 
-# imogene
+# imogimap
 
 <!-- badges: start -->
 <!-- badges: end -->
 
 
-The goal of imogene is to calculate statistical synergy scores based on mRNA expression profiles of multi-sample data to quantify combinatorial effects of single onco-genes or tumor intrinsic onco-genic pathways and immune checkpoints on immune related phenotype in tumor microenvironment.
+The goal of imogimap is to calculate statistical synergy scores based on mRNA expression profiles of multi-sample data to quantify combinatorial effects of single onco-genes or tumor intrinsic onco-genic pathways and immune checkpoints on immune related phenotype in tumor microenvironment.
 
 
 ## Installation
 
-You can install the released version of imogene from  GitHub with:
+You can install the released version of imogimap from  GitHub with:
 
 ``` r
-install_github('korkutlab/imogene')
+install_github('korkutlab/imogimap')
 ```
 
 ## Usage
 
-This is a basic example of how to use imogene with TCGA data
+This is a basic example of how to use imogimap with TCGA data
 
 ``` r
-library(imogene)
+library(imogimap)
 # List Hugo ID's for a single onco-gene or list or genes defining an onco-genic pathway  signature
 my_onco <- c("TGFB1","TGFB2","TGFB3")
 
@@ -44,9 +44,9 @@ my_syng_df <-  im_syng_tcga(onco_gene  = my_onco,
 im_boxplot_tcga(onco_gene = "TGFB1", icp_gene = "CD270",cohort = "luad",
 Immune_Feature = "IFNGscore")
 ```
-This is a basic example of how to use imogene with user's data
+This is a basic example of how to use imogimap with user's data
 ``` r
-library(imogene)
+library(imogimap)
 # Use sample_mRNA_data directly or as formatting guide for expression data
 my_expressions <- sample_mRNA_data
 

@@ -1,7 +1,8 @@
 #' Finds Spearman correlation between an oncogene, an immune checkpoint and immune associated phenotypes.
-#' @import dplyr
+#' @importFrom dplyr bind_rows across mutate group_by everything distinct
+#' @importFrom psych corr.test
 #' @import curatedTCGAData
-#' @import tidyr
+#' @importFrom tidyr gather
 #' @param onco_gene  A character vector of gene Hugo symbols.
 #' @param icp_gene An optional character vector of immune checkpoint gene/protein IDs.
 #' @param cohort a character vector of TCGA diseases
@@ -10,7 +11,7 @@
 #' @return a list of dataframes containing Spearman correlations and non-FDR adjusted probability values.
 #' @details
 #'
-#' im_cor_tcga uses NASeq2GeneNorm expression data, as provided by \code{\pkg{curatedTCGAData}}, to find correlation  between onco_genes and immune checkpoints and immuno-oncology features as listed in TCGA_immune_features_list.
+#' im_cor_tcga uses NASeq2GeneNorm expression data, as provided by \code{\link[curatedTCGAData]{curatedTCGAData}}, to find correlation  between onco_genes and immune checkpoints and immuno-oncology features as listed in TCGA_immune_features_list.
 #'
 #' By default (if no icp_gene is specified), icp_gene_list will be used.
 #'
@@ -22,7 +23,7 @@
 #'
 #'All barcodes in sample_list must be 15 character long and belong to the same cohort. When sample_list is provided, cohort should be the disease cohort that they belong to, otherwise only the first element of the cohort list will be used.
 #'
-#' @examples im_cor_tcga(onco_gene=c("BRAF"),icp_gene=c("CD274","CTLA4"),cohort=c("acc","gbm"))
+#' @examples im_cor_tcga(onco_gene=c("BRAF"),icp_gene=c("CD274","CTLA4"),cohort=c("gbm"))
 #' @export
 
 im_cor_tcga<-function(onco_gene,icp_gene,cohort,sample_list){
@@ -51,7 +52,7 @@ im_cor_tcga<-function(onco_gene,icp_gene,cohort,sample_list){
       df_selected <- as.data.frame(df[rownames(df) %in% onco_gene,])
       colnames(df_selected) <- onco_gene
     }else{
-      df_selected <- t(df[rownames(df) %in% onco_gene,])
+      df_selected <- t(df[rownames(df) %in% onco_gene,,drop=F])
     }
     if(nrow(df_selected)==0){
       stop("ERROR: No valid Hugo symbol found")
@@ -61,9 +62,8 @@ im_cor_tcga<-function(onco_gene,icp_gene,cohort,sample_list){
     if(missing(icp_gene)){
       icp_gene <- icp_gene_list
     }
-    df_icp <- as.data.frame(df[rownames(df) %in% icp_gene,])
-    colnames(df_icp) <- icp_gene
-    dft_cor <- psych::corr.test(df_selected,df_icp,method="spearman",adjust = "none")
+    df_icp <- t(df[rownames(df) %in% icp_gene,,drop=F])
+    dft_cor <- corr.test(df_selected,df_icp,method="spearman",adjust = "none")
     df_rho <- as.data.frame(dft_cor$r)
     df_rho$onco_gene <- rownames(df_rho)
     df_rho <- gather(df_rho, icp_gene,rho,-onco_gene)
@@ -85,7 +85,7 @@ im_cor_tcga<-function(onco_gene,icp_gene,cohort,sample_list){
     row.names(df_EMT) <- df_EMT$Tumor_Sample_ID
     dft1 <- as.matrix(df_EMT[,c(2:(ncol(df_EMT)-1))])
     dft2 <- as.matrix(df_EMT$EMTscore)
-    dft_cor <- psych::corr.test(dft1,dft2,method="spearman",adjust = "none")
+    dft_cor <- corr.test(dft1,dft2,method="spearman",adjust = "none")
     EMT_cor <- data.frame("onco_gene"=onco_gene,"rho"=dft_cor$r,"padj"=dft_cor$p)
 
     # Calculate correlation with Angiogenesis score-----------------------
@@ -94,7 +94,7 @@ im_cor_tcga<-function(onco_gene,icp_gene,cohort,sample_list){
     row.names(df_AG) <- df_AG$Tumor_Sample_ID
     dft1 <- as.matrix(df_AG[,c(2:(ncol(df_AG)-1))])
     dft2 <- as.matrix(df_AG$AGscore)
-    dft_cor <- psych::corr.test(dft1,dft2,method="spearman",adjust = "none")
+    dft_cor <- corr.test(dft1,dft2,method="spearman",adjust = "none")
     AG_cor <- data.frame("onco_gene"=onco_gene,"rho"=dft_cor$r,"padj"=dft_cor$p)
 
     # Calculate correlation with IFNG-----------------------
@@ -103,7 +103,7 @@ im_cor_tcga<-function(onco_gene,icp_gene,cohort,sample_list){
     row.names(df_IFNG) <- df_IFNG$Tumor_Sample_ID
     dft1 <- as.matrix(df_IFNG[,c(2:(ncol(df_IFNG)-1))])
     dft2 <- as.matrix(df_IFNG$IFNGscore)
-    dft_cor <- psych::corr.test(dft1,dft2,method="spearman",adjust = "none")
+    dft_cor <- corr.test(dft1,dft2,method="spearman",adjust = "none")
     IFNG_cor <- data.frame("onco_gene"=onco_gene,"rho"=dft_cor$r,"padj"=dft_cor$p)
 
     # Calculate correlation with Tumor mutation burden -----------------------
@@ -111,7 +111,7 @@ im_cor_tcga<-function(onco_gene,icp_gene,cohort,sample_list){
     row.names(df_TMB) <- df_TMB$Tumor_Sample_ID
     dft1 <- as.matrix(df_TMB[,c(2:(ncol(df_TMB)-2))])
     dft2 <- as.matrix(df_TMB[,c(ncol(df_TMB)-1,ncol(df_TMB))])
-    dft_cor <- psych::corr.test(dft1,dft2,method="spearman",adjust = "none")
+    dft_cor <- corr.test(dft1,dft2,method="spearman",adjust = "none")
     df_rho <- as.data.frame(dft_cor$r)
     df_rho$gene <- rownames(df_rho)
     df_rho <- gather(df_rho, TMB,rho,-gene)
@@ -126,21 +126,21 @@ im_cor_tcga<-function(onco_gene,icp_gene,cohort,sample_list){
     row.names(df_inf) <- df_inf$Tumor_Sample_ID
     dft1 <- as.matrix(df_inf[,c(2:(ncol(df_inf)-1))])
     dft2 <- as.matrix(df_inf$Leukocyte_fraction)
-    dft_cor <- psych::corr.test(dft1,dft2,method="spearman",adjust = "none")
+    dft_cor <- corr.test(dft1,dft2,method="spearman",adjust = "none")
     infiltration_cor <- data.frame("onco_gene"=onco_gene,"rho"=dft_cor$r,"padj"=dft_cor$p)
 
 
     # Calculate correlations with immune cell types -----------------------
     df_selected$PATIENT_BARCODE <- substr(df_selected$Tumor_Sample_ID, 1, 12)
     df_selected$Tumor_Sample_ID<-NULL
-    df_selected <- df_selected %>% group_by(PATIENT_BARCODE) %>% dplyr::mutate(dplyr::across(cols = c(2),.fns = ~mean(.x, na.rm = TRUE))) %>% distinct
+    df_selected <- df_selected %>% group_by(PATIENT_BARCODE) %>% mutate(across(cols = c(2),.fns = ~mean(.x, na.rm = TRUE))) %>% distinct
     df_ict <- merge(df_selected,TCGA_IMCell_fraction,by="PATIENT_BARCODE")
     row.names(df_ict) <- df_ict$PATIENT_BARCODE
     df_ict$PATIENT_BARCODE <- NULL
     df_selected <- df_selected[,c("PATIENT_BARCODE",c(setdiff(colnames(df_selected), "PATIENT_BARCODE")))]
     dft1 <- as.matrix(df_ict[,colnames(df_selected)[-1],drop=F])
     dft2 <- as.matrix(df_ict[,colnames(TCGA_IMCell_fraction)[-1],drop=F])
-    dft_cor <- psych::corr.test(dft1,dft2,method="spearman",adjust = "none")
+    dft_cor <- corr.test(dft1,dft2,method="spearman",adjust = "none")
     df_rho <- as.data.frame(dft_cor$r)
     df_rho$gene <- rownames(df_rho)
     df_rho <- gather(df_rho, ict,rho,-gene)

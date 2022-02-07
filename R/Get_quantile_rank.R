@@ -1,5 +1,5 @@
 #' Stratify each column of data using quantile values.
-#'
+#' @importFrom  stats quantile
 #' @param df S numeric dataframe
 #' @keywords Quantile ranking, Quartiles, Median, dataframe, Matrix
 #' @return  A numeric dataframes with quartile ranking group IDs
@@ -14,15 +14,15 @@ get_quantile_rank<-function(df){
   if(min(df)==max(df)) return(NA)
 
   dfr <-apply(df,2,function(x){
-    df_breaks<- quantile(x, na.rm=T,probs=c(0,0.25,0.5,0.75,1))
+    df_breaks<- quantile(x, na.rm=TRUE,probs=c(0,0.25,0.5,0.75,1))
     if(!any(duplicated(df_breaks))){
       as.integer(cut(x,df_breaks,include.lowest=TRUE))
     }else{
-      df_breaks<- quantile(x, na.rm=T,probs=c(0,0.5,1))
+      df_breaks<- quantile(x, na.rm=TRUE,probs=c(0,0.5,1))
       if(!any(duplicated(df_breaks))){
         3*as.integer(cut(x,df_breaks,include.lowest=TRUE))-2
       }else{
-        df_breaks<- quantile(x, na.rm=T,probs=c(0,1))
+        df_breaks<- quantile(x, na.rm=TRUE,probs=c(0,1))
         x <- x-(df_breaks[1]-df_breaks[2])/2
         3*as.integer(cut(x,2,include.lowest=TRUE))-2
       }

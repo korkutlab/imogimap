@@ -45,7 +45,7 @@ Default is 1000.}
 A data.frame of synergy scores and bootstrapping p.values.
 }
 \description{
-Takes a list of Tumor-intrinsic pathway(TIP) genes and returns their combinatorial association with immune checkpoint(ICP) genes by evaluating their synergistic impact on immune-associated phenotypes(IAP) using RNASeq2GeneNorm expressions as provided by \code{\pkg{curatedTCGAData}} in a selected disease cohort.
+Takes a list of Tumor-intrinsic pathway(TIP) genes and returns their combinatorial association with immune checkpoint(ICP) genes by evaluating their synergistic impact on immune-associated phenotypes(IAP) using RNASeq2GeneNorm expressions as provided by \pkg{curatedTCGAData} in a selected disease cohort.
 }
 \details{
 If no icp_gene is specified, the default icp_gene_list will be used.

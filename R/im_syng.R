@@ -1,6 +1,10 @@
 #' Find combinatorial association of immunotherapy co-targets with tumor intrinsic features.
-#' @import dplyr
-#' @import data.table
+#' @importFrom dplyr bind_rows across mutate group_by everything
+#' @importFrom magrittr %>%
+#' @importFrom data.table setkey as.data.table
+#' @importFrom data.table ":=" ".SD"
+#' @importFrom utils combn setTxtProgressBar txtProgressBar
+#' @importFrom stats complete.cases median
 #' @param onco_gene A character vector of gene IDs.
 #' @param icp_gene An optional character vector of immune checkpoint gene/protein IDs.
 #' @param data_expression A non-negative numeric matrix or data frame containing gene/protein expressions in linear scale.
@@ -42,7 +46,7 @@
 
 
 im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, add_features,method,specificity, N_iteration_specificity, sensitivity, N_iteration_sensitivity){
-  
+
   df_syng <- data.frame(agent1=character(),
                         agent2=character(),
                         Immune_feature=character(),
@@ -73,7 +77,7 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, add_features,
   if(nrow(df_selected)==0){
     stop("ERROR: No gene found. Select a co-target gene from expression data")
   }
-  
+
   #Check for immune checkpoint expressions----------------
   if(missing(icp_gene)){
     icp_gene <- icp_gene_list
@@ -94,7 +98,7 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, add_features,
   if(nrow(df_icp)==0){
     stop("No immune checkpoint found in expression data. expression data")
   }
-  
+
   #Check for immune features------------------------------
   if(missing(data_feature)){
     data_feature <- data.frame(row.names = colnames(data_expression))
@@ -107,8 +111,8 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, add_features,
       }
     }
   }else{
-    df_min <- min(data_feature,na.rm=T)
-    df_max <- max(data_feature,na.rm=T)
+    df_min <- min(data_feature,na.rm=TRUE)
+    df_max <- max(data_feature,na.rm=TRUE)
     if(df_min < 0 | df_max > 1 ){
       stop("ERROR: feature is out of range. Normalize data_feature to [0,1].")
     }
@@ -121,33 +125,33 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, add_features,
   data_feature0 <- data_feature
   #Calculate additional immune features---------------------
   message("Calculating additional features...")
-  if(add_features==T){
+  if(add_features==TRUE){
     df_tmp <- get_features(data_expression)
     df_tmp <- df_tmp[,c("Tumor_Sample_ID","EMTscore","AGscore","IFNGscore")]
     data_feature <- merge(df_tmp,data_feature,by="Tumor_Sample_ID")
   }
-  
-  
+
+
   #Construct quantile ranking matrices--------------
   df_selected <- scale(log2(df_selected+1),center = T,scale = T)
   df_icp <- scale(log2(df_icp+1),center = T,scale = T)
   df_select_qr <- get_quantile_rank(df_selected)
   df_icp_qr <- get_quantile_rank(df_icp)
   df_all <- merge(df_select_qr,df_icp_qr)
-  
+
   #Build unique permutations
   all_genes <- unique(c(onco_gene_sub,icp_gene_sub))
   all_perms <- t(combn(all_genes,m = 2))
   N_perm <- as.numeric(nrow(all_perms))
   N_genes <- as.numeric(length(all_genes))
   N_feature <- as.numeric(ncol(data_feature)-1)
-  
+
   #Calculate synergy scores -------------------------------------
   if(N_feature>0){
     message("Calculating synergy scores for immune features ...")
-    
+
     pb <- txtProgressBar(min = 0, max = N_perm, char="-",style = 3)
-    
+
     for(pair_ID in 1:N_perm){
       gene_ID1 <- which(colnames(df_all)==all_perms[pair_ID,1])
       gene_ID2 <- which(colnames(df_all)==all_perms[pair_ID,2])
@@ -162,9 +166,9 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, add_features,
                                  agent1_expression=character(),
                                  agent2_expression=character(),
                                  wilcox_pvalue=numeric())
-        
+
         for(im_ID in 2:ncol(data_feature)){
-          
+
           dft2 <- merge(data_feature[ , c(1 , im_ID)] , dft , by="Tumor_Sample_ID")
           dft2 <- dft2[complete.cases(dft2),]
           dft2 <- dft2[,c(2,3,4)]
@@ -189,16 +193,16 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, add_features,
     }
     df_syng <- as.data.table(df_syng)
     data.table::setkey(df_syng,agent1,agent2,Immune_feature)
-    
+
     message("\nSynergy calculation completed! ")
   }else{
     message("No feature data found.\n")
   }
-  
+
   rownames(data_feature)<- data_feature$Tumor_Sample_ID
   data_feature<- as.matrix(data_feature[,-1,drop=F])
   data_feature <- data_feature[,colSums(is.na(data_feature))<nrow(data_feature),drop=F]
-  
+
   #Check if p.value should be calculated-----------------------
   if(missing(specificity)){
     specificity <- FALSE
@@ -207,9 +211,9 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, add_features,
     message("\nStarting Specificity analysis:\n ")
     #Build unique permutations----------------------
     df_syng_complete <- df_syng[ !is.na( df_syng$Synergy_score),]
-    
+
     if(nrow(df_syng_complete)>0){
-      
+
       all_genes <- unique( c( df_syng_complete$agent1,df_syng_complete$agent2))
       N_genes <- as.numeric( length( all_genes))
       sub_feature_list <- unique(df_syng_complete[
@@ -219,7 +223,7 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, add_features,
         N_iteration_specificity <- 1000
       }
       message("  Building bootstrapping distribution from ", N_iteration_specificity ," genes")
-      
+
       #Build random bank of expression values---------
       df_bank <- data.frame()
       while(ncol(df_bank)==0){
@@ -230,7 +234,7 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, add_features,
         df_bank <- df_bank[!duplicated(as.list(df_bank))]
       }
       df_bank <- df_bank[,c(all_genes, setdiff(colnames(df_bank),all_genes))]
-    
+
       #Construct quantile ranking matrices for bank---
       df_bank <- scale(log2(df_bank+1),center = T,scale = T)
       df_bank_qr <- get_quantile_rank(df_bank)
@@ -240,13 +244,13 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, add_features,
       message(" Calculating specificity pvalues...\n")
       if(N_feature > 0){
         for( i in 1:N_feature){
-          
+
           #Select feature
           select_feature <- sub_feature_list[i]
           mark_feature <- as.integer( which( colnames( data_feature) == select_feature))
           df_feature <- as.matrix(data_feature[ , mark_feature, drop=F ])
           message( "          ...",select_feature)
-          
+
           #Make a list of all genes with non-NA synergy score value
           df_syng_t <- df_syng_complete[ df_syng_complete$Immune_feature == select_feature,]
           sub_genes1 <- unique( df_syng_t[ ,.( agent1 , agent1_expression)])
@@ -254,28 +258,28 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, add_features,
           colnames(sub_genes1)<-c("gene","effect")
           colnames(sub_genes2)<-c("gene","effect")
           sub_genes <- unique( rbind(sub_genes1,sub_genes2))
-          
+
           syng_dist <- vector( "list", nrow( sub_genes ))
           names(syng_dist) <- paste0(sub_genes$gene,"_",sub_genes$effect)
-          
+
           df_bank_sub1 <- cbind(df_feature,
                                 df_bank_qr[match(rownames(df_feature),rownames(df_bank_qr)),])
           df_bank_sub1 <- df_bank_sub1[complete.cases(df_bank_sub1),]
           bank_size <- as.numeric(ncol(df_bank_sub1))
           bank_mark <- N_genes+2
           df_bank_sub1_cols <- colnames( df_bank_sub1)
-          
+
           #Build bootstrapping distribution
           tmpn <- nrow(sub_genes)
           pb <- txtProgressBar(min = 0, max = tmpn, char="-",style = 3)
-          
+
           for( j in 1 :tmpn){
             gene_mark <- as.numeric( which(  df_bank_sub1_cols  == sub_genes$gene[ j]))
             df_bank_sub2 <- df_bank_sub1[ , c(1, gene_mark, bank_mark : bank_size)]
             df_bank_sub2 <- df_bank_sub2[ df_bank_sub2[ , 2 ] %in% c( 1, 4), ]
             bank_size2 <- as.numeric( ncol( df_bank_sub2))
             gene_effect <- sub_genes$effect[j]
-            
+
             syng_dist_t <- vector()
             for(k in 3:bank_size2){
               dft <- df_bank_sub2[,c(1,2,k)]
@@ -290,11 +294,11 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, add_features,
             syng_dist[[j]] <- syng_dist_t
             setTxtProgressBar(pb, j)
           }
-          
+
           #Calculate p.values for all pairs
-          
+
           for(pair_ID in 1:nrow(df_syng_t)){
-            
+
             tmp_row <- df_syng_t[pair_ID,]
             gene1 <- tmp_row$agent1[1]
             gene2 <- tmp_row$agent2[1]
@@ -303,7 +307,7 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, add_features,
             myscore <- tmp_row$Synergy_score[1]
             mysign <- sign(myscore)
             if( mysign==0) mysign <- 1
-            
+
             j1 <- which( names( syng_dist) == paste0(gene1,"_",effect1))
             tmp_dist <- syng_dist[[j1]]
             Pvalue1 <- sum(mysign*tmp_dist > mysign*myscore, tmp_dist==myscore )/length(tmp_dist)
@@ -316,10 +320,10 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, add_features,
         }
       }
     }
-  }  
-  
+  }
+
   #Check if robustness analysis should be done---------------------------
-  
+
   if(missing(sensitivity)){
     sensitivity <- FALSE
   }
@@ -328,14 +332,14 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, add_features,
       N_iteration_sensitivity <- 1000
     }
     message("\nCalculating robustness R. Iterating ", N_iteration_sensitivity, " times:")
-    
+
     #Define parameters
     df_syng_complete <- df_syng[ !is.na( df_syng$Synergy_score),]
     if( nrow(df_syng_complete) > 0 ){
       df_syng_complete$sum <- 0
       df_syng_complete$sum2 <- 0
       df_syng_complete$N <- 0
-      
+
       dft1 <- as.data.frame(df_selected)
       dft2 <- as.data.frame(df_icp)
       dft1$ID <- rownames(dft1)
@@ -344,11 +348,11 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, add_features,
       rownames(df_comb) <- df_comb$ID
       df_comb$ID <- NULL
       df_comb <- as.matrix(df_comb)
-      
+
       N_sample <- as.numeric(nrow(df_comb))
       N_sub <- floor(N_sample*0.7)
-      
-      
+
+
       df_syng_complete <- df_syng[ !is.na( df_syng$Synergy_score),]
       df_syng_complete1 <- df_syng_complete[df_syng_complete$Immune_feature %in%
                                               colnames(data_feature),]
@@ -356,24 +360,24 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, add_features,
 
 
       pb <- txtProgressBar(min = 0, max = N_iteration_sensitivity, char="-",style = 3)
-      
+
       for(n_sns in 1:N_iteration_sensitivity){
-        
+
         df_sub <- df_comb[sample(N_sample,N_sub,replace = F),]
         df_sub_qr <- get_quantile_rank(df_sub)
         df_sub_qr <- as.matrix(df_sub_qr[,-1])
-        
+
         dft <- data_expression[,colnames(data_expression) %in% rownames(df_sub)]
         tmp_feature <- data_feature0[rownames(data_feature0) %in% rownames(df_sub),]
-        if(add_features==T){
+        if(add_features==TRUE){
         df_tmp <- get_features(dft)
         df_tmp <- df_tmp[,c("Tumor_Sample_ID","EMTscore","AGscore","IFNGscore")]
         tmp_feature <- merge(df_tmp,tmp_feature,by="Tumor_Sample_ID")
         }
         rownames(tmp_feature)<- tmp_feature$Tumor_Sample_ID
         tmp_feature<- as.matrix(tmp_feature[,-1])
-     
-        
+
+
         for(pair_ID in 1:N_syng_complete1 ){
           tmp_df <- df_syng_complete1[pair_ID,]
           gene_ID1 <- tmp_df$agent1
@@ -384,15 +388,15 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, add_features,
           feature_ID <- tmp_df$Immune_feature
           mark_feature <- as.integer( which( colnames( tmp_feature) == feature_ID))
           df_feature <- as.matrix(tmp_feature[ , mark_feature,drop=F])
-          
+
           dft <- df_sub_qr[ , c(which(colnames(df_sub_qr)==gene_ID1),
                                 which(colnames(df_sub_qr)==gene_ID2))]
           dft <- dft[dft[ , 1] %in% c(1 , 4) ,,drop=F ]
           dft <- dft[dft[ , 2] %in% c(1 , 4) ,,drop=F ]
-          
+
           dft <- cbind(df_feature[match(rownames(dft),rownames(df_feature)),,drop=F], dft)
           dft <- dft[complete.cases(dft),,drop=F]
-          
+
           if(nrow(dft)>0){
             dfts <- find_a_synergy(fdata = dft,
                                    method = method,
@@ -401,7 +405,7 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, add_features,
           }else{
             dfts <- NA
           }
-          
+
           df_syng_complete1$sum[pair_ID] <- sum(df_syng_complete1$sum[pair_ID],
                                                 dfts, na.rm = T)
           dfts <- dfts -base_score
@@ -414,7 +418,7 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, add_features,
       }
 
         df_syng_complete <- df_syng_complete1
-      
+
       df_syng_complete$sensitivity_R <- sqrt(df_syng_complete$sum2/df_syng_complete$N) / abs(df_syng_complete$Synergy_score)
       df_syng_complete$sum <- NULL
       df_syng_complete$sum2 <- NULL
@@ -433,4 +437,3 @@ colnames(df_syng)[1:6] <- c("Gene1","Gene2",
 return(df_syng)
 }
 
-  

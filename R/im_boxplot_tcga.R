@@ -1,28 +1,29 @@
 #' Generates a stratified boxplot for immune feature values based of a two genes.
-#' @import dplyr
+#' @importFrom dplyr across mutate group_by everything
 #' @import curatedTCGAData
-#' @import ggplot2
-#' @import ggpubr
+#' @importFrom ggplot2 aes coord_trans element_text geom_boxplot geom_jitter ggplot ggplot_build labs  position_jitter scale_color_manual scale_x_discrete theme theme_bw
+#' @importFrom ggpubr stat_compare_means
+#' @importFrom stats median
 #' @param onco_gene A character indicating a single onco_gene Hugo symbol.
 #' @param icp_gene A character indicating a single immune checkpoint Hugo symbol.
 #' @param cohort a single TCGA disease
 #' @param sample_list An optional character vector of TCGA samples barcodes indicating a subset of samples within a cohort. All barcodes in sample_list must be 15 character long and belong to the same cohort.
-#' @param Immune_Feauture an immune feature name as listed in TCGA_immune_features_list.
+#' @param Immune_phenotype an immune phenotype name as listed in TCGA_Immune_phenotypes_list.
 #' @param logtrans An optional logical indicating if y axis should be displayed in logarithmic scale. Default is FALSE.
 #' @keywords boxplots, immune features, immune checkpoints, TCGA
 #' @details
 #'
-#' Feature data is stratified based on expression quartiles of onco_gene and icp_gene. High/Low categories include samples with expression values in lower/upper quartiles correspondingly. Samples with expression values in middle quartiles are discarded. For details of quartile calculation see \code{\link[imogene]{get_quantile_rank}} function.
+#' Feature data is stratified based on expression quartiles of onco_gene and icp_gene. High/Low categories include samples with expression values in lower/upper quartiles correspondingly. Samples with expression values in middle quartiles are discarded. For details of quartile calculation see \code{\link[imogimap]{get_quantile_rank}} function.
 #'
 #' Pvalues are calculated using Wilcoxon test.
 #'
 #' @return a list of multiple dataframes of correlation coefficients and p.values
 #' @examples im_boxplot_tcga(onco_gene = "BRAF", icp_gene="CD274",
-#' cohort="acc", Immune_Feature="Mast.Cells.Activated",logtrans=TRUE)
+#' cohort="acc", Immune_phenotype="Mast.Cells.Activated",logtrans=TRUE)
 #' @seealso get_quantile_rank
 #' @export
 
-im_boxplot_tcga<-function(onco_gene,icp_gene,cohort,Immune_Feature,sample_list,logtrans){
+im_boxplot_tcga<-function(onco_gene,icp_gene,cohort,Immune_phenotype,sample_list,logtrans){
 
   cohort <- tolower(cohort)
   results <- list()
@@ -49,30 +50,30 @@ im_boxplot_tcga<-function(onco_gene,icp_gene,cohort,Immune_Feature,sample_list,l
     stop("ERROR: No gene found. Select a gene name from your mRNA data")
   }
 
-  if(Immune_Feature=="EMTscore"){
+  if(Immune_phenotype=="EMTscore"){
     df_feature <- get_emt_score(df)
     colnames(df_feature)[1] <- "PATIENT_BARCODE"
   }else{
-    if(Immune_Feature=="Leukocyte_fraction"){
+    if(Immune_phenotype=="Leukocyte_fraction"){
       df_feature <- TCGA_Leukocyte_fraction
       colnames(df_feature)[1] <- "PATIENT_BARCODE"
     }else{
-      if(Immune_Feature=="AGscore"){
+      if(Immune_phenotype=="AGscore"){
         df_feature <- get_angio_score(df)
         colnames(df_feature)[1] <- "PATIENT_BARCODE"
       }else{
-        if(Immune_Feature=="IFNGscore"){
+        if(Immune_phenotype=="IFNGscore"){
           df_feature <- get_ifng_score(df)
           colnames(df_feature)[1] <- "PATIENT_BARCODE"
         }else{
-          if(grepl("TMB",Immune_Feature)){
-            df_feature <- TCGA_TMB[,c("Tumor_Sample_ID",Immune_Feature)]
+          if(grepl("TMB",Immune_phenotype)){
+            df_feature <- TCGA_TMB[,c("Tumor_Sample_ID",Immune_phenotype)]
             colnames(df_feature)[1] <- "PATIENT_BARCODE"
           }else{
             df_feature <- TCGA_IMCell_fraction
-            tmp <- which(colnames(df_feature)==Immune_Feature)
+            tmp <- which(colnames(df_feature)==Immune_phenotype)
             if(length(tmp)==0){
-              stop(Immune_Feature," Not found.
+              stop(Immune_phenotype," Not found.
                 Choose a feature from TCGA_feature_list.\n")
             }else{
               tmpID <- which(colnames(df_feature)=="PATIENT_BARCODE")
@@ -161,14 +162,14 @@ im_boxplot_tcga<-function(onco_gene,icp_gene,cohort,Immune_Feature,sample_list,l
   if(logtrans){
     transvalue <- "log2"
     df_feature[df_feature[,2]==0,2]<-NA
-    plot_min <- min(df_feature[,2],na.rm=T)
+    plot_min <- min(df_feature[,2],na.rm=TRUE)
     df_feature[is.na(df_feature[,2]),2] <- plot_min
   }else{
     transvalue <- "identity"
   }
 
-  p<-ggplot(df_feature, aes(x=state,y=get(Immune_Feature),col="grey")) +
-    labs(title="", x="", y=Immune_Feature)+
+  p<-ggplot(df_feature, aes(x=state,y=get(Immune_phenotype),col="grey")) +
+    labs(title="", x="", y=Immune_phenotype)+
     geom_boxplot(width=0.5, show.legend = T,
                  outlier.size = 1.0, lwd=0.5,
                  outlier.colour = "red",outlier.shape = 21)+
@@ -187,11 +188,11 @@ im_boxplot_tcga<-function(onco_gene,icp_gene,cohort,Immune_Feature,sample_list,l
   gg<-ggplot_build(p)
   xx<-gg$data[[1]][c("group","outliers")]
   df_feature2<-merge(df_feature,xx,by.x="state",by.y="group")
-  df_feature2$out<-apply(df_feature2,1,function(x) x[Immune_Feature] %in% x$outliers)
+  df_feature2$out<-apply(df_feature2,1,function(x) x[Immune_phenotype] %in% x$outliers)
 
 
-  p <- ggplot(df_feature2, aes(x=state,y=get(Immune_Feature))) +
-    labs(title="", x="", y=Immune_Feature)+
+  p <- ggplot(df_feature2, aes(x=state,y=get(Immune_phenotype))) +
+    labs(title="", x="", y=Immune_phenotype)+
     geom_boxplot(width=0.5, show.legend = T, lwd=1,
                  outlier.shape = NA,border="grey")+
     geom_jitter(aes(col=out) ,position = position_jitter(width=0.1),

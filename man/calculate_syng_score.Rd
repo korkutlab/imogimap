@@ -32,6 +32,9 @@ calculate_syng_score(
 \item{SEM2_HL}{Standard error of the mean of the representing group}
 
 \item{SEM2_HH}{Standard error of the mean of the representing group}
+
+\item{method}{A character string indicating which synergy score to be used. one of "max" or "independence".
+Default is "max".}
 }
 \value{
 A numerical  scores

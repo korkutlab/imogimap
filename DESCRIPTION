@@ -1,4 +1,4 @@
-Package: imogene
+Package: imogimap
 Title: : Immuno-oncology gene expression associations
 Version: 0.0.0.1000
 Authors@R: 
@@ -7,14 +7,12 @@ Authors@R:
            role = c("aut", "cre"),
            email = "b.bozorgui@gmail.com",
            comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: Imogene (Immuno-oncology gene expression associations) is a group-to-group comparison tool that assesses 
-    user-provided mRNA expressions to identify associated features at the tumor immune interface that have likely
-    biological relevance and cooperatively effect with regard to immune oncological processes. 
+Description: Imogimap (Immuno-oncology gene interaction maps)automates searches for combinatorial associations and likely functional interactions at the tumor-immune interface to identify the mechanisms that modulate immune-associated phenotypes (e.g., interferon responses, immune infiltration, enrichment of specific immune cell types). The output of ImogiMap is a catalogue of network models involving tumor associated processes (TAP) and immune checkpoints (ICPs) that synergistically co-associate with immune phenotypes (IAPs).
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Depends: 
     R (>= 2.10)
 biocViews:
@@ -27,7 +25,8 @@ Imports:
     curatedTCGAData,
     igraph,
     psych,
-    data.table
+    data.table,
+    magrittr
 Suggests: 
     knitr,
     rmarkdown

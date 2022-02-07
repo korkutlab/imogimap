@@ -22,7 +22,7 @@ a list of dataframes containing Spearman correlations and non-FDR adjusted proba
 Finds Spearman correlation between an oncogene, an immune checkpoint and immune associated phenotypes.
 }
 \details{
-im_cor_tcga uses NASeq2GeneNorm expression data, as provided by \code{\pkg{curatedTCGAData}}, to find correlation  between onco_genes and immune checkpoints and immuno-oncology features as listed in TCGA_immune_features_list.
+im_cor_tcga uses NASeq2GeneNorm expression data, as provided by \code{\link[curatedTCGAData]{curatedTCGAData}}, to find correlation  between onco_genes and immune checkpoints and immuno-oncology features as listed in TCGA_immune_features_list.
 
 By default (if no icp_gene is specified), icp_gene_list will be used.
 
@@ -35,7 +35,7 @@ A non-FDR-adjusted p.value is reported for each correlation value to allow for e
 All barcodes in sample_list must be 15 character long and belong to the same cohort. When sample_list is provided, cohort should be the disease cohort that they belong to, otherwise only the first element of the cohort list will be used.
 }
 \examples{
-im_cor_tcga(onco_gene=c("BRAF"),icp_gene=c("CD274","CTLA4"),cohort=c("acc","gbm"))
+im_cor_tcga(onco_gene=c("BRAF"),icp_gene=c("CD274","CTLA4"),cohort=c("gbm"))
 }
 \keyword{correlation,}
 \keyword{expression}

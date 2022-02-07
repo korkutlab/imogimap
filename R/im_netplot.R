@@ -1,22 +1,24 @@
 #' Creates and plot an igraph network from dataframe
 #' @importFrom igraph graph.edgelist E E<- set_edge_attr V V<- degree
-#' @param df A dataframe as outputted by \code{\link[imogene]{im_syng_tcga}} im_syng_tcga or \code{\link[imogene]{im_syng}}
-#' @param Immune_Feature a character string indicating name of an immune feature.
-#' @param icp_gene An optional character vector of immune checkpoints for color coding vertex. default is \code{\link[imogene]{icp_gene_list}}
+#' @importFrom  ggplot2 alpha
+#' @param df A dataframe as outputted by \code{\link{im_syng_tcga}} or \code{\link[imogimap]{im_syng}}
+#' @param Immune_phenotype a character string indicating name of an immune feature.
+#' @param icp_gene An optional character vector of immune checkpoints for color coding vertex. default is \code{\link[imogimap]{icp_gene_list}}
 #' @param cohort An optional character string indicating a single TCGA disease.
 #' @param cutoff A numeric indicating quantile cut-off for absolute values of synergy scores.
 #' @param seed A single value, interpreted as an integer, or NULL (see set.seed for details).
 #' @return A plotted igraph object showing network of synergistic (red) and antagonistic (blue) associations.
 #' @examples
 #' df <- im_syng_tcga(onco_gene = icp_gene_list,icp_gene = icp_gene_list,cohort = "acc")
-#' im_netplot(df, Immune_Feature = "EMTscore",cutoff = 5, seed = 1234)
+#' im_netplot(df, Immune_phenotype = "EMTscore", seed = 1234)
 #' @details
 #'
-#' im_netplot uses \code{\pkg{igraph}} to construct and plot network from synergy score data frame. Immune-checkpoints/onco-genes are depicted as black/white vertices, and positive/negative synergistic interactions are depicted as red/blue edges. Thickness of an edge is determined by the absolute value of the score, and the size of each vertex is determined by its degree. Edges with absolute values lower that the cut-off will be removed from the graph.
+#' im_netplot uses \pkg{igraph} to construct and plot network from synergy score data frame. Immune-checkpoints/onco-genes are depicted as black/white vertices, and positive/negative synergistic interactions are depicted as red/blue edges. Thickness of an edge is determined by the absolute value of the score, and the size of each vertex is determined by its degree. Edges with absolute values lower that the cut-off will be removed from the graph.
 #'
 #' cutoff=0 does not remove any edges. cutoff=1 removes all edges. Default is 0.95, which keeps scores with their absolute value  higher than 0.95 quantile.
 #'Colored groups are constructed based on edge-between-ness membership. For more information see \code{\link[igraph]{edge.betweenness.community}}
 #' seed is an integer that is the starting point from which random numbers are generated in igraph. Seed value is used for the reproducibility of plot layout. different seed numbers will generate different
+#' @seealso [igraph]
 #' @export
 #'
 

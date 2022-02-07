@@ -27,10 +27,10 @@ Feature data is stratified base on expression quartiles of onco_gene and icp_gen
 Pvalues are calculated using Wilcoxon test.
 
 data_expression is formatted with genes/proteins as rows and samples/patients as columns.
-For data_expression sample formats see \code{\link[imogene]{sample_mRNA_data}}.
+For data_expression sample formats see \code{\link[imogimap]{sample_mRNA_data}}.
 
 data_feature is formatted with samples/patients as rows and immune feature as single column.
-For data_feature sample format see \code{\link[imogene]{sample_Leukocyte_fraction_data}}.
+For data_feature sample format see \code{\link[imogimap]{sample_Leukocyte_fraction_data}}.
 }
 \examples{
 im_boxplot(onco_gene = "TGFB1",icp_gene="TNFSF4",

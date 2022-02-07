@@ -1,4 +1,5 @@
 #' Calculates and transforms default immune features within a specified sample cohort .
+#' @importFrom  stats sd
 #' @param  pdf A numeric data frame or matrix with samples as columns and gene/proteins as rows.
 #' @keywords Immune feature, Probability integral transform
 #' @return A list with two dataframes containing transformed values for  immune features and immune cell type fractions as listed in \code{TCGA_immune_features_list}.
@@ -48,10 +49,10 @@ get_features=function(pdf){
   #Merge all features-----------------------------
   #-----------------------------------------------
 
-  dft <- as.data.frame(merge(cohort_EMT , cohort_AG, by="Tumor_Sample_ID",all=T))
-  dft <- as.data.frame(merge(dft , cohort_IFNG, by="Tumor_Sample_ID",all=T))
-  dft<- as.data.frame(merge(dft , df_lf, by="Tumor_Sample_ID",all=T))
-  dft <- as.data.frame(merge(dft , df_tmb, by="Tumor_Sample_ID",all=T))
+  dft <- as.data.frame(merge(cohort_EMT , cohort_AG, by="Tumor_Sample_ID",all=TRUE))
+  dft <- as.data.frame(merge(dft , cohort_IFNG, by="Tumor_Sample_ID",all=TRUE))
+  dft<- as.data.frame(merge(dft , df_lf, by="Tumor_Sample_ID",all=TRUE))
+  dft <- as.data.frame(merge(dft , df_tmb, by="Tumor_Sample_ID",all=TRUE))
 
 
   return(dft)

@@ -12,9 +12,9 @@
 #' @description  A set of 77 unique genes as the pan-cancer EMT signature
 #' @format A data frame with 77 rows and 3 columns:
 #' \describe{
-#'   \item{\code{Gene}}{character Gene hugo symbol}
-#'   \item{\code{Group}}{character Epithelial vs Mesenchymal}
-#'   \item{\code{signe}}{numeric Negative for Epithelial and Positive for Mesenchymal}
+#'   \item{\code{genes}}{character Gene hugo symbol}
+#'   \item{\code{group}}{character Epithelial vs Mesenchymal}
+#'   \item{\code{sign}}{numeric Negative for Epithelial and Positive for Mesenchymal}
 #'}
 #' @source \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4737991/#SD1}
 "EMT_gene_list"

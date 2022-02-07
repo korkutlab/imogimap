@@ -33,19 +33,12 @@ df_inf<- df_inf[,c("Tumor_Sample_ID","Leukocyte_fraction")]
 df_inf <- setDT(df_inf)[, lapply(.SD, median), by=c(names(df_inf)[1]), .SDcols=2]
 TCGA_Leukocyte_fraction <- df_inf
 
-# #PANCAN EMT scores
-# EMT_rnaseq <- read.csv("EMTscore_pancan_RNAseq_from_TongPan_original.csv")
-# EMT_rnaseq$Tumor_Sample_ID <- substr(EMT_rnaseq$PatientID, 1, 15)
-# EMT_rnaseq <- EMT_rnaseq[EMT_rnaseq$Tumor_Sample_ID %in% sel,]
-# EMT_rnaseq <- setDT(EMT_rnaseq)[, lapply(.SD, mean), by=c(names(EMT_rnaseq)[3]), .SDcols=2]
-# row.names(EMT_rnaseq) <- EMT_rnaseq$Tumor_Sample_ID
-# TCGA_EMT <- EMT_rnaseq
-
 #EMT gene list
-EMT_gene_list <- read.csv("Pan-Cancer-EMT-Signature-Genes.csv")
+EMT_gene_list <- read.csv("data-raw/Pan-Cancer-EMT-Signature-Genes.csv")
 EMT_gene_list$sign <- ifelse(EMT_gene_list$Group=="M",1,-1)
 colnames(EMT_gene_list)[1]<-"genes"
-
+colnames(EMT_gene_list)[2]<-"group"
+usethis::use_data( EMT_gene_list,overwrite = T)
 #Angiogenesis gene list
 AG_gene_list <- scan("genes_angiogenesis.txt",what = "charachter")
 
@@ -87,25 +80,25 @@ TCGA_immune_features_list <- dft
 
 
 # T cell dysfunction signature genes
-
-lgn1 <- readxl::read_xlsx("significant_dysfunction_scores.xlsx",sheet = 1)
-lgn2 <- readxl::read_xlsx("significant_dysfunction_scores.xlsx",sheet = 2)
-lgn3 <- readxl::read_xlsx("significant_dysfunction_scores.xlsx",sheet = 3)
-lgn4 <- readxl::read_xlsx("significant_dysfunction_scores.xlsx",sheet = 4)
-lgn5 <- readxl::read_xlsx("significant_dysfunction_scores.xlsx",sheet = 5)
-
-lgn <-  rbind(lgn1,lgn2,lgn3,lgn4,lgn5)
-lgn <- lgn[lgn$FDR<0.1,]
-library(plyr)
-lgn_count<- ddply(lgn,.(Symbol),nrow)
-lgn_count <- lgn_count[lgn_count$V1>1,]
-lgn <- lgn[lgn$Symbol %in% lgn_count$Symbol,]
-lgn <- unique(lgn$Symbol)
-
-lgn5_sub <- lgn5[lgn5$Symbol %in% lgn,]
-lgn5_sub <- lgn5_sub[lgn5_sub$FDR<0.05,]
-
-lgn_tcell_dys <- lgn5_sub
+#
+# lgn1 <- readxl::read_xlsx("significant_dysfunction_scores.xlsx",sheet = 1)
+# lgn2 <- readxl::read_xlsx("significant_dysfunction_scores.xlsx",sheet = 2)
+# lgn3 <- readxl::read_xlsx("significant_dysfunction_scores.xlsx",sheet = 3)
+# lgn4 <- readxl::read_xlsx("significant_dysfunction_scores.xlsx",sheet = 4)
+# lgn5 <- readxl::read_xlsx("significant_dysfunction_scores.xlsx",sheet = 5)
+#
+# lgn <-  rbind(lgn1,lgn2,lgn3,lgn4,lgn5)
+# lgn <- lgn[lgn$FDR<0.1,]
+# library(plyr)
+# lgn_count<- ddply(lgn,.(Symbol),nrow)
+# lgn_count <- lgn_count[lgn_count$V1>1,]
+# lgn <- lgn[lgn$Symbol %in% lgn_count$Symbol,]
+# lgn <- unique(lgn$Symbol)
+#
+# lgn5_sub <- lgn5[lgn5$Symbol %in% lgn,]
+# lgn5_sub <- lgn5_sub[lgn5_sub$FDR<0.05,]
+#
+# lgn_tcell_dys <- lgn5_sub
 
 #Creates data
 
@@ -114,7 +107,6 @@ usethis::use_data( lgn_tcell_dys,overwrite = T)
 
 usethis::use_data(
   TCGA_Leukocyte_fraction,
-  TCGA_EMT,
   EMT_gene_list,
   icp_gene_list,
   TCGA_IMCell_fraction,

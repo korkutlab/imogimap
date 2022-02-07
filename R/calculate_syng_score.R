@@ -7,6 +7,8 @@
 #' @param SEM2_LH Standard error of the mean of the representing group
 #' @param SEM2_HL Standard error of the mean of the representing group
 #' @param SEM2_HH Standard error of the mean of the representing group
+#' @param method A character string indicating which synergy score to be used. one of "max" or "independence".
+#' Default is "max".
 #' @keywords synergy score
 #' @return A numerical  scores
 #' @details

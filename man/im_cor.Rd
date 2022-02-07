@@ -27,17 +27,18 @@ Calculate Spearman correlation with immune checkpoints
 By default (if no icp_gene is specified), icp_gene_list will be used.
 
 data_expression is formatted with genes/proteins as rows and samples/patients as columns.
-For data_expression sample formats see see \code{\link[imogene]{sample_mRNA_data}}.
+For data_expression sample formats see see \code{\link[imogimap]{sample_mRNA_data}}.
 
 data_feature is formatted with samples/patients as rows and immune features as columns.
-For data_feature sample format see \code{\link[imogene]{sample_Leukocyte_fraction_data}}.
+For data_feature sample format see \code{\link[imogimap]{sample_Leukocyte_fraction_data}}.
 }
 \examples{
 im_cor(onco_gene =  c("BRAF","CTLA4"),
                  icp_gene= c("CD274","CTLA4"),
                  data_expression =  sample_mRNA_data,
                  data_feature = sample_immune_cell_fraction_data,
-                 add_features=T)
+                 add_features=TRUE)
+
 }
 \keyword{Spearman}
 \keyword{checkpoints}

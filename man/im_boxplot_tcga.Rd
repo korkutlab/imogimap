@@ -8,7 +8,7 @@ im_boxplot_tcga(
   onco_gene,
   icp_gene,
   cohort,
-  Immune_Feature,
+  Immune_phenotype,
   sample_list,
   logtrans
 )
@@ -20,11 +20,11 @@ im_boxplot_tcga(
 
 \item{cohort}{a single TCGA disease}
 
+\item{Immune_phenotype}{an immune phenotype name as listed in TCGA_Immune_phenotypes_list.}
+
 \item{sample_list}{An optional character vector of TCGA samples barcodes indicating a subset of samples within a cohort. All barcodes in sample_list must be 15 character long and belong to the same cohort.}
 
 \item{logtrans}{An optional logical indicating if y axis should be displayed in logarithmic scale. Default is FALSE.}
-
-\item{Immune_Feauture}{an immune feature name as listed in TCGA_immune_features_list.}
 }
 \value{
 a list of multiple dataframes of correlation coefficients and p.values
@@ -33,13 +33,13 @@ a list of multiple dataframes of correlation coefficients and p.values
 Generates a stratified boxplot for immune feature values based of a two genes.
 }
 \details{
-Feature data is stratified based on expression quartiles of onco_gene and icp_gene. High/Low categories include samples with expression values in lower/upper quartiles correspondingly. Samples with expression values in middle quartiles are discarded. For details of quartile calculation see \code{\link[imogene]{get_quantile_rank}} function.
+Feature data is stratified based on expression quartiles of onco_gene and icp_gene. High/Low categories include samples with expression values in lower/upper quartiles correspondingly. Samples with expression values in middle quartiles are discarded. For details of quartile calculation see \code{\link[imogimap]{get_quantile_rank}} function.
 
 Pvalues are calculated using Wilcoxon test.
 }
 \examples{
 im_boxplot_tcga(onco_gene = "BRAF", icp_gene="CD274",
-cohort="acc", Immune_Feature="Mast.Cells.Activated",logtrans=TRUE)
+cohort="acc", Immune_phenotype="Mast.Cells.Activated",logtrans=TRUE)
 }
 \seealso{
 get_quantile_rank

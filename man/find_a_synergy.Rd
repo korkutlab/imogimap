@@ -35,11 +35,11 @@ Three pvalues are calculated using Wilcoxon.test by comparing means of the targe
 A data frame is returned that contains: Feature and genes name, a numeric synergy score measuring synergistic association of two genes on a feature, a numeric representing significance pvalue, and two characters indicating whether expression or inhibition of each gene positively associates with feature. If no synergistic association is found,score will be set to NA.
 }
 \examples{
-dft <- TCGA_EMT$EMTscore
+dft <- TCGA_Leukocyte_fraction$Leukocyte_fraction
 mydata<- as.matrix(cbind(feature=dft,
-gene1=sample(c(1,4),length(dft),replace = T),
-gene2=sample(c(1,4),length(dft),replace = T)))
-find_a_synergy(mydata)
+gene1=sample(c(1,4),length(dft),replace = TRUE),
+gene2=sample(c(1,4),length(dft),replace = TRUE)))
+find_a_synergy(fdata=mydata,method="max")
 
 }
 \seealso{

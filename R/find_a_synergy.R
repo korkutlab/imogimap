@@ -1,5 +1,6 @@
 #' Finds a statistical synergistic score for a data frame containing values of an immune feature and stratified expression levels of two genes.
-#' @import ggpubr
+
+#' @importFrom stats median mad
 #' @param fdata A numeric matrix with 3 columns: A numeric indicating value of an immune feature and two integers, each interpreted as a coded label for the expression level of a gene. Each row of fdata is a different sample or experiment.
 #' @param method a character string indicating which synergy score method to be used. one of "max" or "independence". Default is "max".
 #' @param oncogene1 An optional factor indicating assumed expression of gene1 in relation to IAP. One of "Expressed","Inhibited",or NA. Default is NA
@@ -23,11 +24,11 @@
 #'
 #'
 #' @examples
-#' dft <- TCGA_EMT$EMTscore
+#' dft <- TCGA_Leukocyte_fraction$Leukocyte_fraction
 #' mydata<- as.matrix(cbind(feature=dft,
-#' gene1=sample(c(1,4),length(dft),replace = T),
-#' gene2=sample(c(1,4),length(dft),replace = T)))
-#' find_a_synergy(mydata)
+#' gene1=sample(c(1,4),length(dft),replace = TRUE),
+#' gene2=sample(c(1,4),length(dft),replace = TRUE)))
+#' find_a_synergy(fdata=mydata,method="max")
 #'
 #' @seealso [get_quantile_rank()]
 #' @export
@@ -62,10 +63,10 @@ find_a_synergy=function(fdata,method,oncogene1,oncogene2){
       pval <- NA
     }else{
 
-      m_LL <- median(dft_LL,na.rm=T)
-      m_LH <- median(dft_LH,na.rm=T)
-      m_HL <- median(dft_HL,na.rm=T)
-      m_HH <- median(dft_HH,na.rm=T)
+      m_LL <- median(dft_LL,na.rm=TRUE)
+      m_LH <- median(dft_LH,na.rm=TRUE)
+      m_HL <- median(dft_HL,na.rm=TRUE)
+      m_HH <- median(dft_HH,na.rm=TRUE)
 
       SEM2_LL <-  ( stats::mad(dft_LL,na.rm = T)^2 ) /sum( !is.na(dft_LL) )
       SEM2_LH <-  ( stats::mad(dft_LH,na.rm = T)^2 ) /sum( !is.na(dft_LH) )
@@ -140,21 +141,21 @@ find_a_synergy=function(fdata,method,oncogene1,oncogene2){
         if(i==1){
           agent1_expression <- "Expressed"
           agent2_expression <- "Expressed"
-          pval <-  max(ggpubr::compare_means(IAP~group,fdata2,paired=F,ref.group = 4)$p,na.rm=T)
+          pval <-  max(ggpubr::compare_means(IAP~group,fdata2,paired=F,ref.group = 4)$p,na.rm=TRUE)
         }else{
           if(i==2){
             agent1_expression <- "Expressed"
             agent2_expression <- "Inhibited"
-            pval <-  max(ggpubr::compare_means(IAP~group,fdata2,paired=F,ref.group = 3)$p,na.rm=T)
+            pval <-  max(ggpubr::compare_means(IAP~group,fdata2,paired=F,ref.group = 3)$p,na.rm=TRUE)
           }else{
             if(i==3){
               agent1_expression <- "Inhibited"
               agent2_expression <- "Expressed"
-              pval <-  max(ggpubr::compare_means(IAP~group,fdata2,paired=F,ref.group = 2)$p,na.rm=T)
+              pval <-  max(ggpubr::compare_means(IAP~group,fdata2,paired=F,ref.group = 2)$p,na.rm=TRUE)
             }else{
               agent1_expression <- "Inhibited"
               agent2_expression <- "Inhibited"
-              pval <- max(ggpubr::compare_means(IAP~group,fdata2,paired=F,ref.group = 1)$p,na.rm=T)
+              pval <- max(ggpubr::compare_means(IAP~group,fdata2,paired=F,ref.group = 1)$p,na.rm=TRUE)
             }
           }
         }

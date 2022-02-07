@@ -1,4 +1,7 @@
 #' Calculate Spearman correlation with immune checkpoints
+#' @importFrom psych corr.test
+#' @importFrom tidyr gather
+#' @importFrom  dplyr select tibble
 #' @param onco_gene A character vector of gene/protein IDs.
 #' @param icp_gene An optional character vector of immune checkpoint gene/protein IDs.
 #' @param data_expression A numeric matrix or data frame containing gene/protein expressions.
@@ -11,20 +14,16 @@
 #' By default (if no icp_gene is specified), icp_gene_list will be used.
 #'
 #' data_expression is formatted with genes/proteins as rows and samples/patients as columns.
-#' For data_expression sample formats see see \code{\link[imogene]{sample_mRNA_data}}.
+#' For data_expression sample formats see see \code{\link[imogimap]{sample_mRNA_data}}.
 #'
 #' data_feature is formatted with samples/patients as rows and immune features as columns.
-#' For data_feature sample format see \code{\link[imogene]{sample_Leukocyte_fraction_data}}.
+#' For data_feature sample format see \code{\link[imogimap]{sample_Leukocyte_fraction_data}}.
 #'
 #' @examples im_cor(onco_gene =  c("BRAF","CTLA4"),
 #'                  icp_gene= c("CD274","CTLA4"),
 #'                  data_expression =  sample_mRNA_data,
 #'                  data_feature = sample_immune_cell_fraction_data,
-#'                  add_features=T)
-#' @import dplyr
-#' @import tibble
-#' @import tidyr
-#' @importFrom psych corr.test
+#'                  add_features=TRUE)
 #'
 #' @export
 
@@ -59,7 +58,7 @@ im_cor<-function(onco_gene,icp_gene, data_expression,data_feature,add_features){
     warning("No immune checkpoint found.")
     icp_cor <- tibble("rho"=numeric(),"pvalue"=numeric())
   }else{
-    dft_cor <- psych::corr.test(df_selected,df_icp,method="spearman",adjust = "none")
+    dft_cor <- corr.test(df_selected,df_icp,method="spearman",adjust = "none")
     df_rho <- as.data.frame(dft_cor$r)
     df_rho$onco_gene <- rownames(df_rho)
     df_rho <- gather(df_rho, icp_gene,rho,-onco_gene)
@@ -91,7 +90,7 @@ im_cor<-function(onco_gene,icp_gene, data_expression,data_feature,add_features){
 
 
   #Check for additional immune features---------------------
-  if(add_features==T){
+  if(add_features==TRUE){
     df_EMT <-  get_emt_score(data_expression)
     if(nrow(df_EMT)==0){
       warning("No EMT signature marker found.\n")
@@ -129,7 +128,7 @@ im_cor<-function(onco_gene,icp_gene, data_expression,data_feature,add_features){
     strid <- as.numeric(which(colnames(df_selected)=="Tumor_Sample_ID"))
     dft1 <- as.matrix(select(df_merged,colnames(df_selected)[-strid]))
     dft2 <- as.matrix(select(df_merged,-colnames(df_selected)))
-    dft_cor <- psych::corr.test(dft1,dft2,method="spearman",adjust = "none")
+    dft_cor <- corr.test(dft1,dft2,method="spearman",adjust = "none")
     df_rho <- as.data.frame(dft_cor$r)
     df_rho$gene <- rownames(df_rho)
     df_rho <- gather(df_rho, ict,rho,-gene)

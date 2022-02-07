@@ -1,6 +1,6 @@
 #' Generate a stratified boxplot for immune feature values
-#' @import ggplot2
-#' @import ggpubr
+#' @importFrom ggplot2 aes coord_trans element_text geom_boxplot geom_jitter ggplot ggplot_build labs  position_jitter scale_color_manual scale_x_discrete theme theme_bw
+#' @importFrom ggpubr stat_compare_means
 #' @param onco_gene A charachter indicating a single onco_gene ID.
 #' @param icp_gene A charachter indicating a single immune checkpoint ID.
 #' @param data_expression A numeric matrix or data frame containing gene/protein expressions
@@ -14,10 +14,10 @@
 #'Pvalues are calculated using Wilcoxon test.
 #'
 #' data_expression is formatted with genes/proteins as rows and samples/patients as columns.
-#' For data_expression sample formats see \code{\link[imogene]{sample_mRNA_data}}.
+#' For data_expression sample formats see \code{\link[imogimap]{sample_mRNA_data}}.
 #'
 #' data_feature is formatted with samples/patients as rows and immune feature as single column.
-#' For data_feature sample format see \code{\link[imogene]{sample_Leukocyte_fraction_data}}.
+#' For data_feature sample format see \code{\link[imogimap]{sample_Leukocyte_fraction_data}}.
 #'
 #' @examples im_boxplot(onco_gene = "TGFB1",icp_gene="TNFSF4",
 #'                   data_expression =  sample_mRNA_data,

@@ -19,7 +19,7 @@
 #' @return A data.frame of synergy scores and bootstrapping p.values.
 #' @description
 #'
-#' Takes a list of Tumor-intrinsic pathway(TIP) genes and returns their combinatorial association with immune checkpoint(ICP) genes by evaluating their synergistic impact on immune-associated phenotypes(IAP) using RNASeq2GeneNorm expressions as provided by \code{\pkg{curatedTCGAData}} in a selected disease cohort.
+#' Takes a list of Tumor-intrinsic pathway(TIP) genes and returns their combinatorial association with immune checkpoint(ICP) genes by evaluating their synergistic impact on immune-associated phenotypes(IAP) using RNASeq2GeneNorm expressions as provided by \pkg{curatedTCGAData} in a selected disease cohort.
 #'
 #' @details
 #'
@@ -39,9 +39,13 @@
 #'
 #' @examples im_syng_tcga(onco_gene=c("TGFB1","SERPINB9"), cohort=c("ucec","skcm"))
 #'
-#' @import dplyr
+#' @importFrom dplyr bind_rows across mutate group_by everything distinct
+#' @importFrom magrittr %>%
 #' @importFrom data.table setkey as.data.table
 #' @import curatedTCGAData
+#' @importFrom data.table ":=" ".SD"
+#' @importFrom utils combn setTxtProgressBar txtProgressBar
+#' @importFrom stats complete.cases median
 #'
 #' @export
 
@@ -191,8 +195,8 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, specif
 
     if(!missing(select_iap)){
       if(is.data.frame(select_iap) || is.matrix(select_iap)){
-        df_min <- min(select_iap,na.rm=T)
-        df_max <- max(select_iap,na.rm=T)
+        df_min <- min(select_iap,na.rm=TRUE)
+        df_max <- max(select_iap,na.rm=TRUE)
         if(df_min < 0 | df_max > 1 ){
           stop("ERROR: feature is out of range. Normalize data_feature to [0,1].")
         }
@@ -261,7 +265,7 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, specif
             dft2 <- dft2[complete.cases(dft2),]
 
             dfts <- find_a_synergy(dft2,method = method)
-            df_helper <- dplyr::bind_rows(df_helper , dfts)
+            df_helper <- bind_rows(df_helper , dfts)
           }
         }else{
           df_helper <-  data.frame(agent1=colnames(dft)[1],
@@ -278,7 +282,7 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, specif
           df_helper <- df_helper[ , c("Disease" , c(setdiff(colnames(df_helper) , "Disease")))]
           df_helper$specificity_pvalue <- NA
           df_helper$sensitivity_R <- NA
-          df_syng <- dplyr::bind_rows(df_syng , df_helper)
+          df_syng <- bind_rows(df_syng , df_helper)
         }
         setTxtProgressBar(pb, pair_ID)
       }
@@ -308,7 +312,7 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, specif
             dft2 <- dft2[complete.cases(dft2),,drop=F]
             if(nrow(dft2)>0){
               dfts <- find_a_synergy(dft2,method = method)
-              df_helper <- dplyr::bind_rows(df_helper , dfts)
+              df_helper <- bind_rows(df_helper , dfts)
             }
           }
         }else{
@@ -325,13 +329,13 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, specif
           df_helper <- df_helper[ , c("Disease" , c(setdiff(colnames(df_helper) , "Disease")))]
           df_helper$specificity_pvalue <- NA
           df_helper$sensitivity_R <- NA
-          df_syng <- dplyr::bind_rows(df_syng , df_helper)
+          df_syng <- bind_rows(df_syng , df_helper)
         }
         setTxtProgressBar(pb, pair_ID)
       }
     }
     df_syng <- as.data.table(df_syng)
-    data.table::setkey(df_syng, Disease, agent1,agent2,Immune_feature)
+    setkey(df_syng, Disease, agent1,agent2,Immune_feature)
 
     message("\nSynergy calculation completed!\n ")
 
@@ -381,7 +385,7 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, specif
 
         tmp <- as.data.frame(df_bank)
         tmp$PATIENT_BARCODE <- substr(rownames(tmp), 1, 12)
-        tmp <- data.table::as.data.table(tmp)
+        tmp <- as.data.table(tmp)
         tmp <- tmp[,lapply(.SD,median),by=PATIENT_BARCODE]
         tmp<- as.data.frame(tmp)
         df_bank2 <- as.matrix(tmp[,-which(colnames(tmp)=="PATIENT_BARCODE")])
@@ -603,7 +607,7 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, specif
 
           tmp <- as.data.frame(df_sub)
           tmp$PATIENT_BARCODE <- substr(rownames(tmp), 1, 12)
-          tmp <- data.table::as.data.table(tmp)
+          tmp <- as.data.table(tmp)
           tmp <- tmp[,lapply(.SD,median),by=PATIENT_BARCODE]
           tmp<- as.data.frame(tmp)
           df_sub2 <- as.matrix(tmp[,-which(colnames(tmp)=="PATIENT_BARCODE")])
@@ -716,7 +720,7 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, specif
       }
     }
     df_syng <- as.data.frame(df_syng)
-    df_syng_all <- dplyr::bind_rows(df_syng_all,df_syng )
+    df_syng_all <- bind_rows(df_syng_all,df_syng )
     message("\n",disease," completed\n")
   }
   df_syng_all[df_syng_all=="DKFZp686O24166"]<-"NCR3LG1"
