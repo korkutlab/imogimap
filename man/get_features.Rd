@@ -16,7 +16,7 @@ A list with two dataframes containing transformed values for  immune features an
 Calculates and transforms default immune features within a specified sample cohort .
 }
 \details{
-Given a cohort of samples, calculates immune features within the cohort and transforms their values using probability integral transform. The resulting feature values will have a standard uniform distribution between \link{0,1}
+Given a cohort of samples, calculates immune features within the cohort and transforms their values using probability integral transform. The resulting feature values will have a standard uniform distribution between \code{[0,1]}
 }
 \examples{
 get_features(pdf=sample_mRNA_data)

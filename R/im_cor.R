@@ -29,6 +29,12 @@
 
 im_cor<-function(onco_gene,icp_gene, data_expression,data_feature,add_features){
 
+  rho <- NULL
+  padj <- NULL
+  ict <- NULL
+  gene <- NULL
+  pvalue <- NULL
+  
   results <- list()
   data_expression <- as.data.frame(data_expression)
 

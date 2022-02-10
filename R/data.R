@@ -113,3 +113,8 @@
 #' @format A character vector of length 28
 "TCGA_immune_features_list"
 
+globalVariables(c("AG_gene_list", "EMT_gene_list", "TCGA_TMB","TCGA_immune_features_list",
+                  "TCGA_disease_list","sample_mRNA_data","sample_Leukocyte_fraction_data",
+                  "sample_immune_cell_fraction_data","sample_immune_cell_fraction_data",
+                  "icp_gene_list","TCGA_IMCell_fraction","TCGA_Leukocyte_fraction"))
+globalVariables(c("."))

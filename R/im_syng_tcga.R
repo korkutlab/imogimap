@@ -19,7 +19,7 @@
 #' @return A data.frame of synergy scores and bootstrapping p.values.
 #' @description
 #'
-#' Takes a list of Tumor-intrinsic pathway(TIP) genes and returns their combinatorial association with immune checkpoint(ICP) genes by evaluating their synergistic impact on immune-associated phenotypes(IAP) using RNASeq2GeneNorm expressions as provided by \pkg{curatedTCGAData} in a selected disease cohort.
+#' Takes a list of Tumor-intrinsic pathway(TIP) genes and returns their combinatorial association with immune checkpoint(ICP) genes by evaluating their synergistic impact on immune-associated phenotypes(IAP) using RNASeq2GeneNorm expressions as provided by \pkg{curatedTCGAData}.
 #'
 #' @details
 #'
@@ -27,9 +27,9 @@
 #
 # IAP names are listed in TCGA_immune_features_list.
 #'If no icp_gene is specified, the default icp_gene_list will be used.
-#'If select_iap is a character vector, it must be any sub-list of IAP names as listed in TCGA_immune_features_list. If a numeric matrix or data.frame, each column represents a user-defined IAP and must have a range between [0,1]. If select_iap is missing all IAPs listed in TCGA_immune_features_list will be considered for analysis.
+#'If select_iap is a character vector, it must be any sub-list of IAP names as listed in TCGA_immune_features_list. If a numeric matrix or data.frame, each column represents a user-defined IAP and must have a range between \code{[0,1]}. If select_iap is missing all IAPs listed in TCGA_immune_features_list will be considered for analysis.
 #'
-#' For synergy score calculations all features are normalized to be on [0,1] range. For details of synergy score and significance pvalue calculations see \code{find_a_synergy} function.
+#' For synergy score calculations all features are normalized to be on \code{[0,1]} range. For details of synergy score and significance pvalue calculations see \code{find_a_synergy} function.
 #'
 #' A specificity p.value is computed using random sampling with replacement from two null models, generated from one of the two genes against a set of genes randomly selected from the genome. Two P-values are calculated for the synergistic interaction of the pair against the two null models. The highest of the two P-values is used to assess the specificity of the interaction against the whole genome. The number of randomly selected genes in each null model is determined by N_iteration_specificity.
 #'
@@ -50,6 +50,10 @@
 #' @export
 
 im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, specificity, N_iteration_specificity, sensitivity, N_iteration_sensitivity, sample_list){
+
+  PATIENT_BARCODE <- Disease <- agent1 <- agent2 <- Immune_feature <- NULL
+  agent1_expression <- agent2_expression <- specificity_pvalue <- NULL
+  sensitivity_R <- i.sensitivity_R <- NULL
 
   df_syng_all <- data.frame(Disease=character(),
                             agent1=character(),
@@ -100,7 +104,7 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, specif
 
     disease <- cohort[cohortID]
     message("\nReading TCGA ",toupper(disease)," data\n")
-    df <-curatedTCGAData::curatedTCGAData( diseaseCode = disease,
+    df <-curatedTCGAData::curatedTCGAData( diseaseCode = disease,version = "1.1.38",
                                            assays = c("RNASeq2GeneNorm"), dry.run = F)@ExperimentList@listData[[1]]
 
     data_expression <- df@assays$data@listData[[1]]

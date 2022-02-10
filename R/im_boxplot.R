@@ -26,7 +26,7 @@
 
 im_boxplot <- function(onco_gene,icp_gene,data_expression,data_feature){
 
-
+  state <- NULL
   #Check for onco_gene and immune checkpoint expressions---------
   data_expression <- as.data.frame(data_expression)
   df_selected <- t(data_expression[rownames(data_expression) %in% c(onco_gene,icp_gene),])

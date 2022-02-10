@@ -2,7 +2,7 @@
 % Please edit documentation in R/calculate_syng_score.R
 \name{calculate_syng_score}
 \alias{calculate_syng_score}
-\title{Calculate four synergy scores given median and standard error of means of four groups}
+\title{Calculates a synergy score given median and standard error of means of four stratified groups}
 \usage{
 calculate_syng_score(
   m_LL,
@@ -40,7 +40,7 @@ Default is "max".}
 A numerical  scores
 }
 \description{
-Calculate four synergy scores given median and standard error of means of four groups
+Calculates a synergy score given median and standard error of means of four stratified groups
 }
 \details{
 Calculates a synergy score given median and standard error of means of four groups each representing different expression levels of two genes.

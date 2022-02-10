@@ -57,7 +57,7 @@ For data_expression sample formats see sample_mRNA_data.
 data_feature is formatted with samples/patients as rows and immune features as columns.
 For data_feature sample format see sample_immune_cell_fraction_data.
 
-For synergy score calculations all features are normalized to be on \link{0,1} range. For details of synergy score and significance pvalue calculations see \code{find_a_synergy} function.
+For synergy score calculations all features are normalized to be on \code{[0,1]} range. For details of synergy score and significance pvalue calculations see \code{find_a_synergy} function.
 
 A specificity p.value is computed using random sampling with replacement from two null models, generated from one of the two genes against a set of genes randomly selected from the genome. Two P-values are calculated for the synergistic interaction of the pair against the two null models. The highest of the two P-values is used to assess the specificity of the interaction against the whole genome. The number of randomly selected genes in each null model is determined by N_iteration_specificity.
 

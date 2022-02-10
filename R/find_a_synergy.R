@@ -1,4 +1,4 @@
-#' Finds a statistical synergistic score for a data frame containing values of an immune feature and stratified expression levels of two genes.
+#' Evalues synergies for a data frame containing values of an immune feature and stratified expression levels of two genes.
 
 #' @importFrom stats median mad
 #' @param fdata A numeric matrix with 3 columns: A numeric indicating value of an immune feature and two integers, each interpreted as a coded label for the expression level of a gene. Each row of fdata is a different sample or experiment.

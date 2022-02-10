@@ -35,7 +35,8 @@ The following functions accept user-curated expression data as input.
 
 \itemize{
 \item{\code{\link[imogimap]{im_netplot}}:}{ Creates and plot an igraph network from dataframe as outputed }
-\item{\code{\link[imogimap]{get_syng_score}}:}{ Calculates synergy score for a stratified data}
+\item{\code{\link[imogimap]{find_a_synergy}}:}{ Evalues synergies for a data frame containing values of an immune feature and stratified expression levels of two genes.}
+\item{\code{\link[imogimap]{calculate_syng_score}}:}{ Calculates a synergy score given median and standard error of means of four stratified groups}
 \item{\code{\link[imogimap]{get_angio_score}}:}{ Calculates angiogenesis score}
 \item{\code{\link[imogimap]{get_emt_score}}:}{ Calculates EMT score}
 \item{\code{\link[imogimap]{get_ifng_score}}:}{ Calculates IFNG score}

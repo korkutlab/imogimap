@@ -14,7 +14,7 @@ get_angio_score=function(pdf){
   missing_genes <- AG_gene_list[-which(AG_gene_list %in% rownames(pdf))]
   if(length(missing_genes)>0){
     warning(length(missing_genes)," missing Angiogenesis signature genes:  \n  ",
-      lapply(missing_EMT, function(x)paste0(x,"  ")),"\n Check AG_gene_list for
+      lapply(missing_genes, function(x)paste0(x,"  ")),"\n Check AG_gene_list for
       all signature genes.\n")
   }
 

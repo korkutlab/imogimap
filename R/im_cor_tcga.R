@@ -28,6 +28,8 @@
 
 im_cor_tcga<-function(onco_gene,icp_gene,cohort,sample_list){
 
+  rho <- PATIENT_BARCODE <- padj <- TMB <- gene <- ict <- pvalue <- NULL
+
   if(!missing(sample_list)){
     cohort <- cohort[1]
   }
@@ -37,7 +39,7 @@ im_cor_tcga<-function(onco_gene,icp_gene,cohort,sample_list){
   for(cohortID in 1:length(cohort)){
 
     # Read data -----------------------
-    df <-curatedTCGAData::curatedTCGAData( diseaseCode = cohort[cohortID],
+    df <-curatedTCGAData( diseaseCode = cohort[cohortID],version = "1.1.38",
       assays = c("RNASeq2GeneNorm"), dry.run = F)@ExperimentList@listData[[1]]
     df <- df@assays$data@listData[[1]]
     colnames(df)<-  substr(colnames(df), 1, 15)

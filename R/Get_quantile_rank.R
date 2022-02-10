@@ -11,7 +11,7 @@
 
 get_quantile_rank<-function(df){
 
-  if(min(df)==max(df)) return(NA)
+  if(min(df,na.rm=TRUE)==max(df,na.rm=TRUE)) return(NA)
 
   dfr <-apply(df,2,function(x){
     df_breaks<- quantile(x, na.rm=TRUE,probs=c(0,0.25,0.5,0.75,1))
@@ -30,15 +30,15 @@ get_quantile_rank<-function(df){
   })
   if(is.null(dfr)){
     lgenes <- names(dfr)[sapply(dfr, is.null)]
-    warning(length(lgenes)," column(s) with duplications in quantile values are removed.")
-    excluded_expressions<<-lapply(lgenes, function(x)paste0(x,"  "))
+    #warning(length(lgenes)," column(s) with duplications in quantile values are removed.")
+    #excluded_expressions<<-lapply(lgenes, function(x)paste0(x,"  "))
     return(dfr)
   }
 
   if(inherits(dfr, "list")){
     lgenes <- names(dfr)[sapply(dfr, is.null)]
-    warning(length(lgenes)," column(s) with duplications in quantile values are removed.")
-    excluded_expressions<<-lapply(lgenes, function(x)paste0(x,"  "))
+    #warning(length(lgenes)," column(s) with duplications in quantile values are removed.")
+    #excluded_expressions<<-lapply(lgenes, function(x)paste0(x,"  "))
     dfr <- as.data.frame(Filter(Negate(is.null), dfr))
   }
   rownames(dfr)<-rownames(df)

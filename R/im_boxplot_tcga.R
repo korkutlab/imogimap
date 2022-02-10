@@ -24,12 +24,15 @@
 #' @export
 
 im_boxplot_tcga<-function(onco_gene,icp_gene,cohort,Immune_phenotype,sample_list,logtrans){
-
+  
+  PATIENT_BARCODE <- NULL
+  state <- NULL
+  out <- NULL
   cohort <- tolower(cohort)
   results <- list()
 
   #Read data -----------------------
-  df <-curatedTCGAData::curatedTCGAData( diseaseCode = cohort,
+  df <-curatedTCGAData::curatedTCGAData( diseaseCode = cohort,version = "1.1.38",
                                          assays = c("RNASeq2GeneNorm"), dry.run = F)@ExperimentList@listData[[1]]
   df <- df@assays$data@listData[[1]]
   colnames(df)<-  substr(colnames(df), 1, 15)

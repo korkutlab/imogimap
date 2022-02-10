@@ -2,7 +2,7 @@
 % Please edit documentation in R/find_a_synergy.R
 \name{find_a_synergy}
 \alias{find_a_synergy}
-\title{Finds a statistical synergistic score for a data frame containing values of an immune feature and stratified expression levels of two genes.}
+\title{Evalues synergies for a data frame containing values of an immune feature and stratified expression levels of two genes.}
 \usage{
 find_a_synergy(fdata, method, oncogene1, oncogene2)
 }
@@ -19,7 +19,7 @@ find_a_synergy(fdata, method, oncogene1, oncogene2)
 A data frame containing: A numeric synergy score measuring synergistic impact of two genes on a feature, and two characters indicating whether expression or inhibition of each gene positively impacts feature. Returns NA if no synergistic interaction is found.
 }
 \description{
-Finds a statistical synergistic score for a data frame containing values of an immune feature and stratified expression levels of two genes.
+Evalues synergies for a data frame containing values of an immune feature and stratified expression levels of two genes.
 }
 \details{
 fdata is a numeric matrix with 3 columns: The first column contains the numeric value of a single immune feature. The second and third columns are any of the coded labels 1 or 4, representing low or high expression levels of two genes as outputted by get_quantile_rank. Column-names should be names of feature and two genes accordingly. For details of quantile stratification see get_quantile_rank.

@@ -1,0 +1,26 @@
+citHeader("To cite imogimap in publications use:")
+
+citEntry(
+  entry    = "Article",
+  title    = "Mapping the functional interactions at the tumor-immune checkpoint interface",
+  author   = c(as.person("Behnaz Bozorgui"),
+  as.person("Elisabeth K. Kong"),
+  as.person("Augustin Luna"),
+  as.person("Anil Korkut")),
+  journal  = "biorxiv",
+  year     = 2022,
+  url      = "https://doi.org/10.1101/2021.10.06.462889",
+  textVersion = paste(
+  "Bozorgui, B. et al. (2022). Mapping the functional interactions at the tumor-immune checkpoint interface,  https://doi.org/10.1101/2021.10.06.462889")
+)
+
+bibentry(bibtype = "Manual",
+title = "{imogimap}: Immuno-oncology gene interaction Maps ",
+author = c(as.person("Behnaz Bozorgui"),
+  as.person("Elisabeth K. Kong"),
+  as.person("Augustin Luna"),
+  as.person("Anil Korkut")),
+year = 2022,
+url = "https://github.com/korkutlab/Imogene")
+textVersion = paste(
+  "Bozorgui, B. et al. Immuno-oncology gene interaction Maps.  https://github.com/korkutlab/Imogimap")

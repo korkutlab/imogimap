@@ -31,7 +31,7 @@ As an example, let us explore TGFb cytokines combinatorial interactions with imm
  
 ```{r}
 my_onco <- c("TGFBR1")
-my_icp <- icp_gene_list
+my_icp <- c("TGFBR2")
 ```
 Then we define disease lists using any of the TCGA abbreviated  disease names as listed in  `TCGA_disease_list`:
 

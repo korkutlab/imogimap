@@ -1,4 +1,4 @@
-#'Calculate four synergy scores given median and standard error of means of four groups
+#'Calculates a synergy score given median and standard error of means of four stratified groups
 #' @param m_LL median in Low_Low expression group
 #' @param m_LH median in Low_High expression group
 #' @param m_HL median in High_Low expression group
