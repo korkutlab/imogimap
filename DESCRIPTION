@@ -29,5 +29,8 @@ Imports:
     magrittr
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    shinythemes,
+    bsplus,
+    markdown
 VignetteBuilder: knitr

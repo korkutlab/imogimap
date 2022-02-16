@@ -69,7 +69,7 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, specif
   #Check input parameters------------------------
 
 
-  if( missing( method ) ){
+  if(missing(method)){
     method <- "max"
   }else{
     method <- tolower(method)
@@ -104,7 +104,7 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, specif
 
     disease <- cohort[cohortID]
     message("\nReading TCGA ",toupper(disease)," data\n")
-    df <-curatedTCGAData::curatedTCGAData( diseaseCode = disease,version = "1.1.38",
+    df <- curatedTCGAData::curatedTCGAData( diseaseCode = disease, version = "1.1.38",
                                            assays = c("RNASeq2GeneNorm"), dry.run = F)@ExperimentList@listData[[1]]
 
     data_expression <- df@assays$data@listData[[1]]

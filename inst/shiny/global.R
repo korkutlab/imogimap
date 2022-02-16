@@ -1,0 +1,29 @@
+seed <- 123
+
+tcgaTypes <- sort(c(
+  "Adrenocortical Carcinoma"="ACC",
+  "Bladder Urothelial Carcinoma"="BLCA",
+  "Breast Invasive Carcinoma"="BRCA",
+  "Cervical Squamous Cell Carcinoma"="CESC",
+  "Cholangiocarcinoma"="CHOL",
+  "Colon Adenocarcinoma"="COAD",
+  "Diffuse Large B-Cell Lymphoma"="DLBC",
+  "Esophageal Adenocarcinoma"="ESCA",
+  "Glioblastoma Multiforme"="GBM", 
+  "Head and Neck Squamous Cell Carcinoma"="HNSC",
+  "Kidney Renal Clear Cell Carcinoma"="KIRC",
+  "Acute Myeloid Leukemia"="LAML",
+  "Low-Grade Glioma"="LGG",
+  "Liver Hepatocellular Carcinoma"="LIHC",
+  "Lung adenocarcinoma"="LUAD",   
+  "Lung squamous cell"="LUSC", 
+  "Mesothelioma"="MESO",
+  "Ovarian"="OV",
+  "Pancreatic Adenocarcinoma"="PAAD",
+  "Prostate Adenocarcinoma"="PRAD",
+  "Rectal Adenocarcinoma"="READ",
+  "Cutaneous Melanoma"="SKCM",
+  "Stomach Adenocarcinoma"="STAD",
+  "Thyroid Cancer"="THCA",
+  "Endometrial Carcinoma"="UCEC"
+))
