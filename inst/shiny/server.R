@@ -32,7 +32,7 @@ function(input, output, session) {
       sensitivity = input$sensitivity,
       specificity = input$specificity
     )
-    #tmp <- "BAD"
+
     cat("COLS: ", paste(colnames(tmp), collapse=","), "\n")
     tmp <- tmp[order(-tmp$Synergy_score),]
     
