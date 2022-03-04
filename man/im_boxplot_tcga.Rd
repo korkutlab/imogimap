@@ -10,7 +10,7 @@ im_boxplot_tcga(
   cohort,
   Immune_phenotype,
   sample_list,
-  logtrans
+  logtrans = FALSE
 )
 }
 \arguments{
@@ -27,7 +27,7 @@ im_boxplot_tcga(
 \item{logtrans}{An optional logical indicating if y axis should be displayed in logarithmic scale. Default is FALSE.}
 }
 \value{
-a list of multiple dataframes of correlation coefficients and p.values
+a list of multiple dataframes of correlation coefficients and p.values FIXME (EVEN BEFORE MY EDITS IT WAS A GGPLOT NOT THIS)
 }
 \description{
 Generates a stratified boxplot for immune feature values based of a two genes.

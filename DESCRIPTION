@@ -32,5 +32,6 @@ Suggests:
     rmarkdown,
     shinythemes,
     bsplus,
-    markdown
+    markdown,
+    waiter
 VignetteBuilder: knitr

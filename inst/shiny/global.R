@@ -1,5 +1,3 @@
-seed <- 123
-
 tcgaTypes <- sort(c(
   "Adrenocortical Carcinoma"="ACC",
   "Bladder Urothelial Carcinoma"="BLCA",
@@ -27,3 +25,4 @@ tcgaTypes <- sort(c(
   "Thyroid Cancer"="THCA",
   "Endometrial Carcinoma"="UCEC"
 ))
+tcgaTypes <- tolower(tcgaTypes)

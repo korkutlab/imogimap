@@ -49,7 +49,7 @@
 #'
 #' @export
 
-im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, specificity, N_iteration_specificity, sensitivity, N_iteration_sensitivity, sample_list){
+im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, specificity, N_iteration_specificity=1000, sensitivity, N_iteration_sensitivity=1000, sample_list){
 
   PATIENT_BARCODE <- Disease <- agent1 <- agent2 <- Immune_feature <- NULL
   agent1_expression <- agent2_expression <- specificity_pvalue <- NULL
@@ -85,8 +85,6 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, specif
 
 
   #Loop over diseases-----------------------------
-
-
   for(cohortID in 1:length(cohort)){
 
     df_syng <- data.frame(Disease=character(),
@@ -103,8 +101,9 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, specif
     #Get expression data----------------------------
 
     disease <- cohort[cohortID]
-    message("\nReading TCGA ",toupper(disease)," data\n")
-    df <- curatedTCGAData::curatedTCGAData( diseaseCode = disease, version = "1.1.38",
+    message("\nReading TCGA ", toupper(disease), " data\n")
+    
+    df <- curatedTCGAData::curatedTCGAData(diseaseCode = disease, version = "1.1.38",
                                            assays = c("RNASeq2GeneNorm"), dry.run = F)@ExperimentList@listData[[1]]
 
     data_expression <- df@assays$data@listData[[1]]
@@ -137,7 +136,6 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, specif
     onco_gene_sub <- colnames(df_selected)
 
     #Check for immune checkpoint expressions--------
-
     if(missing(icp_gene)){
       icp_gene <- icp_gene_list
       icp_gene[1] <- "C10orf54"
@@ -206,7 +204,7 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, specif
         }
         select_iap <- as.data.frame(select_iap)
         data_feature <- select_iap
-      }else{
+      } else {
         data_feature <- get_features(data_expression)
         data_feature <- data_feature[,which(colnames(data_feature) %in% c("Tumor_Sample_ID",select_iap)),drop=F]
         rownames(data_feature)<- data_feature$Tumor_Sample_ID
@@ -219,7 +217,7 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, specif
         data_cell <- as.matrix(data_cell[,-1])
         data_cell <- data_cell[,colSums(is.na(data_cell))<nrow(data_cell),drop=F]
       }
-    }else{
+    } else {
       select_iap <- TCGA_immune_features_list
       data_feature <- get_features(data_expression)
       rownames(data_feature)<- data_feature$Tumor_Sample_ID
@@ -234,7 +232,7 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, specif
 
     #Build unique permutations
 
-    all_genes <- unique(c(onco_gene_sub,icp_gene_sub))
+    all_genes <- unique(c(onco_gene_sub, icp_gene_sub))
     all_perms <- t(combn(all_genes,m = 2))
     N_perm <- as.numeric(nrow(all_perms))
     N_genes <- as.numeric(length(all_genes))
@@ -244,7 +242,7 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, specif
 
     #Calculate synergy scores for features ---------
 
-    message("Calculating synerrgy scores ...\n")
+    message("Calculating synergy scores ...\n")
     if(N_feature>0){
       pb <- txtProgressBar(min = 0, max = N_perm, char="-",style = 3)
 
@@ -338,7 +336,7 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, specif
         setTxtProgressBar(pb, pair_ID)
       }
     }
-    df_syng <- as.data.table(df_syng)
+    df_syng <- data.table::as.data.table(df_syng)
     setkey(df_syng, Disease, agent1,agent2,Immune_feature)
 
     message("\nSynergy calculation completed!\n ")
@@ -357,17 +355,15 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, specif
 
       if(nrow(df_syng_complete)>0){
 
-        all_genes <- unique( c( df_syng_complete$agent1,df_syng_complete$agent2))
-        N_genes <- as.numeric( length( all_genes))
+        all_genes <- unique( c(df_syng_complete$agent1, df_syng_complete$agent2))
+        N_genes <- as.numeric( length(all_genes))
         sub_feature_list <- unique(df_syng_complete[
           df_syng_complete$Immune_feature %in% colnames( data_feature),]$Immune_feature)
         N_feature <- as.numeric( length( sub_feature_list))
         sub_imcell_feature_list <- unique(df_syng_complete[
           df_syng_complete$Immune_feature %in% colnames( TCGA_IMCell_fraction ),]$Immune_feature)
         N_imcell_feature <-as.numeric( length( sub_imcell_feature_list))
-        if(missing(N_iteration_specificity)){
-          N_iteration_specificity <- 1000
-        }
+
 
         message("  Building bootstrapping distribution from ", N_iteration_specificity ," genes")
 
@@ -389,7 +385,7 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, specif
 
         tmp <- as.data.frame(df_bank)
         tmp$PATIENT_BARCODE <- substr(rownames(tmp), 1, 12)
-        tmp <- as.data.table(tmp)
+        tmp <- data.table::as.data.table(tmp)
         tmp <- tmp[,lapply(.SD,median),by=PATIENT_BARCODE]
         tmp<- as.data.frame(tmp)
         df_bank2 <- as.matrix(tmp[,-which(colnames(tmp)=="PATIENT_BARCODE")])
@@ -565,9 +561,6 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, specif
       sensitivity <- FALSE
     }
     if(sensitivity){
-      if(missing(N_iteration_sensitivity)){
-        N_iteration_sensitivity <- 1000
-      }
       message("\nCalculating robustness R. Iterating ", N_iteration_sensitivity, " times:")
 
 
@@ -611,7 +604,7 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, specif
 
           tmp <- as.data.frame(df_sub)
           tmp$PATIENT_BARCODE <- substr(rownames(tmp), 1, 12)
-          tmp <- as.data.table(tmp)
+          tmp <- data.table::as.data.table(tmp)
           tmp <- tmp[,lapply(.SD,median),by=PATIENT_BARCODE]
           tmp<- as.data.frame(tmp)
           df_sub2 <- as.matrix(tmp[,-which(colnames(tmp)=="PATIENT_BARCODE")])

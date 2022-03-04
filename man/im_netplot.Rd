@@ -4,7 +4,7 @@
 \alias{im_netplot}
 \title{Creates and plot an igraph network from dataframe}
 \usage{
-im_netplot(df, icp_gene, cohort, Immune_phenotype, cutoff, seed)
+im_netplot(df, icp_gene, cohort, Immune_phenotype, cutoff, seed = 1)
 }
 \arguments{
 \item{df}{A dataframe as outputted by \code{\link{im_syng_tcga}} or \code{\link[imogimap]{im_syng}}}
@@ -17,7 +17,7 @@ im_netplot(df, icp_gene, cohort, Immune_phenotype, cutoff, seed)
 
 \item{cutoff}{A numeric indicating quantile cut-off for absolute values of synergy scores.}
 
-\item{seed}{A single value, interpreted as an integer, or NULL (see set.seed for details).}
+\item{seed}{A single value, interpreted as an integer; Default: 1 (see set.seed for details).}
 }
 \value{
 A plotted igraph object showing network of synergistic (red) and antagonistic (blue) associations.
@@ -33,8 +33,9 @@ Colored groups are constructed based on edge-between-ness membership. For more i
 seed is an integer that is the starting point from which random numbers are generated in igraph. Seed value is used for the reproducibility of plot layout. different seed numbers will generate different
 }
 \examples{
-df <- im_syng_tcga(onco_gene = icp_gene_list,icp_gene = icp_gene_list,cohort = "acc")
-im_netplot(df, Immune_phenotype = "EMTscore", seed = 1234)
+df <- im_syng_tcga(onco_gene = icp_gene_list[1:3], icp_gene = icp_gene_list[1:3], cohort = "acc")
+im_netplot(df, Immune_phenotype = "EMTscore")
+
 }
 \seealso{
 \link{igraph}

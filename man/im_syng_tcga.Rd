@@ -11,9 +11,9 @@ im_syng_tcga(
   select_iap,
   method,
   specificity,
-  N_iteration_specificity,
+  N_iteration_specificity = 1000,
   sensitivity,
-  N_iteration_sensitivity,
+  N_iteration_sensitivity = 1000,
   sample_list
 )
 }

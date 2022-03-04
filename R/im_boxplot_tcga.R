@@ -1,9 +1,9 @@
 #' Generates a stratified boxplot for immune feature values based of a two genes.
+#' 
 #' @importFrom dplyr across mutate group_by everything
 #' @import curatedTCGAData
-#' @importFrom ggplot2 aes coord_trans element_text geom_boxplot geom_jitter ggplot ggplot_build labs  position_jitter scale_color_manual scale_x_discrete theme theme_bw
-#' @importFrom ggpubr stat_compare_means
 #' @importFrom stats median
+#' 
 #' @param onco_gene A character indicating a single onco_gene Hugo symbol.
 #' @param icp_gene A character indicating a single immune checkpoint Hugo symbol.
 #' @param cohort a single TCGA disease
@@ -17,13 +17,12 @@
 #'
 #' Pvalues are calculated using Wilcoxon test.
 #'
-#' @return a list of multiple dataframes of correlation coefficients and p.values
+#' @return a list of multiple dataframes of correlation coefficients and p.values FIXME (EVEN BEFORE MY EDITS IT WAS A GGPLOT NOT THIS)
 #' @examples im_boxplot_tcga(onco_gene = "BRAF", icp_gene="CD274",
 #' cohort="acc", Immune_phenotype="Mast.Cells.Activated",logtrans=TRUE)
 #' @seealso get_quantile_rank
 #' @export
-
-im_boxplot_tcga<-function(onco_gene,icp_gene,cohort,Immune_phenotype,sample_list,logtrans){
+im_boxplot_tcga<-function(onco_gene,icp_gene,cohort,Immune_phenotype,sample_list,logtrans=FALSE){
   
   PATIENT_BARCODE <- NULL
   state <- NULL
@@ -116,6 +115,7 @@ im_boxplot_tcga<-function(onco_gene,icp_gene,cohort,Immune_phenotype,sample_list
     effect_onco <- my_score$agent1_expression
     effect_icp <- my_score$agent2_expression
   }
+  
   #Flip labels if inhibition of genes positively impact feature
   if(effect_onco=="Inhibited"){
     df_feature[df_feature[,3]==4,3] <- 0
@@ -158,61 +158,9 @@ im_boxplot_tcga<-function(onco_gene,icp_gene,cohort,Immune_phenotype,sample_list
       }
     }
   }
-  #Plot-------------------------------------------
-  if(missing(logtrans)){
-    logtrans<-FALSE
-  }
-  if(logtrans){
-    transvalue <- "log2"
-    df_feature[df_feature[,2]==0,2]<-NA
-    plot_min <- min(df_feature[,2],na.rm=TRUE)
-    df_feature[is.na(df_feature[,2]),2] <- plot_min
-  }else{
-    transvalue <- "identity"
-  }
 
-  p<-ggplot(df_feature, aes(x=state,y=get(Immune_phenotype),col="grey")) +
-    labs(title="", x="", y=Immune_phenotype)+
-    geom_boxplot(width=0.5, show.legend = T,
-                 outlier.size = 1.0, lwd=0.5,
-                 outlier.colour = "red",outlier.shape = 21)+
-    geom_jitter(position = position_jitter(width=0.1), cex=1, pch=19, alpha=1)+
-    theme( axis.text.x=element_text(size=10),
-           axis.text.y=element_text(size=10,angle = 90),
-           axis.title =element_text(size=10),legend.position ="top")+
-    scale_x_discrete(labels = mylabels)+
-    stat_compare_means(comparisons =
-                         list( c("1", "2"),c("1", "3"), c("3", "4"), c("2", "4")),
-                       size=5,method = "wilcox.test")+
-    theme(legend.text=element_text(size=10))+
-    theme_bw()+
-    coord_trans(y=transvalue)
-
-  gg<-ggplot_build(p)
-  xx<-gg$data[[1]][c("group","outliers")]
-  df_feature2<-merge(df_feature,xx,by.x="state",by.y="group")
-  df_feature2$out<-apply(df_feature2,1,function(x) x[Immune_phenotype] %in% x$outliers)
-
-
-  p <- ggplot(df_feature2, aes(x=state,y=get(Immune_phenotype))) +
-    labs(title="", x="", y=Immune_phenotype)+
-    geom_boxplot(width=0.5, show.legend = T, lwd=1,
-                 outlier.shape = NA,border="grey")+
-    geom_jitter(aes(col=out) ,position = position_jitter(width=0.1),
-                cex=2, pch=19, alpha=1)+
-    scale_color_manual(values=c("black","red"),guide="none")+
-    scale_x_discrete(labels =  mylabels)+
-    theme_bw()+
-    stat_compare_means(comparisons =
-                         list( c("1", "4"),c("2", "4"), c("3", "4")),
-                       size=10,method = "wilcox.test",
-                       bracket.size=1,vjust=1.5)+
-    theme( axis.text.x=element_text(size=25),
-           axis.text.y=element_text(size=25,angle = 90),
-           axis.title =element_text(size=25),legend.position ="top")+
-    theme(legend.text=element_text(size=25))+
-    coord_trans(y=transvalue)
-  return(p)
+  results <- list(df_feature=df_feature, logtrans=logtrans, Immune_phenotype=Immune_phenotype, mylabels=mylabels)
+  return(results)
 }
 
 
