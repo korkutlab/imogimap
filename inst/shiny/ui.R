@@ -13,7 +13,7 @@ pkg_version <- packageVersion(pkg_name) %>% as.character
 site_name <- HTML(paste0("imogimap ", tags$sub(pkg_version)))
 
 tmp_onco_genes <- paste("TGFB1", collapse="\n")
-tmp_icp_genes <- paste(c("CD27", "CD276"), collapse="\n") #icp_gene_list
+tmp_icp_genes <- paste(icp_gene_list, collapse="\n") #icp_gene_list
 
 # navbarPage() will not work here with combination of waiter and bsplus
 fluidPage(#site_name,
@@ -36,9 +36,9 @@ fluidPage(#site_name,
                                    
                                    textAreaInput("onco_genes", "Input Genes (One Gene Per Line)", tmp_onco_genes, width = "480px"),
                                    textAreaInput("immune_genes", "Immune Checkpoint (ICP) Genes (One Gene Per Line; Curated List of 29 ICP Genes Provided Below as Default)", tmp_icp_genes, width = "480px"),
-                                   
+                                   selectInput("immune_phenotype", "Immune Phenotype", TCGA_immune_features_list),
                                    selectInput("cohort", "Cohort", tcgaTypes, selected="luad"),
-                                   selectInput("method", "Method", c("independence", "max")),
+                                   selectInput("method", "Method", c( "max","independence")),
                                    
                                    checkboxInput("sensitivity", "Sensitivity", FALSE) %>%
                                      shinyInput_label_embed(
@@ -57,8 +57,6 @@ fluidPage(#site_name,
                                      ),
                                    
                                    h4("Plot Parameters"),
-                                   
-                                   selectInput("immune_phenotype", "Immune Phenotype", c("IFNGscore", "EMTscore", "Leukocyte_fraction", "AGscore", "TMB_Silent_per_Mb", "TMB_Non.silent_per_Mb", "FIXME_DOCUMENT THIS LIST BETTER")),
                                    
                                    #textInput("plot_onco_gene", "Plot Gene", placeholder="HGNC Symbols (e.g., TP53)"),
                                    #textInput("plot_icp_gene", "Plot Immune Checkpoint Gene", placeholder="HGNC Symbols (e.g., TP53)"),

@@ -6,7 +6,7 @@ Authors@R:
            family = "Bozorgui",
            role = c("aut", "cre"),
            email = "b.bozorgui@gmail.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
+           comment = c(ORCID = "0000-0003-0557-1681"))
 Description: Imogimap (Immuno-oncology gene interaction maps)automates searches for combinatorial associations and likely functional interactions at the tumor-immune interface to identify the mechanisms that modulate immune-associated phenotypes (e.g., interferon responses, immune infiltration, enrichment of specific immune cell types). The output of ImogiMap is a catalogue of network models involving tumor associated processes (TAP) and immune checkpoints (ICPs) that synergistically co-associate with immune phenotypes (IAPs).
 License: MIT + file LICENSE
 Encoding: UTF-8

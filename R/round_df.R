@@ -8,8 +8,7 @@
 #' @examples
 #' x <- matrix(runif(10), nrow=10, ncol=10)
 #' x <- as.data.frame(x)
-#' y <- roundDf(x, 2)
-#''
+#' y <- round_df(x, 2)
 #' @export
 round_df <- function(df, digits=5) {
   nums <- vapply(df, is.numeric, FUN.VALUE=logical(1))

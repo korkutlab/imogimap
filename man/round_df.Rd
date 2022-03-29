@@ -17,3 +17,8 @@ a data.frame
 \description{
 Round the numeric columns in a data.frame
 }
+\examples{
+x <- matrix(runif(10), nrow=10, ncol=10)
+x <- as.data.frame(x)
+y <- round_df(x, 2)
+}

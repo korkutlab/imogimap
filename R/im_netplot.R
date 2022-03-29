@@ -68,7 +68,7 @@ im_netplot<- function(df, icp_gene, cohort, Immune_phenotype, cutoff, seed=1) {
   g <- igraph::set_edge_attr(g, "Synergy_score", index=E(g), df[, "Synergy_score"])
 
   E(g)$color <- ifelse(E(g)$Synergy_sign=="+","red","blue")
-  E(g)$color <- alpha(E(g)$color,0.5)
+  E(g)$color <- alpha(E(g)$color,abs(E(g)$Synergy_score))
 
   V(g)$color <- ifelse(substr(names(V(g)),1,nchar(names(V(g)))-1) %in% icp_gene,"grey",
                        ifelse(substr(names(V(g)),nchar(names(V(g))),nchar(names(V(g))))=="+","darkorange1",
@@ -87,7 +87,7 @@ im_netplot<- function(df, icp_gene, cohort, Immune_phenotype, cutoff, seed=1) {
            vertex.label.font = 1,
            vertex.label.color = "black",
            vertex.label.cex=1.5,
-           vertex.label.dist=1.5,
+           vertex.label.dist=1,
            #edge.color = edge_color,
            edge.width = 5*(E(g)$Synergy_score-ming)/(max(E(g)$Synergy_score)-ming)+2,
            edge.curved=0.3)
