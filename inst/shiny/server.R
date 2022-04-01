@@ -36,8 +36,11 @@ function(input, output, session) {
       cohort = input$cohort,
       select_iap = input$immune_phenotype,
       method = input$method,
+      ndatamin=4,
       sensitivity = input$sensitivity,
-      specificity = input$specificity
+      specificity = input$specificity,
+      N_iteration_sensitivity = input$N_iteration_sensitivity,
+      N_iteration_specificity = input$N_iteration_specificity
     )
  
     cat("COLS: ", paste(colnames(tmp), collapse=","), "\n")
@@ -52,7 +55,8 @@ function(input, output, session) {
   output$results_table <- DT::renderDataTable({
     tmp <- my_syng_df() %>% round_df(., 3)
     tmp <- tmp[,-1]
-    colnames(tmp) <- c("Gene1", "Gene2", "IAP", "Synergy", "Gene1Expr", "Gene2Expr", "WilcoxPvalue",
+    colnames(tmp) <- c("Gene1", "Gene2", "IAP", "Synergy", 
+                       "Gene1Expr", "Gene2Expr", "WilcoxPvalue",
                        "SpecificityPvalue","SensitivityR")
     
     cat("COLS: ", paste(colnames(tmp), collapse=","), "\n")
@@ -71,7 +75,7 @@ function(input, output, session) {
   
   output$netplot <- renderPlot({
     cat("DEBUG: im_netplot started\n")
-    
+     
     tmp_results <- my_syng_df()
     tmp_results <- subset(tmp_results,!is.na(Synergy_score))
     tmp_results <- subset(tmp_results, !(Synergy_score==0))

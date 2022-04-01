@@ -39,6 +39,7 @@ fluidPage(#site_name,
                                    selectInput("immune_phenotype", "Immune Phenotype", TCGA_immune_features_list),
                                    selectInput("cohort", "Cohort", tcgaTypes, selected="luad"),
                                    selectInput("method", "Method", c( "max","independence")),
+                                  
                                    
                                    checkboxInput("sensitivity", "Sensitivity", FALSE) %>%
                                      shinyInput_label_embed(
@@ -47,6 +48,11 @@ fluidPage(#site_name,
                                            title = "Sensitivity", content = "Conduct sensitivity analysis?", placement = "right"
                                          )
                                      ),
+                                   conditionalPanel(
+                                     condition = "input.sensitivity == true",
+                                     numericInput("N_iteration_sensitivity","Number of iterations",
+                                                  10,min = 10,step=10)
+                                   ),
                                    
                                    checkboxInput("specificity", "Specificity", FALSE) %>%
                                      shinyInput_label_embed(
@@ -55,7 +61,11 @@ fluidPage(#site_name,
                                            title = "Specificity", content = "Conduct specificity analysis?", placement = "right"
                                          )
                                      ),
-                                   
+                                   conditionalPanel(
+                                     condition = "input.specificity == true",
+                                     numericInput("N_iteration_specificity","Number of iterations",
+                                                  10,min = 10,step=10)
+                                   ),
                                    h4("Plot Parameters"),
                                    
                                    #textInput("plot_onco_gene", "Plot Gene", placeholder="HGNC Symbols (e.g., TP53)"),

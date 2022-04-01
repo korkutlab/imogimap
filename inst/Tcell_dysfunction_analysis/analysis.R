@@ -30,8 +30,8 @@ my_scores <- im_syng_tcga( onco_gene=df_TCDF_genes$Gene,
                            select_iap = "IFNGscore",
                            specificity = F,
                            sensitivity = F,
-                           N_iteration_specificity = 1000,
-                           N_iteration_sensitivity = 1000)
+                           N_iteration_specificity = 10,
+                           N_iteration_sensitivity = 10)
 
 my_scores <- my_scores[-which(is.na(my_scores$Synergy_score)),]
 

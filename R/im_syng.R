@@ -174,7 +174,7 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, add_features,
           dft2 <- merge(data_feature[ , c(1 , im_ID)] , dft , by="Tumor_Sample_ID")
           dft2 <- dft2[complete.cases(dft2),]
           dft2 <- dft2[,c(2,3,4)]
-          dfts <- find_a_synergy(dft2,method = method)
+          dfts <- find_a_synergy(dft2,method = method,ndatamin = ndatamin)
           df_helper <- dplyr::bind_rows(df_helper , dfts)
         }
       }else{
@@ -288,7 +288,7 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, add_features,
               dft <- dft[dft[,3] %in% c(1,4),,drop=F]
               if(nrow(dft)>0){
                 syng_dist_t[k-2] <- find_a_synergy(fdata = dft,
-                                                   method = method,
+                                                   method = method,ndatamin = ndatamin,
                                                    oncogene1 = gene_effect)$Synergy_score
               }
             }
@@ -401,7 +401,7 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, add_features,
 
           if(nrow(dft)>0){
             dfts <- find_a_synergy(fdata = dft,
-                                   method = method,
+                                   method = method,ndatamin = ndatamin,
                                    oncogene1 = effect1,
                                    oncogene2 = effect2)$Synergy_score
           }else{

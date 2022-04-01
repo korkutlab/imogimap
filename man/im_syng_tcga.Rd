@@ -10,6 +10,7 @@ im_syng_tcga(
   cohort,
   select_iap,
   method,
+  ndatamin = 8,
   specificity,
   N_iteration_specificity = 1000,
   sensitivity,
@@ -28,6 +29,8 @@ im_syng_tcga(
 
 \item{method}{A character string indicating which synergy score to be used. one of "max" or "independence".
 Default is "max".}
+
+\item{ndatamin}{minimum number of samples. Synergy score calculation will be skipped for matrices with number of rows less than ndatamin}
 
 \item{specificity}{An optional logical indicating if specificity analysis should be done. Default is FALSE.}
 
@@ -60,7 +63,7 @@ Sensitivity (Robustness) score defined as normalized root mean square deviation 
 All barcodes in sample_list must be 15 character long and belong to the same cohort. When sample_list is provided, cohort should be the disease cohort that they belong to, otherwise only the first element of the cohort list will be used.
 }
 \examples{
-im_syng_tcga(onco_gene=c("TGFB1","SERPINB9"), cohort=c("ucec","skcm"))
+im_syng_tcga(onco_gene=c("TGFB1","SERPINB9"), cohort=c("ucec"))
 
 }
 \keyword{Synergy}

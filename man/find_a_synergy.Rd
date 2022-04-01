@@ -4,7 +4,7 @@
 \alias{find_a_synergy}
 \title{Evalues synergies for a data frame containing values of an immune feature and stratified expression levels of two genes.}
 \usage{
-find_a_synergy(fdata, method, oncogene1, oncogene2)
+find_a_synergy(fdata, method, oncogene1, oncogene2, ndatamin)
 }
 \arguments{
 \item{fdata}{A numeric matrix with 3 columns: A numeric indicating value of an immune feature and two integers, each interpreted as a coded label for the expression level of a gene. Each row of fdata is a different sample or experiment.}
@@ -14,6 +14,8 @@ find_a_synergy(fdata, method, oncogene1, oncogene2)
 \item{oncogene1}{An optional factor indicating assumed expression of gene1 in relation to IAP. One of "Expressed","Inhibited",or NA. Default is NA}
 
 \item{oncogene2}{An optional factor indicating assumed expression of  gene2. One of 1,-1,or NA. Default is NA}
+
+\item{ndatamin}{minimum number of samples. Synergy score calculation will be skipped for matrices with number of rows less than ndatamin}
 }
 \value{
 A data frame containing: A numeric synergy score measuring synergistic impact of two genes on a feature, and two characters indicating whether expression or inhibition of each gene positively impacts feature. Returns NA if no synergistic interaction is found.
@@ -39,7 +41,7 @@ dft <- TCGA_Leukocyte_fraction$Leukocyte_fraction
 mydata<- as.matrix(cbind(feature=dft,
 gene1=sample(c(1,4),length(dft),replace = TRUE),
 gene2=sample(c(1,4),length(dft),replace = TRUE)))
-find_a_synergy(fdata=mydata,method="max")
+find_a_synergy(fdata=mydata,method="max",ndatamin=8)
 
 }
 \seealso{

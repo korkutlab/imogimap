@@ -107,7 +107,7 @@ im_boxplot_tcga<-function(onco_gene,icp_gene,cohort,Immune_phenotype,sample_list
   df_feature <- df_feature[df_feature[,4] %in% c(1,4),]
 
   #Find if expression or inhibition of genes positively impact feature
-  my_score <- find_a_synergy(df_feature[,-1],method = "max")
+  my_score <- find_a_synergy(df_feature[,-1],method = "max",ndatamin=8)
   if(is.na(my_score$Synergy_score)){
     effect_onco <- "Expressed"
     effect_icp <- "Expressed"

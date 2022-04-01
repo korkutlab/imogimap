@@ -5,6 +5,7 @@
 #' @param method a character string indicating which synergy score method to be used. one of "max" or "independence". Default is "max".
 #' @param oncogene1 An optional factor indicating assumed expression of gene1 in relation to IAP. One of "Expressed","Inhibited",or NA. Default is NA
 #' @param oncogene2 An optional factor indicating assumed expression of  gene2. One of 1,-1,or NA. Default is NA
+#' @param ndatamin minimum number of samples. Synergy score calculation will be skipped for matrices with number of rows less than ndatamin
 #' @keywords synergy scoring
 #' @return A data frame containing: A numeric synergy score measuring synergistic impact of two genes on a feature, and two characters indicating whether expression or inhibition of each gene positively impacts feature. Returns NA if no synergistic interaction is found.
 #' @details
@@ -28,14 +29,14 @@
 #' mydata<- as.matrix(cbind(feature=dft,
 #' gene1=sample(c(1,4),length(dft),replace = TRUE),
 #' gene2=sample(c(1,4),length(dft),replace = TRUE)))
-#' find_a_synergy(fdata=mydata,method="max")
+#' find_a_synergy(fdata=mydata,method="max",ndatamin=8)
 #'
 #' @seealso [get_quantile_rank()]
 #' @export
 #'
-find_a_synergy=function(fdata,method,oncogene1,oncogene2){
+find_a_synergy=function(fdata,method,oncogene1,oncogene2,ndatamin){
 
-  if(nrow(fdata)<2){
+  if(nrow(fdata)<ndatamin){
     sscoreij <- data.frame(agent1=colnames(fdata)[2],
                            agent2=colnames(fdata)[3],
                            Immune_feature=colnames(fdata)[1],
@@ -56,7 +57,7 @@ find_a_synergy=function(fdata,method,oncogene1,oncogene2){
     n3 <- length(dft_HL)
     n4 <- length(dft_HH)
 
-    if(n1<1 || n2<1 || n3<1 || n4<1){
+    if(n1<2 || n2<2 || n3<2 || n4<2){
       CS <- NA
       agent1_expression <- NA
       agent2_expression <- NA
