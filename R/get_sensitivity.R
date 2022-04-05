@@ -6,6 +6,7 @@
 #'@param ndatamin minimum number of samples. Synergy score calculation will be skipped for matrices with number of rows less than ndatamin
 #' @param N_iteration_sensitivity Number of iterations for random sampling for sensitivity analysis.
 #' Default is 1000.
+#' @param sample_list An optional character vector of TCGA samples barcodes indicating a subset of samples within a cohort.
 #' @keywords specificity, pvalue ,bootstrapping
 #' @return Specificty pvalues for each row of dataframe
 #' @description
@@ -13,6 +14,7 @@
 #' @details
 #'A specificity p.value is computed using random sampling with replacement from two null models, generated from one of the two genes against a set of genes randomly selected from the genome. Two P-values are calculated for the synergistic interaction of the pair against the two null models. The highest of the two P-values is used to assess the specificity of the interaction against the whole genome. The number of randomly selected genes in each null model is determined by N_iteration_specificity.
 #'
+#'All barcodes in sample_list must be 15 character long and belong to the same cohort. When sample_list is provided, cohort should be the disease cohort that they belong to, otherwise only the first element of the cohort list will be used.
 #'
 #' @examples 
 #' df <- im_syng_tcga(onco_gene=c("TGFB1","SERPINB9"), cohort=c("ucec"),specificity = F)
@@ -27,8 +29,11 @@
 #'
 #' @export
 
-get_sensitivity <- function(df_syng,method='max',ndatamin=8,N_iteration_sensitivity=10000){
+get_sensitivity <- function(df_syng,method='max',ndatamin=8,N_iteration_sensitivity=10000,sample_list){
   
+  PATIENT_BARCODE <- Disease <- agent1 <- agent2 <- Immune_feature <- NULL
+  agent1_expression <- agent2_expression <- NULL
+  sensitivity_R <- i.sensitivity_R <- NULL
   
   
   if(missing(method)){
@@ -46,6 +51,9 @@ get_sensitivity <- function(df_syng,method='max',ndatamin=8,N_iteration_sensitiv
                                 "Immune_feature","Synergy_score",
                                 "agent1_expression","agent2_expression")
     cohort <- unique(df_syng$Disease)
+    df_syng[df_syng=="NCR3LG1"]<-"DKFZp686O24166"
+    df_syng[df_syng=="VSIR"]<-"C10orf54"
+    
     df_syng <- data.table::as.data.table(df_syng)
     setkey(df_syng, Disease, agent1,agent2,Immune_feature)
     
@@ -65,11 +73,19 @@ get_sensitivity <- function(df_syng,method='max',ndatamin=8,N_iteration_sensitiv
       
       data_expression <- df@assays$data@listData[[1]]
       colnames(data_expression)<-  substr(colnames(data_expression), 1, 15)
+      if(!missing(sample_list)){
+        data_expression<-data_expression[,sample_list ]
+        if(ncol(data_expression)==0){
+          stop("ERROR: barcodes not found.")
+        }
+      }
       
       message("Quantile ranking Gene expressions...")
       
       #Check for co-target expressions----------------
       onco_gene <- unique(c(df_syng_complete$agent1,df_syng_complete$agent2))
+      onco_gene[onco_gene=="VSIR"]<- "C10orf54"
+      onco_gene[onco_gene=="NCR3LG1"]<- "DKFZp686O24166"
       
       if(length(onco_gene)==1){
         df_selected <- as.data.frame((data_expression[rownames(data_expression ) %in% onco_gene,]))
@@ -85,13 +101,11 @@ get_sensitivity <- function(df_syng,method='max',ndatamin=8,N_iteration_sensitiv
         warning("All onco_gene's have zero expression in ", disease )
         next
       }
-      
-      
-      
+    
       #Construct quantile ranking matrices for each sample--------
-      
+  
       df_selected <- scale(log2(df_selected+1),center = T,scale = T)
-      
+  
       df_comb <- df_selected
       N_sample <- as.numeric(nrow(df_comb))
       N_sub <- floor(N_sample*0.7)
@@ -132,7 +146,7 @@ get_sensitivity <- function(df_syng,method='max',ndatamin=8,N_iteration_sensitiv
       
       pb <- txtProgressBar(min = 0, max = N_iteration_sensitivity, char="-",style = 3)
       
-      
+
       for(n_sns in 1:N_iteration_sensitivity){
         
         df_sub <- df_comb[sample(N_sample,N_sub,replace = F),]
@@ -158,7 +172,7 @@ get_sensitivity <- function(df_syng,method='max',ndatamin=8,N_iteration_sensitiv
             df_feature <- as.matrix(data_feature1[ , mark_feature,drop=F])
             
             dft <- df_sub_qr[ , c(which(colnames(df_sub_qr)==gene_ID1),
-                                  which(colnames(df_sub_qr)==gene_ID2))]
+                                  which(colnames(df_sub_qr)==gene_ID2)),drop=F]
             dft <- dft[dft[ , 1] %in% c(1 , 4) ,,drop=F ]
             dft <- dft[dft[ , 2] %in% c(1 , 4) ,,drop=F ]
             
@@ -168,6 +182,7 @@ get_sensitivity <- function(df_syng,method='max',ndatamin=8,N_iteration_sensitiv
             
             dfts <- find_a_synergy(fdata = dft,
                                    method = method,
+                                   ndatamin = ndatamin,
                                    oncogene1 = effect1,
                                    oncogene2 = effect2)$Synergy_score
             
@@ -230,6 +245,7 @@ get_sensitivity <- function(df_syng,method='max',ndatamin=8,N_iteration_sensitiv
         }
         setTxtProgressBar(pb, n_sns)
       }
+      
       if(nrow(df_syng_complete1)>0 ){
         if(nrow(df_syng_complete2)>0 ){
           df_syng_complete <- rbind(df_syng_complete1,df_syng_complete2)
@@ -239,6 +255,7 @@ get_sensitivity <- function(df_syng,method='max',ndatamin=8,N_iteration_sensitiv
       }else{
         df_syng_complete <- df_syng_complete2
       }
+      
       df_syng_complete$sensitivity_R <- sqrt(df_syng_complete$sum2/df_syng_complete$N) / abs(df_syng_complete$Synergy_score)
       df_syng_complete$sum <- NULL
       df_syng_complete$sum2 <- NULL

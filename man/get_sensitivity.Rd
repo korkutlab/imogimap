@@ -8,7 +8,8 @@ get_sensitivity(
   df_syng,
   method = "max",
   ndatamin = 8,
-  N_iteration_sensitivity = 10000
+  N_iteration_sensitivity = 10000,
+  sample_list
 )
 }
 \arguments{
@@ -21,6 +22,8 @@ Default is "max".}
 
 \item{N_iteration_sensitivity}{Number of iterations for random sampling for sensitivity analysis.
 Default is 1000.}
+
+\item{sample_list}{An optional character vector of TCGA samples barcodes indicating a subset of samples within a cohort.}
 }
 \value{
 Specificty pvalues for each row of dataframe
@@ -30,6 +33,8 @@ A helper function to allow user calculate specifity pvalue for a subset of its d
 }
 \details{
 A specificity p.value is computed using random sampling with replacement from two null models, generated from one of the two genes against a set of genes randomly selected from the genome. Two P-values are calculated for the synergistic interaction of the pair against the two null models. The highest of the two P-values is used to assess the specificity of the interaction against the whole genome. The number of randomly selected genes in each null model is determined by N_iteration_specificity.
+
+All barcodes in sample_list must be 15 character long and belong to the same cohort. When sample_list is provided, cohort should be the disease cohort that they belong to, otherwise only the first element of the cohort list will be used.
 }
 \examples{
 df <- im_syng_tcga(onco_gene=c("TGFB1","SERPINB9"), cohort=c("ucec"),specificity = F)

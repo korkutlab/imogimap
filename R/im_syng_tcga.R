@@ -68,7 +68,7 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, ndatam
   
   #Check input parameters------------------------
   if(missing(ndatamin)){
-    ndatamin <- 4
+    ndatamin <- 8
   }
   
   if(missing(method)){
@@ -128,6 +128,11 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, ndatam
       colnames(df_selected) <- onco_gene
     }else{
       df_selected <- t(data_expression[rownames(data_expression ) %in% onco_gene,])
+      missing_genes <- onco_gene[-which(onco_gene %in% rownames(df_selected))]
+      if(length(missing_genes)>0){
+        warning(length(missing_genes)," Some oncogenes are missing:  \n  ",
+                lapply(missing_genes, function(x)paste0(x,"  ")))
+      }
     }
     if(nrow(df_selected)==0){
       stop("ERROR: No Hugo symbols found for onco-genes.")
@@ -151,6 +156,12 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, ndatam
       colnames(df_icp) <- icp_gene
     }else{
       df_icp <- t(data_expression[rownames(data_expression) %in% icp_gene,])
+      missing_genes <- icp_gene[-which(icp_gene %in% rownames(df_icp))]
+      if(length(missing_genes)>0){
+        warning(length(missing_genes)," Some oncogenes are missing:  \n  ",
+                lapply(missing_genes, function(x)paste0(x,"  ")))
+      }
+      
     }
     if(nrow(df_icp)==0){
       stop("ERROR: No Hugo symbols found for icp_genes.")
@@ -275,7 +286,7 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, ndatam
           for(im_ID in 1:ncol(data_feature)){
             dft2 <- cbind(data_feature[ , im_ID][match(rownames(dft),rownames(data_feature))], dft)
             colnames(dft2)[1]<- colnames(data_feature)[im_ID]
-            dft2 <- dft2[complete.cases(dft2),]
+            dft2 <- dft2[complete.cases(dft2),,drop=F]
             
             dfts <- find_a_synergy(dft2,method = method,ndatamin = ndatamin)
             df_helper <- bind_rows(df_helper , dfts)
@@ -431,7 +442,7 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, ndatam
             
             df_bank_sub1 <- cbind(df_feature,
                                   df_bank_qr[match(rownames(df_feature),rownames(df_bank_qr)),])
-            df_bank_sub1 <- df_bank_sub1[complete.cases(df_bank_sub1),]
+            df_bank_sub1 <- df_bank_sub1[complete.cases(df_bank_sub1),,drop=F]
             bank_size <- as.numeric(ncol(df_bank_sub1))
             bank_mark <- N_genes+2
             df_bank_sub1_cols <- colnames( df_bank_sub1)
@@ -508,7 +519,7 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, ndatam
             
             df_bank_sub1 <- cbind(df_feature,
                                   df_bank_qr2[match(rownames(df_feature),rownames(df_bank_qr2)),])
-            df_bank_sub1 <- df_bank_sub1[complete.cases(df_bank_sub1),]
+            df_bank_sub1 <- df_bank_sub1[complete.cases(df_bank_sub1),,drop=F]
             bank_size <- as.numeric(ncol(df_bank_sub1))
             bank_mark <- N_genes+2
             df_bank_sub1_cols <- colnames( df_bank_sub1)

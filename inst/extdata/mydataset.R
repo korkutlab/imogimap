@@ -68,25 +68,33 @@ TCGA_immune_features_list <- dft
 
 
 # T cell dysfunction signature genes
-#
-# lgn1 <- readxl::read_xlsx("significant_dysfunction_scores.xlsx",sheet = 1)
-# lgn2 <- readxl::read_xlsx("significant_dysfunction_scores.xlsx",sheet = 2)
-# lgn3 <- readxl::read_xlsx("significant_dysfunction_scores.xlsx",sheet = 3)
-# lgn4 <- readxl::read_xlsx("significant_dysfunction_scores.xlsx",sheet = 4)
-# lgn5 <- readxl::read_xlsx("significant_dysfunction_scores.xlsx",sheet = 5)
-#
-# lgn <-  rbind(lgn1,lgn2,lgn3,lgn4,lgn5)
-# lgn <- lgn[lgn$FDR<0.1,]
-# library(plyr)
-# lgn_count<- ddply(lgn,.(Symbol),nrow)
-# lgn_count <- lgn_count[lgn_count$V1>1,]
-# lgn <- lgn[lgn$Symbol %in% lgn_count$Symbol,]
-# lgn <- unique(lgn$Symbol)
-#
-# lgn5_sub <- lgn5[lgn5$Symbol %in% lgn,]
-# lgn5_sub <- lgn5_sub[lgn5_sub$FDR<0.05,]
-#
-# lgn_tcell_dys <- lgn5_sub
+
+lgn1 <-
+readxl::read_xlsx("significant_dysfunction_scores.xlsx",sheet = 1)
+lgn2 <-
+readxl::read_xlsx("significant_dysfunction_scores.xlsx",sheet = 2)
+lgn3 <-
+readxl::read_xlsx("significant_dysfunction_scores.xlsx",sheet = 3)
+lgn4 <-
+readxl::read_xlsx("significant_dysfunction_scores.xlsx",sheet = 4)
+lgn5 <-
+readxl::read_xlsx("significant_dysfunction_scores.xlsx",sheet = 5)
+
+lgn <-  rbind(lgn1,lgn2,lgn3,lgn4,lgn5) 
+lgn <- lgn[lgn$FDR<0.1,]
+library(plyr) 
+lgn_count<- ddply(lgn,.(Symbol),nrow) 
+lgn_count <-lgn_count[lgn_count$V1>1,] 
+lgn <- lgn[lgn$Symbol %in% lgn_count$Symbol,] 
+lgn <- unique(lgn$Symbol)
+
+lgn5_sub <- lgn5[lgn5$Symbol %in% lgn,]
+lgn5_sub <-lgn5_sub[lgn5_sub$FDR<0.05,]
+
+lgn2_sub <- lgn2[lgn2$Symbol %in% lgn,]
+lgn2_sub <-lgn2_sub[lgn2_sub$FDR<0.05,]
+lgn2_sub <-lgn2[lgn2$FDR<0.05,]
+lgn_tcell_tnbc <- lgn5_sub$Symbol
 
 #Creates data
 
