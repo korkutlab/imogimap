@@ -8,7 +8,7 @@ get_sensitivity(
   df_syng,
   method = "max",
   ndatamin = 8,
-  N_iteration_sensitivity = 10000,
+  N_iteration_sensitivity = 1000,
   sample_list
 )
 }

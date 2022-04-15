@@ -44,14 +44,13 @@ get_specificity <- function(df_syng,method='max',ndatamin=8,N_iteration_specific
                                 "Immune_feature","Synergy_score",
                                 "agent1_expression","agent2_expression")
     
-    df_syng[df_syng$agent1=="VSIR",]$agent1 <- "C10orf54"
-    df_syng[df_syng$agent1=="NCR3LG1",]$agent1 <- "DKFZp686O24166"
-    df_syng[df_syng$agent2=="VSIR",]$agent2 <- "C10orf54"
-    df_syng[df_syng$agent2=="NCR3LG1",]$agent2 <- "DKFZp686O24166"
-    
+    df_syng[df_syng=="VSIR"]<- "C10orf54"
+    df_syng[df_syng=="NCR3LG1"]<- "DKFZp686O24166"
+  
     df_syng <- data.table::as.data.table(df_syng)
     setkey(df_syng, Disease, agent1,agent2,Immune_feature)
-    
+    df_syng$specificity_pvalue <- as.numeric(df_syng$specificity_pvalue)
+    df_syng$sensitivity_R<- as.numeric(df_syng$sensitivity_R)
     cohort <- unique(df_syng$Disease)
     
     for(cohortID in 1:length(cohort)){
@@ -282,6 +281,7 @@ get_specificity <- function(df_syng,method='max',ndatamin=8,N_iteration_specific
             Pvalue2 <- sum( mysign*tmp_dist > mysign*myscore, tmp_dist==myscore )/length(tmp_dist)
             df_syng <- df_syng[.(disease,gene1,gene2,select_feature,effect1,effect2),
                                specificity_pvalue :=max(Pvalue1, Pvalue2)]
+            warning(max(Pvalue1, Pvalue2))
           }
         }
       }
