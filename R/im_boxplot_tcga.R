@@ -29,29 +29,29 @@ im_boxplot_tcga<-function(onco_gene,icp_gene,cohort,Immune_phenotype,sample_list
   out <- NULL
   cohort <- tolower(cohort)
   results <- list()
-
+  
   #Read data -----------------------
   df <-curatedTCGAData::curatedTCGAData( diseaseCode = cohort,version = "1.1.38",
                                          assays = c("RNASeq2GeneNorm"), dry.run = F)@ExperimentList@listData[[1]]
   df <- df@assays$data@listData[[1]]
   colnames(df)<-  substr(colnames(df), 1, 15)
-
+  
   if(!missing(sample_list)){
     df<-df[,sample_list ]
-    if(ncol(df==0)){
+    if(ncol(df)==0){
       stop("ERROR: barcodes not found.")
     }
   }
   icp_gene <- ifelse(icp_gene=="VSIR", "C10orf54",
                      ifelse(icp_gene=="NCR3LG1","DKFZp686O24166",icp_gene))
   onco_gene <- ifelse(onco_gene=="VSIR", "C10orf54",
-                     ifelse(onco_gene=="NCR3LG1","DKFZp686O24166",onco_gene))
-
+                      ifelse(onco_gene=="NCR3LG1","DKFZp686O24166",onco_gene))
+  
   df_selected <- as.data.frame(t(df[rownames(df) %in% c(onco_gene,icp_gene),]))
   if(nrow(df_selected)==0){
     stop("ERROR: No gene found. Select a gene name from your mRNA data")
   }
-
+  df_selected <- df_selected[,c(onco_gene,icp_gene)]
   if(Immune_phenotype=="EMTscore"){
     df_feature <- get_emt_score(df)
     colnames(df_feature)[1] <- "PATIENT_BARCODE"
@@ -92,20 +92,20 @@ im_boxplot_tcga<-function(onco_gene,icp_gene,cohort,Immune_phenotype,sample_list
       }
     }
   }
-
-
+  
+  
   #construct quantile ranking matrices------------
   df_selected <- scale(df_selected,center = T,scale = T)
   df_select_qr <- get_quantile_rank(df_selected)
   colnames(df_select_qr)[1]<- "PATIENT_BARCODE"
-
-
+  
+  
   #Reformat---------------------------------------
   df_feature <- merge(df_feature,df_select_qr,by="PATIENT_BARCODE")
   df_feature <- as.data.frame(df_feature)
   df_feature <- df_feature[df_feature[,3] %in% c(1,4),]
   df_feature <- df_feature[df_feature[,4] %in% c(1,4),]
-
+  
   #Find if expression or inhibition of genes positively impact feature
   my_score <- find_a_synergy(df_feature[,-1],method = "max",ndatamin=8)
   if(is.na(my_score$Synergy_score)){
@@ -121,17 +121,17 @@ im_boxplot_tcga<-function(onco_gene,icp_gene,cohort,Immune_phenotype,sample_list
     df_feature[df_feature[,3]==4,3] <- 0
     df_feature[df_feature[,3]==1,3] <- 4
     df_feature[df_feature[,3]==0,3] <- 1
-
+    
   }
   if(effect_icp=="Inhibited"){
     df_feature[df_feature[,4]==4,4] <- 0
     df_feature[df_feature[,4]==1,4] <- 4
     df_feature[df_feature[,4]==0,4] <- 1
   }
-
+  
   #Define labels
   df_feature$state <- as.factor(as.integer((df_feature[,3]*2+df_feature[,4])/3))
-
+  
   if(effect_onco=="Expressed" && effect_icp=="Expressed"){
     mylabels <-   c("Both low",
                     paste0(icp_gene," high\n",onco_gene," low"),
@@ -146,19 +146,19 @@ im_boxplot_tcga<-function(onco_gene,icp_gene,cohort,Immune_phenotype,sample_list
     }else{
       if(effect_onco=="Inhibited" && effect_icp=="Expressed"){
         mylabels <- c( paste0(icp_gene," low\n",onco_gene," high"),
-                       "Both low",
                        "Both high",
+                       "Both low",
                        paste0(onco_gene," low\n",icp_gene," high"))
       }else{
         mylabels <- c(paste0(onco_gene," low\n",icp_gene," high"),
-                      "Both high",
                       "Both low",
+                      "Both high",
                       paste0(icp_gene," low\n",onco_gene," high"))
-
+        
       }
     }
   }
-
+  
   results <- list(df_feature=df_feature, logtrans=logtrans, Immune_phenotype=Immune_phenotype, mylabels=mylabels)
   return(results)
 }

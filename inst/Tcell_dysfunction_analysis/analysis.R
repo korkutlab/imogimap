@@ -129,7 +129,6 @@ ggplot(df,aes(Synergy_score,-log((Q))))+
 
 
 #plot2D---------------------------------------------
-
 df <- df_scores
 df$r <- -log(df$sensitivity_R)
 df <- df[df$r>1,]
@@ -147,20 +146,22 @@ im_netplot(df =df, Immune_phenotype  ="IFNGscore",cutoff = 0.,seed=3)
 
 #Plot2E---------------------------------------------
 while (!is.null(dev.list()))  dev.off()
-im_boxplot_tcga(onco_gene = "SERPINB9",
-                icp_gene = "CTLA4",
+obj <- im_boxplot_tcga(onco_gene = "CTLA4",
+                icp_gene = "SERPINB9",
                 cohort = "ucec",
-                Immune_Feature ="IFNGscore",
+                Immune_phenotype ="IFNGscore",
                 logtrans = F)
-dev.off()
+im_boxplot_tcga_plot(obj)
+
 
 #Plot2F---------------------------------------------
 while (!is.null(dev.list()))  dev.off()
-im_boxplot_tcga(onco_gene = "CD70",
+obj <- im_boxplot_tcga(onco_gene = "CD70",
                 icp_gene = "CD86",
                 cohort = "ucec",
-                Immune_Feature ="IFNGscore",
+                Immune_phenotype ="IFNGscore",
                 logtrans = F)
+im_boxplot_tcga_plot(obj)
 
 
 #Plot2G---------------------------------------------
@@ -172,9 +173,11 @@ library(survminer)
 clin <- read.csv("TCGA_PFIsurvival_UCEC.csv",header = T)
 
 #Read TCGA UCEC expression
-df <-curatedTCGAData::curatedTCGAData( diseaseCode = "ucec",
-                                       assays = c("RNASeq2GeneNorm"),
-                                       dry.run = F)@ExperimentList@listData[[1]]
+df <-curatedTCGAData::curatedTCGAData(diseaseCode = "ucec",
+                                      version = "1.1.38",
+                                      assays = c("RNASeq2GeneNorm"), 
+                                      dry.run = F)@ExperimentList@listData[[1]]
+
 data_expression <- df@assays$data@listData[[1]]
 colnames(data_expression)<-  substr(colnames(data_expression), 1, 15)
 
@@ -198,10 +201,14 @@ df_selected <- as.matrix(df_selected)
 df_select_qr <- get_quantile_rank(df_selected)
 df_select_qr$bcr_patient_barcode <- df_select_qr$Tumor_Sample_ID
 
-#Select samples with  expression values in Q1 or Q3 quantile.
-df_select_qr <- cbind(df_select_qr,as.integer((df_select_qr[,2]*2+df_select_qr[,3])/3))
-df_select_qr <- df_select_qr[df_select_qr[,5]%in% c(1,4),]
-colnames(df_select_qr)[5]<-"status"
+#Select samples with  expression values below Q1 or above Q3 quartile.
+df_select_qr$status <- ifelse(df_select_qr[,2]==1 & df_select_qr[,3]==1,1,
+                              ifelse(df_select_qr[,2]==4 & df_select_qr[,3]==4,4,NA))
+df_select_qr <- df_select_qr[df_select_qr$status %in% c(1,4),]
+
+#df_select_qr <- cbind(df_select_qr,as.integer((df_select_qr[,2]*2+df_select_qr[,3])/3))
+#df_select_qr <- df_select_qr[df_select_qr[,5]%in% c(1,4),]
+#colnames(df_select_qr)[5]<-"status"
 
 #Merge data
 df_surv <- merge(df_select_qr ,clin,by="bcr_patient_barcode")
@@ -223,6 +230,7 @@ pval <- surv_pvalue(
 
 #plot
 while (!is.null(dev.list()))  dev.off()
+pdf("../../../new_ucec_surv.pdf", height = 4, width = 4)
 ggsurv <- ggsurvplot(fit1, data = df_surv, risk.table=F,  size = 2,
                      palette = c("blue","red"),
                      xlab="Time (Days)",  legend.title="",
@@ -235,12 +243,12 @@ ggsurv$plot <- ggsurv$plot +
     "text",
     x = 0, y = 0,
     vjust = 0.1, hjust = 0,
-    label = paste0("Log-Rank Pvalue", pval  ,"\nHazard Ratio  ,",hr),
+    label = paste0("Log-Rank Pvalue ",  round(pval, 4)  ,"\nHazard Ratio  ", round(hr, 2) ),
     size = 10
   )
 
 ggsurv
-
+dev.off()
 
 #Supplementary figure----------------------------------------
 
