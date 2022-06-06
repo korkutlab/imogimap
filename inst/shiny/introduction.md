@@ -1,6 +1,5 @@
-### imogimap
-FIXME imogimap is great because X Y Z
+### How to use imogimap:
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi at mi urna. Aliquam malesuada, purus id iaculis dictum, odio purus imperdiet quam, non fermentum leo elit nec lacus. Etiam dictum vitae lectus eget placerat. Suspendisse mollis tincidunt felis sed porta. Fusce in risus ornare felis posuere blandit et ut tortor. Maecenas fermentum condimentum tortor at gravida. Suspendisse ac turpis convallis, maximus ipsum nec, vehicula turpis. Morbi nisl nisl, rutrum at eros a, aliquam hendrerit metus. Duis a consequat eros, eu mollis nulla. Vivamus pretium ex neque, eget tempor lacus maximus eget. Donec malesuada varius libero nec efficitur. Nulla aliquam a nulla sed semper.
+Use the "Input Gene" field to insert Hugo IDs of your curated list of TAP genes. Use the default ICP genes that are already included or insert your own set of ICP genes. Choose an IAP from the immune phenotype drop-down menu, and specify the TCGA disease cohort that you are interested in. Hit the  "Submit" key and and go to the "Results" tab. If you wish to include specificity and sensitivity statistical assessments, check the corresponding boxes and specify the number of iterations.
 
-Nunc urna ex, faucibus id massa vel, blandit varius quam. Nam tristique ornare blandit. Curabitur varius, mi efficitur malesuada mollis, tortor est dictum diam, at maximus felis massa eget quam. Duis nec ligula suscipit, auctor elit euismod, cursus erat. Mauris tempor quis orci ut maximus. Sed ut nisl quam. Sed facilisis accumsan velit, vitae bibendum enim auctor vel. Sed eu massa consectetur, ornare ante dignissim, pharetra est. Nulla aliquam mauris nec mi rutrum, sed congue sem semper. Duis vitae luctus nibh. Interdum et malesuada fames ac ante ipsum primis in faucibus.
+See the "About" section for details on how to interpret the results 

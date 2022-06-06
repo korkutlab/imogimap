@@ -1,7 +1,5 @@
 load("/Users/bbozorgui/Projects/2020/Application_note/imogene/data/TCGA_disease_list.rda")
 load("/Users/bbozorgui/Projects/2020/Application_note/imogene/data/TCGA_immune_features_list.rda")
-load("/Users/bbozorgui/Projects/2020/Application_note/imogene/data/TCGA_immune_features_list.rda")
-load("/Users/bbozorgui/Projects/2020/Application_note/imogene/data/TCGA_immune_features_list.rda")
 ("/Users/bbozorgui/Projects/2020/Application_note/imogene/data/TCGA_immune_features_list.rda")read
 read("/Users/bbozorgui/Projects/2020/Application_note/imogene/data/TCGA_immune_features_list.rda")
 read.table("/Users/bbozorgui/Projects/2020/Application_note/imogene/data/TCGA_immune_features_list.rda")
@@ -9,3 +7,4 @@ load("/Users/bbozorgui/Projects/2020/Application_note/imogene/data/TCGA_immune_f
 ttt
 read.table("/Users/bbozorgui/Projects/2020/Application_note/imogene/data/TCGA_immune_features_list.rda")->ttt
 ttt
+load("/Users/bbozorgui/Projects/2022/imogimap_application/imogimap/data/TCGA_immune_features_list.rda")

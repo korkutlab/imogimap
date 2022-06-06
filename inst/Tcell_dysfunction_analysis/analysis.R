@@ -4,9 +4,16 @@
 
 ##Install from github-----------------------------
 
+library(ggplot2)
+library(circlize)
 library(remotes)
+
 install_github('korkutlab/imogimap')
 library(imogimap)
+
+#---------------------------*******-----------------
+#---------------------------Figure2-----------------
+#---------------------------*******-----------------
 
 #Input--------------------------------------------
 
@@ -15,47 +22,57 @@ current_dir <- dirname(rstudioapi::getSourceEditorContext()$path)
 setwd(current_dir)
 
 #UCEC T cell dysfunction genes
-df_TCDF_genes<- read.csv("TCell_dys_genes_ucec.csv",header = T)
+df_TCDF_genes<- read.csv("TCell_dys_genes_ucec.csv",header = F)
 
+#Add ligand/receptor pairs from cellphoneDB
+lgenes <- c(df_TCDF_genes$V1,"LILRB2","ADGRV1","XCR1")
+
+
+icp_gene <- c(icp_gene_list,"CSF1","IL34","NCR3",
+              "FLT3LG","CSF2","CSF3","SLC7A1",
+              "SIRPA","CELSR3","BMP10","CCL4L2",
+              "TNF","TNFRSF13B","TNFRSF17","GPRC5B",
+              "FAM3C","KLRG2","HLA-DPA1","PVR",
+              "IL13RA2","ADGRG5")
 
 
 #Calculate and evaluate synergy scores------------
-
-
-#Specificity and robustness evaluation of scores may take some time.
+#Robustness evaluation of scores may take some time.
 #To skip these evaluations set specificity and sensitivity(Robustness) to FALSE.
-my_scores <- im_syng_tcga( onco_gene=df_TCDF_genes$Gene,
-                           icp_gene = icp_gene_list,
-                           cohort="ucec",
-                           select_iap = "IFNGscore",
-                           specificity = F,
-                           sensitivity = F,
-                           N_iteration_specificity = 10,
-                           N_iteration_sensitivity = 10)
+
+ptm <- proc.time()
+my_scores <- im_syng_tcga( onco_gene= lgenes,
+                         icp_gene = icp_gene,
+                         cohort="ucec",
+                         select_iap ="IFNGscore",
+                         ndatamin = 8,
+                         specificity = F,
+                         N_iteration_specificity = 1000,
+                         N_iteration_sensitivity = 1000,
+                         sensitivity = F)
+proc.time()-ptm
 
 my_scores <- my_scores[-which(is.na(my_scores$Synergy_score)),]
 
 
 #Compare-----------------------------------------
-
 #To compare your results with ours
-df_scores <- read.csv("TCell_dys_scores.csv")
+df_scores <- read.csv("TCell_dys_scores_ucec.csv")
 df_scores <- df_scores[-which(is.na(df_scores$Synergy_score)),]
 
-
-library(ggplot2)
-library(circlize)
 #Plot2A---------------------------------------------
 df <- df_scores
 df$r <- -log(df$sensitivity_R)
 
 while (!is.null(dev.list()))  dev.off()
+pdf("figure2a.pdf",width = 10,height = 10)
+par(mar = c(5,7,10,20))
 ggplot(df,aes(Synergy_score,r))+
-  geom_abline(slope =0,intercept = 1,color="red",size=2)+
+  geom_abline(slope =0,intercept = 0,color="red",size=2)+
   geom_point(cex=1.5)+  theme_bw()+
   xlim(c(-0.8,0.8))+
   #ylim(c(-3,3))+
-  labs(title= "", x= "Synergy scores", y= "-log(R) Robustness",tag="1")+
+  labs(title= "", x= "Synergy scores", y= "-log(R) Robustness",tag="0")+
   guides(x.sec = "axis", y.sec = "axis") +
   theme( axis.text.x = element_text(size=30,angle = 90),
          axis.text.y = element_text(size=30,angle = 90),
@@ -69,15 +86,17 @@ ggplot(df,aes(Synergy_score,r))+
          axis.line.y.right  = element_line( size = 1),
          panel.grid.major = element_blank(),
          panel.grid.minor = element_blank())
+dev.off()
 
 #Plot2B---------------------------------------------
 df <- df_scores
 df$r <- -log(df$sensitivity_R)
-df <- df[df$r>1,]
+df <- df[df$r>0,]
 n <- nrow(df)
 df$Q <- p.adjust(df$wilcox_pvalue,method="BH",n =n)
 
 while (!is.null(dev.list()))  dev.off()
+pdf("figure2b.pdf",width = 10,height = 10)
 par(mar = c(5,7,10,20))
 ggplot(df,aes(Synergy_score,-log((Q))))+
   geom_abline(slope =0,intercept = -log(0.1),color="red",size=2)+
@@ -96,11 +115,12 @@ ggplot(df,aes(Synergy_score,-log((Q))))+
          plot.tag = element_text(size=30,colour="red",hjust = -0.1,vjust = 1.5),
          panel.grid.major = element_blank(),
          panel.grid.minor = element_blank())
+dev.off()
 
 #Plot2C---------------------------------------------
 df <- df_scores
 df$r <- -log(df$sensitivity_R)
-df <- df[df$r>1,]
+df <- df[df$r>0,]
 n <- nrow(df)
 df$Q <- p.adjust(df$wilcox_pvalue,method="BH",n =n)
 df <- df[df$Q<0.1,]
@@ -108,6 +128,7 @@ n<- nrow(df)
 df$Q <- p.adjust(df$specificity_pvalue,method="BH",n =n)
 
 while (!is.null(dev.list()))  dev.off()
+pdf("figure2c.pdf",width = 10,height = 10)
 par(mar = c(5,7,10,20))
 ggplot(df,aes(Synergy_score,-log((Q))))+
   geom_abline(slope =0,intercept = -log(0.1),color="red",size=2)+
@@ -126,23 +147,24 @@ ggplot(df,aes(Synergy_score,-log((Q))))+
          plot.tag = element_text(size=30,colour="red",hjust = -0.1,vjust = 1.),
          panel.grid.major = element_blank(),
          panel.grid.minor = element_blank())
-
+dev.off()
 
 #plot2D---------------------------------------------
 df <- df_scores
 df$r <- -log(df$sensitivity_R)
-df <- df[df$r>1,]
+df <- df[df$r>0,]
 n <- nrow(df)
 df$Q <- p.adjust(df$wilcox_pvalue,method="BH",n =n)
 df <- df[df$Q<0.1,]
 n<- nrow(df)
 df$Q <- p.adjust(df$specificity_pvalue,method="BH",n =n)
 df <- df[df$Q<0.1,]
-
+df <- df[complete.cases(df),]
 #change seed to explore different layouts
 while (!is.null(dev.list()))  dev.off()
-im_netplot(df =df, Immune_phenotype  ="IFNGscore",cutoff = 0.,seed=3)
-
+pdf("figure2d.pdf",width = 15,height = 15)
+im_netplot(df =df, Immune_phenotype  ="IFNGscore",cutoff = 0.0,seed=1)
+dev.off()
 
 #Plot2E---------------------------------------------
 while (!is.null(dev.list()))  dev.off()
@@ -250,7 +272,243 @@ ggsurv$plot <- ggsurv$plot +
 ggsurv
 dev.off()
 
-#Supplementary figure----------------------------------------
+
+#---------------------------*******-----------------
+#---------------------------Figure3-----------------
+#---------------------------*******-----------------
+
+#Inputs-----
+samples_basal <- read.csv("samples_BRCA_basal.csv",row.names = 1)
+samples_basal <- samples_basal$x
+
+#Add ligand/receptor pairs from cellphoneDB
+icp_gene <- c(icp_gene_list,"CSF1","IL34","NCR3",
+              "FLT3LG","CSF2","CSF3","SLC7A1",
+              "SIRPA","CELSR3","BMP10","CCL4L2",
+              "TNF","TNFRSF13B","TNFRSF17","GPRC5B",
+              "FAM3C","KLRG2","HLA-DPA1","PVR",
+              "IL13RA2","ADGRG5")
+
+lgenes_brca  <- read.csv2("TCell_dys_genes_brca.csv",row.names = 1)$x
+lgenes_brca <- c(lgenes_brca, "")
+
+#Calculate and evaluate synergy scores------------
+#Robustness evaluation of scores may take some time.
+#To skip these evaluations set specificity and sensitivity(Robustness) to FALSE.
+ptm <- proc.time()
+df_basal_scores <- im_syng_tcga( onco_gene= lgn_tcell_tnbc,
+                          icp_gene = icp_gene,
+                          cohort="brca",
+                          sample_list = samples_basal,
+                          select_iap ="IFNGscore",
+                          ndatamin = 8,
+                          specificity = F,
+                          N_iteration_specificity = 1000,
+                          N_iteration_sensitivity = 1000,
+                          sensitivity = F
+)
+proc.time()-ptm
+#Compare-----------------------------------------
+#To compare your results with ours
+df_scores_basal <- read.csv("TCellDys_scores_Basal.csv")
+
+
+#Plot3A---------------------------------------------
+df <- df_scores_basal
+df$r <- -log(df$sensitivity_R)
+
+while (!is.null(dev.list()))  dev.off()
+pdf("figure3a.pdf",width = 10,height = 10)
+par(mar = c(5,7,10,20))
+ggplot(df,aes(Synergy_score,r))+
+  geom_abline(slope =0,intercept = 1,color="red",size=2)+
+  geom_point(cex=1.5)+  theme_bw()+
+  xlim(c(-0.8,0.8))+
+  #ylim(c(-3,3))+
+  labs(title= "", x= "Synergy scores", y= "-log(R) Robustness",tag="1")+
+  guides(x.sec = "axis", y.sec = "axis") +
+  theme( axis.text.x = element_text(size=30,angle = 90),
+         axis.text.y = element_text(size=30,angle = 90),
+         axis.title = element_text(size=30),
+         plot.margin=unit(c(1,1,1.5,1.2),"cm"),
+         plot.tag.position = c(.05, 1.15),
+         plot.tag = element_text(size=60,colour="red",hjust = -0.3,vjust = 9),
+         axis.line.x.top  = element_line( size = 1),
+         axis.line.x.bottom = element_line( size = 1),
+         axis.line.y.left  = element_line( size = 1),
+         axis.line.y.right  = element_line( size = 1),
+         panel.grid.major = element_blank(),
+         panel.grid.minor = element_blank())
+dev.off()
+
+#Plot3B---------------------------------------------
+df <- df_scores_basal
+df$r <- -log(df$sensitivity_R)
+df <- df[df$r>0,]
+n <- nrow(df)
+df$Q <- p.adjust(df$wilcox_pvalue,method="BH",n =n)
+
+while (!is.null(dev.list()))  dev.off()
+pdf("figure3b.pdf",width = 10,height = 10)
+par(mar = c(5,7,10,20))
+ggplot(df,aes(Synergy_score,-log((Q))))+
+  geom_abline(slope =0,intercept = -log(0.1),color="red",size=2)+
+  geom_point(size=1.5)+  theme_bw()+xlim(c(-0.8,0.8))+
+  labs(title= "", x= "Synergy scores", y= " -log(Q) Significance\n",tag = "-log(0.1)")+
+  guides(x.sec = "axis", y.sec = "axis") +
+  theme( axis.text.x = element_text(size=30,angle = 90),
+         axis.text.y = element_text(size=30,angle = 90),
+         axis.title = element_text(size=30),
+         axis.line.x.top  = element_line( size = 1),
+         axis.line.x.bottom = element_line( size = 1),
+         axis.line.y.left  = element_line( size = 1),
+         axis.line.y.right  = element_line( size = 1),
+         plot.margin=unit(c(1,1,1.5,1.2),"cm"),
+         plot.tag.position = c(.14, .4),
+         plot.tag = element_text(size=30,colour="red",hjust = -0.1,vjust = 1.5),
+         panel.grid.major = element_blank(),
+         panel.grid.minor = element_blank())
+dev.off()
+
+#Plot3C---------------------------------------------
+df <- df_scores_basal
+df$r <- -log(df$sensitivity_R)
+df <- df[df$r>0,]
+n <- nrow(df)
+df$Q <- p.adjust(df$wilcox_pvalue,method="BH",n =n)
+df <- df[df$Q<0.1,]
+n<- nrow(df)
+df$Q <- p.adjust(df$specificity_pvalue,method="BH",n =n)
+
+while (!is.null(dev.list()))  dev.off()
+pdf("figure3c.pdf",width = 10,height = 10)
+par(mar = c(5,7,10,20))
+ggplot(df,aes(Synergy_score,-log((Q))))+
+  geom_abline(slope =0,intercept = -log(0.1),color="red",size=2)+
+  geom_point(size=2)+  theme_bw()+xlim(c(-0.8,0.8))+
+  guides(x.sec = "axis", y.sec = "axis") +
+  labs(title= "", x= "Synergy scores", y= "-log(Q) Specificity",tag = "-log(0.1)")+
+  theme( axis.text.x = element_text(size=30,angle = 90),
+         axis.text.y = element_text(size=30,angle = 90),
+         axis.title = element_text(size=30),
+         axis.line.x.top  = element_line( size = 1),
+         axis.line.x.bottom = element_line( size = 1),
+         axis.line.y.left  = element_line( size = 1),
+         axis.line.y.right  = element_line( size = 1),
+         plot.margin=unit(c(1,1,1.5,1.2),"cm"),
+         plot.tag.position = c(.1, .65),
+         plot.tag = element_text(size=30,colour="red",hjust = -0.1,vjust = 1.),
+         panel.grid.major = element_blank(),
+         panel.grid.minor = element_blank())
+dev.off()
+
+#plot3D---------------------------------------------
+df <- df_scores_basal
+df$r <- -log(df$sensitivity_R)
+df <- df[df$r>0,]
+n <- nrow(df)
+df$Q <- p.adjust(df$wilcox_pvalue,method="BH",n =n)
+df <- df[df$Q<0.1,]
+n<- nrow(df)
+df$Q <- p.adjust(df$specificity_pvalue,method="BH",n =n)
+df <- df[df$Q<0.1,]
+
+#change seed to explore different layouts
+while (!is.null(dev.list()))  dev.off()
+pdf("figure3d.pdf",width = 15,height = 15)
+im_netplot(df =df, Immune_phenotype  ="IFNGscore",cutoff = 0.0,seed=6)
+dev.off()
+
+#plot3E---------------------------------------------
+dfsc1<-read.csv("GSE114725_rna_imputed.csv",row.names = 1)
+dfsc1 <- dfsc1[rowSums(dfsc1[,c(6:7)])> -4.4,]
+rownames(dfsc1)<- dfsc1$cellid
+
+dfsc1 <- dfsc1[order(dfsc1$patient),]
+dfsc1 <- dfsc1[order(dfsc1$tissue),]
+dfsc1 <- dfsc1[order(dfsc1$cluster),]
+dfsc1 <- dfsc1[order(dfsc1$CD274),]
+
+mat <- as.matrix(dfsc1[,c(6:7)]) 
+mat<- t(mat)
+
+library(ComplexHeatmap)
+library(circlize)
+library(RColorBrewer)
+
+pdf("figure3e.pdf",width = 20,height = 7)
+
+ht = Heatmap(mat,
+             col=colorRamp2(c(-2,-1), c("white", "red")),
+             cluster_rows = T,
+             cluster_columns = T,
+             show_column_names = F,
+             column_title_rot =  90,
+             column_title_gp = gpar(fontsize = 13),
+             row_names_side = "left",
+             row_dend_width = unit(4, "cm"),
+             column_gap =  unit(5, "mm"),
+             heatmap_legend_param = list(title = "imputed counts"),
+             column_split = dfsc1$celltype,
+             bottom_annotation =  HeatmapAnnotation( "Patient"=dfsc1$patient,
+                                                     "Tissue"=dfsc1$tissue,
+                                                     col=list( "Patient" = 
+                                                                 structure(1:length(unique(dfsc1$patient)), 
+                                                                           names = unique(dfsc1$patient)),
+                                                               "Tissue" = 
+                                                                 structure(1:length(unique(dfsc1$tissue)), 
+                                                                           names = unique(dfsc1$tissue))
+                                                     )),
+             top_annotation =  HeatmapAnnotation( "Cell type"=dfsc1$celltype , 
+                                                  col=list("Cell type" = 
+                                                             structure(1:length(unique(dfsc1$celltype)), 
+                                                                       names = unique(dfsc1$celltype)) 
+                                                  )))
+
+draw(ht, padding = unit(c(2, 2, 30, 2), "mm"))
+dev.off()
+
+#plot3F---------------------------------------------
+dfsc2<-read.csv("GSE148673_rna_raw.csv",row.names = 1)
+mat <- as.matrix(dfsc2[,-c(1:2)]) 
+mat<- t(mat)
+
+pdf("figure3f.pdf",width = 20,height = 7)
+
+ht = Heatmap(mat,
+             col=colorRamp2(c(0,2), c("white", "red")),
+             cluster_rows = T,
+             cluster_columns = T,
+             show_column_names = F,
+             column_title_rot =  90,
+             column_title_gp = gpar(fontsize = 13),
+             row_names_side = "left",
+             row_dend_width = unit(4, "cm"),
+             column_gap =  unit(5, "mm"),
+             heatmap_legend_param = list(title = "raw counts"),
+             column_split = df$Patient,
+             bottom_annotation =  HeatmapAnnotation(
+               "Tissue"=df$copykat.pred,
+               col=list( 
+                 "Tissue" = 
+                   structure(1:length(unique(df$copykat.pred)),names = unique(df$copykat.pred))
+               )
+             ),
+             top_annotation =  HeatmapAnnotation( 
+               "Patient"=df$Patient, 
+               col=list(
+                 "Patient" = structure(1:length(unique(df$Patient)),names = unique(df$Patient)) 
+               ))
+)
+
+draw(ht, padding = unit(c(2, 2, 10, 2), "mm"))
+dev.off()
+
+
+#---------------------------*******-----------------
+#-------------------Supplementary figure------------
+#---------------------------*******-----------------
+
 
 df_all<-list()
 

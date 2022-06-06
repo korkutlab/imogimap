@@ -23,7 +23,7 @@
 #' @importFrom magrittr %>%
 #' @importFrom data.table setkey as.data.table
 #' @import curatedTCGAData
-#' @importFrom data.table ":=" ".SD"
+#' @importFrom data.table ":=" ".SD" "%like%"
 #' @importFrom utils combn setTxtProgressBar txtProgressBar
 #' @importFrom stats complete.cases median
 #'
@@ -56,6 +56,7 @@ get_sensitivity <- function(df_syng,method='max',ndatamin=8,N_iteration_sensitiv
     
     df_syng <- data.table::as.data.table(df_syng)
     setkey(df_syng, Disease, agent1,agent2,Immune_feature)
+    df_syng$sensitivity_R<- as.numeric(df_syng$sensitivity_R)
     
     
     for(cohortID in 1:length(cohort)){
@@ -156,9 +157,12 @@ get_sensitivity <- function(df_syng,method='max',ndatamin=8,N_iteration_sensitiv
         if(N_syng_complete1>0){
           
           data_feature1 <- get_selected_features(dft,my_features_var1)
-          data_feature_const1 <-data_feature[rownames(df_sub),my_features_const1,drop=F]
-          if(length(data_feature_const1)>0){
+          data_feature_const1 <- data_feature[rownames(df_sub),my_features_const1,drop=F]
+          if(length(data_feature_const1) > 0 ){
             data_feature1 <- merge(data_feature1,data_feature_const1,by=0)
+            rownames(data_feature1)<-data_feature1$Row.names
+            data_feature1$Row.names<-NULL
+            data_feature1<-as.matrix(data_feature1)
           }
           for(pair_ID in 1:N_syng_complete1 ){
             tmp_df <- df_syng_complete1[pair_ID,]
@@ -179,17 +183,13 @@ get_sensitivity <- function(df_syng,method='max',ndatamin=8,N_iteration_sensitiv
             dft <- cbind(df_feature[match(rownames(dft),rownames(df_feature)),,drop=F], dft)
             dft <- dft[complete.cases(dft),,drop=F]
             
-            
             dfts <- find_a_synergy(fdata = dft,
                                    method = method,
                                    ndatamin = ndatamin,
                                    oncogene1 = effect1,
                                    oncogene2 = effect2)$Synergy_score
             
-            
-            df_syng_complete1$sum[pair_ID] <- sum(df_syng_complete1$sum[pair_ID],
-                                                  dfts, na.rm = T)
-            dfts <- dfts - base_score
+             dfts <- dfts - base_score
             df_syng_complete1$sum2[pair_ID] <- sum(df_syng_complete1$sum2[pair_ID],
                                                    dfts*dfts, na.rm = T)
             df_syng_complete1$N[pair_ID] <- sum(df_syng_complete1$N[pair_ID],
@@ -233,8 +233,6 @@ get_sensitivity <- function(df_syng,method='max',ndatamin=8,N_iteration_sensitiv
                                    oncogene1 = effect1,
                                    oncogene2 = effect2)$Synergy_score
             
-            df_syng_complete2$sum[pair_ID] <- sum(df_syng_complete2$sum[pair_ID],
-                                                  dfts, na.rm = T)
             dfts <- dfts -base_score
             df_syng_complete2$sum2[pair_ID] <-sum(df_syng_complete2$sum2[pair_ID],
                                                   dfts*dfts, na.rm = T)
@@ -257,7 +255,7 @@ get_sensitivity <- function(df_syng,method='max',ndatamin=8,N_iteration_sensitiv
       }
       
       df_syng_complete$sensitivity_R <- sqrt(df_syng_complete$sum2/df_syng_complete$N) / abs(df_syng_complete$Synergy_score)
-      df_syng_complete$sum <- NULL
+
       df_syng_complete$sum2 <- NULL
       df_syng_complete$N <- NULL
       rownames(df_syng_complete) <- NULL
