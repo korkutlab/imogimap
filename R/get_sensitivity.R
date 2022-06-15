@@ -238,7 +238,6 @@ get_sensitivity <- function(df_syng,method='max',ndatamin=8,N_iteration_sensitiv
                                                   dfts*dfts, na.rm = T)
             df_syng_complete2$N[pair_ID] <- sum(df_syng_complete2$N[pair_ID],
                                                 abs(sign(dfts)), na.rm = T)
-            
           }
         }
         setTxtProgressBar(pb, n_sns)

@@ -14,6 +14,8 @@ get_features=function(pdf){
   cohort_EMT <- get_emt_score(pdf)
   cohort_IFNG <- get_ifng_score(pdf)
   cohort_AG <- get_angio_score(pdf)
+  cohort_TCI <- get_TCI_score(pdf)
+  
   df_lf <-  TCGA_Leukocyte_fraction[
     TCGA_Leukocyte_fraction$Tumor_Sample_ID %in% colnames(pdf),]
   df_tmb <- TCGA_TMB[TCGA_TMB$Tumor_Sample_ID %in% colnames(pdf),]
@@ -38,6 +40,12 @@ get_features=function(pdf){
   }else{
     cohort_AG<-data.frame("Tumor_Sample_ID"=colnames(pdf),"AGscore"=NA)}
 
+  if(nrow(cohort_TCI) > 0){
+    sd_TCI <- sd(cohort_TCI$TCIscore,na.rm = T)
+    cohort_TCI$TCIscore <- ( tanh( cohort_TCI$TCIscore/sd_TCI ) + 1 ) / 2
+  }else{
+    cohort_TCI<-data.frame("Tumor_Sample_ID"=colnames(pdf),"TCIscore"=NA)}
+  
   if(nrow(df_tmb) > 0){
     df_tmb$TMB_Non.silent_per_Mb <- tanh(  df_tmb$TMB_Non.silent_per_Mb/10 )
     df_tmb$TMB_Silent_per_Mb <- tanh(  df_tmb$TMB_Silent_per_Mb/10 )
@@ -51,6 +59,7 @@ get_features=function(pdf){
 
   dft <- as.data.frame(merge(cohort_EMT , cohort_AG, by="Tumor_Sample_ID",all=TRUE))
   dft <- as.data.frame(merge(dft , cohort_IFNG, by="Tumor_Sample_ID",all=TRUE))
+  dft <- as.data.frame(merge(dft , cohort_TCI, by="Tumor_Sample_ID",all=TRUE))
   dft<- as.data.frame(merge(dft , df_lf, by="Tumor_Sample_ID",all=TRUE))
   dft <- as.data.frame(merge(dft , df_tmb, by="Tumor_Sample_ID",all=TRUE))
 

@@ -2,6 +2,7 @@
 
 export(calculate_syng_score)
 export(find_a_synergy)
+export(get_TCI_score)
 export(get_angio_score)
 export(get_emt_score)
 export(get_features)

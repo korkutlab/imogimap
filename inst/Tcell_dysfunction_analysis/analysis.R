@@ -47,8 +47,6 @@ my_scores <- im_syng_tcga( onco_gene= lgenes,
                          select_iap ="IFNGscore",
                          ndatamin = 8,
                          specificity = F,
-                         N_iteration_specificity = 1000,
-                         N_iteration_sensitivity = 1000,
                          sensitivity = F)
 proc.time()-ptm
 

@@ -1,7 +1,7 @@
 #' Calculates and transforms default immune features within a specified sample cohort .
 #' @importFrom  stats sd
 #' @param  pdf A numeric data frame or matrix with samples as columns and gene/proteins as rows.
-#' @param  feature A list of character identifying one or more of the three expression based features: EMTscore, AGscore, or IFNGscore
+#' @param  feature A list of character identifying one or more of the four expression based features: EMTscore, AGscore, TCIscore, or IFNGscore
 #' @keywords Immune feature, Probability integral transform
 #' @return A list with two dataframes containing transformed values for  immune features and immune cell type fractions as listed in \code{TCGA_immune_features_list}.
 #' @details
@@ -38,6 +38,16 @@ get_selected_features=function(pdf,feature){
         cohort_AG<-data.frame("Tumor_Sample_ID"=colnames(pdf),"AGscore"=NA)
       }
       dft <- as.data.frame(merge(dft,cohort_AG , by="Tumor_Sample_ID",all=TRUE))
+    }
+    if("TCIscore" %in% feature){
+      cohort_TCI <- get_TCI_score(pdf)
+      if(nrow(cohort_TCI) > 0){
+        sd_TCI <- sd(cohort_TCI$TCIscore,na.rm = T)
+        cohort_TCI$TCIscore <- ( tanh( cohort_TCI$TCIscore/sd_TCI ) + 1 ) / 2
+      }else{
+        cohort_TCI<-data.frame("Tumor_Sample_ID"=colnames(pdf),"TCIscore"=NA)
+      }
+      dft <- as.data.frame(merge(dft,cohort_TCI, by="Tumor_Sample_ID",all=TRUE))
     }
     
     if("IFNGscore" %in% feature){

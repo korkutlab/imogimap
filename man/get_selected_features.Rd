@@ -9,7 +9,7 @@ get_selected_features(pdf, feature)
 \arguments{
 \item{pdf}{A numeric data frame or matrix with samples as columns and gene/proteins as rows.}
 
-\item{feature}{A list of character identifying one or more of the three expression based features: EMTscore, AGscore, or IFNGscore}
+\item{feature}{A list of character identifying one or more of the four expression based features: EMTscore, AGscore, TCIscore, or IFNGscore}
 }
 \value{
 A list with two dataframes containing transformed values for  immune features and immune cell type fractions as listed in \code{TCGA_immune_features_list}.

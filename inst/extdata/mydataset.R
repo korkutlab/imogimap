@@ -62,10 +62,13 @@ sample_mRNA_data <- read.csv("sample_mRNA_data.csv",header = T,row.names = 1)
 colnames(sample_mRNA_data) <- gsub(pattern = "\\.",replacement = "-",x=colnames(sample_mRNA_data))
 
 
-dft <- read.csv("TCGA_immune_features.csv")
+dft <- read.csv("inst/extdata/TCGA_immune_features.csv")
 dft <- dft$x
 TCGA_immune_features_list <- dft
 
+# T cell inflamed 
+dft <- fread("inst/extdata/t_inflamed_gene_expr.tsv")
+tcell_inflamed_gene_list <- colnames(dft)[-c(1,20)]
 
 # T cell dysfunction signature genes
 
@@ -99,7 +102,8 @@ lgn_tcell_tnbc <- lgn5_sub$Symbol
 #Creates data
 
 setwd("../")
-usethis::use_data( sample_mRNA_data,overwrite = T)
+usethis::use_data( tcell_inflamed_gene_list,overwrite = T)
+usethis::use_data( TCGA_immune_features_list,overwrite = T)
 
 usethis::use_data(
   TCGA_Leukocyte_fraction,

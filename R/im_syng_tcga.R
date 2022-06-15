@@ -105,9 +105,7 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, ndatam
     disease <- cohort[cohortID]
     message("\nReading TCGA ", toupper(disease), " data\n")
     
-    df <- curatedTCGAData::curatedTCGAData(diseaseCode = disease, version = "1.1.38",
-                                           assays = c("RNASeq2GeneNorm"), dry.run = F)@ExperimentList@listData[[1]]
-    
+      
     data_expression <- df@assays$data@listData[[1]]
     colnames(data_expression)<-  substr(colnames(data_expression), 1, 15)
     if(!missing(sample_list)){
