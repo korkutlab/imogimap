@@ -1,6 +1,6 @@
 # Creates essential data sets from raw-data
 library(data.table)
-
+library(imogimap)
 current_dir <- dirname(rstudioapi::getSourceEditorContext()$path)
 setwd(current_dir)
 
