@@ -17,9 +17,16 @@ Use the "Input Gene" field to insert Hugo IDs of your curated list of TAP genes.
 
 Under the "Results" tab you will see a synergy score, and three statistical assessment measures for each gene pair. A positive synergy score with both genes marked as "Expressed" means synergistic increase of IAP level in response to expression of both genes. Similarly a negative synergy score with both genes marked as "Expressed" means synergistic decrease of IAP level in response to expression of both genes. 
 
-A color-coded graphical network of combinatorial associations is shown in the "Network" section. Red (Blue) edges represent synergistic up-regulation (down-regulation) of IAP. Dark red (Dark blue) vertices identify over-expression (inhibition) of ICP genes, and orange (blue) vertices identify over-expression (low expression) of input genes. A cutoff parameter is included to subset the list to those pairs with absolute value of synergy scores higher than the cutoff. 
+Sensitivity, R, measures the sensitivity of the observed synergy score to the exact data configuration. The more robust scores, therefore the least sensitive, have lower sensitivityR. 
 
-Choose a gene pair from the drop-down menu in the boxplot section to see boxplots of IAP values, stratified by gene expression levels. IAP and expression data are taken from the specified TCGA  disease cohort. 
+Specificity p.value measures the probability of finding a score higher than the observed synergy score, by randomly pairing a gene from genome to any of onco/icp genes. A lower p.value indicates a more specific results.
+
+
+A color-coded graphical network of combinatorial associations is shown in the "Network" section. Red (Blue) edges represent synergistic up-regulation (down-regulation) of IAP. Dark red (Dark blue) vertices identify over-expression (inhibition) of ICP genes, and orange (blue) vertices identify over-expression (low expression) of oncogenes. A solid black edge indicates an existing ligand-receptor interaction between two adjacent vertices.
+
+A cutoff parameter is included to subset the list to those pairs with absolute value of synergy scores higher than the cutoff quantile value. 
+
+Choose a gene pair from the drop-down menu in the boxplot section to see boxplots of IAP values, stratified by gene expression levels. 
 
 For more information see  https://doi.org/10.1101/2021.10.06.462889
 

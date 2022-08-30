@@ -14,7 +14,7 @@ im_syng_tcga(
   specificity,
   N_iteration_specificity = 1000,
   sensitivity,
-  N_iteration_sensitivity = 1000,
+  N_iteration_sensitivity = 100,
   sample_list
 )
 }
@@ -40,7 +40,7 @@ Default is 1000.}
 \item{sensitivity}{An optional logical indicating if a sensitivity analysis should be done. Default is FALSE.}
 
 \item{N_iteration_sensitivity}{Number of iterations for random sampling for sensitivity analysis.
-Default is 1000.}
+Default is 100.}
 
 \item{sample_list}{An optional character vector of TCGA samples barcodes indicating a subset of samples within a cohort.}
 }

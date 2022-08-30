@@ -11,7 +11,7 @@ Each character is a gene hugo symbol
 }
 }
 \source{
-\url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3743050/}
+\url{https://doi.org/10.1016/j.ccr.2013.06.004}
 }
 \usage{
 AG_gene_list

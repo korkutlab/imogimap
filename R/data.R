@@ -5,7 +5,7 @@
 #'   \item{\code{Tumor_Sample_ID}}{character TCGA 15-charachter Tumor sample ID}
 #'   \item{\code{Leukocyte_fraction}}{double Leukocyte fraction of cells}
 #'}
-#' @source \url{http://somewhere.important.com/}
+#' @source \url{https://doi.org/10.1016/j.cell.2018.03.022}
 "TCGA_Leukocyte_fraction"
 
 #' @title EMT signature genes
@@ -16,7 +16,7 @@
 #'   \item{\code{group}}{character Epithelial vs Mesenchymal}
 #'   \item{\code{sign}}{numeric Negative for Epithelial and Positive for Mesenchymal}
 #'}
-#' @source \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4737991/#SD1}
+#' @source \url{https://doi.org/10.1158/1078-0432.CCR-15-0876}
 "EMT_gene_list"
 
 #' @title Angiogenesis signature genes
@@ -25,7 +25,7 @@
 #' \describe{
 #'   Each character is a gene hugo symbol
 #'}
-#' @source \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3743050/}
+#' @source \url{https://doi.org/10.1016/j.ccr.2013.06.004}
 "AG_gene_list"
 
 #' @title Tumor mutation burden
@@ -36,7 +36,7 @@
 #'   \item{\code{TMB_Non.silent_per_Mb}}{numeric non silent tumor mutation burden}
 #'   \item{\code{TMB_Silent_per_Mb}}{numeric silent tumor mutation burden}
 #'}
-#' @source \url{http://somewhere.important.com/}
+#' @source \url{https://doi.org/10.1016/j.cell.2018.03.022}
 "TCGA_TMB"
 
 #' @title Immune cell type fractions for TCGA data
@@ -71,12 +71,12 @@
 "TCGA_IMCell_fraction"
 
 #' @title Default list of immune checkpoints
-#' @description List of 29 immune checkpoints
+#' @description List of 50 genes including 29 immune checkpoints and their 21 interacting ligands/receptors
 #' @format A vector of characters
 #' \describe{
 #'   Each character is a gene hugo symbol
 #'}
-#' @source \url{https://www.cancerresearch.org/archive/clinical-accelerator-(2)/drug-agent-target-list}
+#' @source \url{https://doi.org/10.1101/2021.10.06.462889}
 "icp_gene_list"
 
 #' @title Sample data set for immune cell fraction data
@@ -89,7 +89,7 @@
 #' @title Sample Leukocyte fraction data
 #' @description Data frame containing Leukocyte fractions for a subset of TCGA cohorts to serve as formatting guide for user-curated data or in test runs.
 #' @format A data frame with of with 76 rows and 1 column. Row names are a patient IDs.
-#' @source \url{http://somewhere.important.com/}
+#' @source \url{https://doi.org/10.1016/j.cell.2018.03.022}
 "sample_Leukocyte_fraction_data"
 
 

@@ -11,12 +11,12 @@ Each character is a gene hugo symbol
 }
 }
 \source{
-\url{https://www.cancerresearch.org/archive/clinical-accelerator-(2)/drug-agent-target-list}
+\url{https://doi.org/10.1101/2021.10.06.462889}
 }
 \usage{
 icp_gene_list
 }
 \description{
-List of 29 immune checkpoints
+List of 50 genes including 29 immune checkpoints and their 21 interacting ligands/receptors
 }
 \keyword{datasets}

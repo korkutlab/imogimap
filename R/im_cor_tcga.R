@@ -41,7 +41,7 @@ im_cor_tcga<-function(onco_gene,icp_gene,cohort,sample_list){
     # Read data -----------------------
     df <-curatedTCGAData( diseaseCode = cohort[cohortID],version = "1.1.38",
       assays = c("RNASeq2GeneNorm"), dry.run = F)@ExperimentList@listData[[1]]
-    df <- df@assays$data@listData[[1]]
+    df <- df@assays@data@listData[[1]]
     colnames(df)<-  substr(colnames(df), 1, 15)
 
     if(!missing(sample_list)){

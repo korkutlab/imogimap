@@ -1,0 +1,17 @@
+CMD javareconf
+sudo R CMD javareconf
+wd
+getwd()
+library(ggplot2)
+library(xlsx)
+R.home()
+R CMD BATCH glasso.R
+sessionInfo()
+sessionInfo()
+library("devtools")
+setwd("~/Projects/2022/imogimap_application/imogimap/")
+install.packages(".",#
+  repos = NULL,#
+  type = "source")#
+library(imogimap)
+document()

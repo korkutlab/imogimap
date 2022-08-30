@@ -13,7 +13,7 @@ A data frame with 77 rows and 3 columns:
 }
 }
 \source{
-\url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4737991/#SD1}
+\url{https://doi.org/10.1158/1078-0432.CCR-15-0876}
 }
 \usage{
 EMT_gene_list
