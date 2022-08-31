@@ -77,7 +77,7 @@ im_netplot<- function(df, icp_gene, cohort, Immune_phenotype, cutoff, seed=1) {
   g <- igraph::set_edge_attr(g, "group", index=E(g), df[, "interaction"])
 
   E(g)$color <- ifelse(E(g)$Synergy_sign=="+","red","blue")
-  E(g)$color <- alpha(E(g)$color,abs(E(g)$Synergy_score))
+  E(g)$color <- alpha(E(g)$color,0.5)
   E(g)$color <- ifelse(E(g)$group==TRUE,"black",E(g)$color)
 
   V(g)$color <- ifelse(substr(names(V(g)),1,nchar(names(V(g)))-1) %in% icp_gene,"grey",

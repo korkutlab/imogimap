@@ -68,31 +68,36 @@ im_boxplot_tcga<-function(onco_gene,icp_gene,cohort,Immune_phenotype,sample_list
           df_feature <- get_ifng_score(df)
           colnames(df_feature)[1] <- "PATIENT_BARCODE"
         }else{
-          if(grepl("TMB",Immune_phenotype)){
-            df_feature <- TCGA_TMB[,c("Tumor_Sample_ID",Immune_phenotype)]
+          if(Immune_phenotype=="TCIscore"){
+            df_feature <- get_TCI_score(df)
             colnames(df_feature)[1] <- "PATIENT_BARCODE"
           }else{
-            df_feature <- TCGA_IMCell_fraction
-            tmp <- which(colnames(df_feature)==Immune_phenotype)
-            if(length(tmp)==0){
-              stop(Immune_phenotype," Not found.
-                Choose a feature from TCGA_feature_list.\n")
+
+            if(grepl("TMB",Immune_phenotype)){
+              df_feature <- TCGA_TMB[,c("Tumor_Sample_ID",Immune_phenotype)]
+              colnames(df_feature)[1] <- "PATIENT_BARCODE"
             }else{
-              tmpID <- which(colnames(df_feature)=="PATIENT_BARCODE")
-              df_feature <- df_feature[,c(tmpID,tmp)]
-              df_selected$PATIENT_BARCODE <- substr(rownames(df_selected), 1, 12)
-              df_selected <- df_selected %>% group_by(PATIENT_BARCODE) %>%
-                mutate(across(.cols = everything(),.fns = ~median(.x, na.rm = TRUE))) %>%  distinct
-              df_selected <- as.data.frame(df_selected)
-              rownames(df_selected) <- df_selected$PATIENT_BARCODE
-              df_selected$PATIENT_BARCODE <- NULL
+              df_feature <- TCGA_IMCell_fraction
+              tmp <- which(colnames(df_feature)==Immune_phenotype)
+              if(length(tmp)==0){
+                stop(Immune_phenotype," Not found.
+                Choose a feature from TCGA_feature_list.\n")
+              }else{
+                tmpID <- which(colnames(df_feature)=="PATIENT_BARCODE")
+                df_feature <- df_feature[,c(tmpID,tmp)]
+                df_selected$PATIENT_BARCODE <- substr(rownames(df_selected), 1, 12)
+                df_selected <- df_selected %>% group_by(PATIENT_BARCODE) %>%
+                  mutate(across(.cols = everything(),.fns = ~median(.x, na.rm = TRUE))) %>%  distinct
+                df_selected <- as.data.frame(df_selected)
+                rownames(df_selected) <- df_selected$PATIENT_BARCODE
+                df_selected$PATIENT_BARCODE <- NULL
+              }
             }
           }
         }
       }
     }
   }
-
 
   #construct quantile ranking matrices------------
   df_selected <- scale(df_selected,center = T,scale = T)

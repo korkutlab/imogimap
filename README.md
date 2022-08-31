@@ -22,7 +22,7 @@ This is a basic example of how to use imogimap with TCGA data
 
 ``` r
 library(imogimap)
-# List Hugo ID's for a single onco-gene or list or genes defining an onco-genic pathway  signature
+# List Hugo ID's for a single onco-gene or list of oncogenes defining an onco-genic pathway  signature
 my_onco <- c("TGFB1","TGFB2","TGFB3")
 
 # List Hugo ID's for immune checkpoints that you are interested in. icp_gene_list can be used as default
@@ -31,6 +31,9 @@ my_icp <- icp_gene_list
 #list TCGA abbreviated names and specify TCGA disease cohorts 
 TCGA_disease_list
 my_cohort <- c("luad","lusc")
+
+#list abbreviated names for available immune features
+TCGA_immune_features_list
 
 #Calulate synergy scores, and optional pvalues, and variances, for combinatorial effects of all gene pairs on all immune phenotypes as listed in TCGA_immune_features_list
 my_syng_df <-  im_syng_tcga(onco_gene  = my_onco,
@@ -41,8 +44,8 @@ my_syng_df <-  im_syng_tcga(onco_gene  = my_onco,
          sensitivity = F)
 
 #Generate stratified boxplot that represents data used to get a single synergy score.
-im_boxplot_tcga(onco_gene = "TGFB1", icp_gene = "CD270",cohort = "luad",
-Immune_Feature = "IFNGscore")
+results <- im_boxplot_tcga(onco_gene = "TGFB1", icp_gene = "CD27", cohort = "luad", Immune_phenotype = "IFNGscore")
+im_boxplot_tcga_plot(results)
 ```
 This is a basic example of how to use imogimap with user's data
 ``` r

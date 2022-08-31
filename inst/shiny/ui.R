@@ -39,11 +39,11 @@ dashboardPage(
                                  img(src = 'md-anderson-horizontal-logo.jpeg')
                           )
                   )
-                  ),
+  ),
   dashboardSidebar(disable = TRUE),
 
-    dashboardBody(
-      tags$style(HTML('.popover{width:4000px;height:250px;}
+  dashboardBody(
+    tags$style(HTML('.popover{width:4000px;height:250px;}
                                .main-sidebar {z-index:auto;}')),
     fluidPage(#site_name,
       #titlePanel(site_name),
