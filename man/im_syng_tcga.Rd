@@ -15,7 +15,8 @@ im_syng_tcga(
   N_iteration_specificity = 1000,
   sensitivity,
   N_iteration_sensitivity = 100,
-  sample_list
+  sample_list,
+  add_receptor_ligand = FALSE
 )
 }
 \arguments{
@@ -43,6 +44,8 @@ Default is 1000.}
 Default is 100.}
 
 \item{sample_list}{An optional character vector of TCGA samples barcodes indicating a subset of samples within a cohort.}
+
+\item{add_receptor_ligand}{An optional logical indicating whether receptor_ligands pair should be added. Default is FALSE.}
 }
 \value{
 A data.frame of synergy scores and bootstrapping p.values.
@@ -52,6 +55,7 @@ Takes a list of Tumor-intrinsic pathway(TIP) genes and returns their combinatori
 }
 \details{
 If no icp_gene is specified, the default icp_gene_list will be used.
+If add_receptor_ligand is TRUE, CellphoneDB database is used to add genes with known receptor-ligand interactions with either of icp_genes or onco_genes.
 If select_iap is a character vector, it must be any sub-list of IAP names as listed in TCGA_immune_features_list. If a numeric matrix or data.frame, each column represents a user-defined IAP and must have a range between \code{[0,1]}. If select_iap is missing all IAPs listed in TCGA_immune_features_list will be considered for analysis.
 
 For synergy score calculations all features are normalized to be on \code{[0,1]} range. For details of synergy score and significance pvalue calculations see \code{find_a_synergy} function.

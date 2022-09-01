@@ -44,7 +44,7 @@ dashboardPage(
                           tags$a("MDAnderson" ,
                                  href = 'https://www.mdanderson.org/',
                                  #style = "padding: 10px 1190px 0px 0px",
-                                 img(src = 'md-anderson-horizontal-logo.jpeg')
+                                 #img(src = 'md-anderson-horizontal-logo.jpeg')
                           )
                   )
   ),
@@ -73,6 +73,20 @@ dashboardPage(
 
                               textAreaInput("onco_genes", "Input Genes (One Gene Per Line)", tmp_onco_genes, width = "480px"),
                               textAreaInput("immune_genes", "Immune Checkpoint (ICP) Genes (One Gene Per Line; Curated List of 29 ICP Genes Provided Below as Default)", tmp_icp_genes, width = "480px"),
+
+                              checkboxInput("add_receptor_ligand", "add receptor/ligand", FALSE) %>%
+                                shinyInput_label_embed(
+                                  shiny_iconlink() %>%
+                                    bs_embed_popover(
+                                      title = "add receptor/ligand",
+                                      content = "Check to add genes with known ligand/receptor interactions from CellphonDB database.",
+                                      placement = "right"
+                                    )
+                                ),
+                              conditionalPanel(
+                                condition = "input.add_receptor_ligand == true",
+                              ),
+
                               selectInput("immune_phenotype", "Immune Phenotype", TCGA_immune_features_list),
                               selectInput("cohort", "Cohort", tcgaTypes, selected="luad"),
                               selectInput("method", "Method", c( "independence","max")),

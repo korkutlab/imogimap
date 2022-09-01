@@ -44,11 +44,14 @@ Now we use `im_syng_tcga` function to get synergy scores. The rest of parameters
 my_syng_df <-  im_syng_tcga(
   onco_gene  = my_onco,
   icp_gene = my_icp, 
+  add_receptor_ligand=F,
   cohort = my_cohort, 
   method = "independence",
   sensitivity = FALSE,
   specificity = FALSE)
 ```
+
+We have the option to search for genes that interact with either of the onco/icp genes using CellphoneDB public receptor-ligand database. `add_receptor_ligand=T` adds the known interacting genes to their corresponding original gene lists. 
 
 We have the option to choose one of the two available synergy scoring methods and determine whether we want to include specificity and robustness analysis. Specificity and robustness measures are calculated  by random bootstrapping, and we can increase or decrease the number of bootstrapping iterations, `N_iteration`, to gain more accuracy or save time.  
 

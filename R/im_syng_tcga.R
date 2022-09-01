@@ -6,6 +6,7 @@
 #' @param select_iap  An optional  character vector or numeric matrix or data.frame.
 #' @param method A character string indicating which synergy score to be used. one of "max" or "independence".
 #' Default is "max".
+#' @param add_receptor_ligand An optional logical indicating whether receptor_ligands pair should be added. Default is FALSE.
 #'@param ndatamin minimum number of samples. Synergy score calculation will be skipped for matrices with number of rows less than ndatamin
 #' @param specificity An optional logical indicating if specificity analysis should be done. Default is FALSE.
 #' @param N_iteration_specificity Number of iterations for random sampling for specificity p.value calculation.
@@ -27,6 +28,7 @@
 #
 # IAP names are listed in TCGA_immune_features_list.
 #'If no icp_gene is specified, the default icp_gene_list will be used.
+#'If add_receptor_ligand is TRUE, CellphoneDB database is used to add genes with known receptor-ligand interactions with either of icp_genes or onco_genes.
 #'If select_iap is a character vector, it must be any sub-list of IAP names as listed in TCGA_immune_features_list. If a numeric matrix or data.frame, each column represents a user-defined IAP and must have a range between \code{[0,1]}. If select_iap is missing all IAPs listed in TCGA_immune_features_list will be considered for analysis.
 #'
 #' For synergy score calculations all features are normalized to be on \code{[0,1]} range. For details of synergy score and significance pvalue calculations see \code{find_a_synergy} function.
@@ -49,7 +51,7 @@
 #'
 #' @export
 
-im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, ndatamin=8,specificity, N_iteration_specificity=1000, sensitivity, N_iteration_sensitivity=100, sample_list){
+im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, ndatamin=8,specificity, N_iteration_specificity=1000, sensitivity, N_iteration_sensitivity=100, sample_list, add_receptor_ligand=FALSE){
 
   PATIENT_BARCODE <- Disease <- agent1 <- agent2 <- Immune_feature <- NULL
   agent1_expression <- agent2_expression <- specificity_pvalue <- NULL
@@ -119,20 +121,24 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, ndatam
     message("Quantile ranking Gene expressions...")
 
     #Add interacting genes-----------
-    lgn1 <- lgn_receptor_ligand[lgn_receptor_ligand$Gene1 %in% onco_gene,]$Gene2
-    lgn2 <- lgn_receptor_ligand[lgn_receptor_ligand$Gene2 %in% onco_gene,]$Gene1
-    lgn <- unique(c(lgn1,lgn2))
-    if(length(lgn)>0){
-      onco_gene<- unique(c(onco_gene,lgn))
+    if(add_receptor_ligand==TRUE){
+      lgn1 <- lgn_receptor_ligand[lgn_receptor_ligand$Gene1 %in% onco_gene,]$Gene2
+      lgn2 <- lgn_receptor_ligand[lgn_receptor_ligand$Gene2 %in% onco_gene,]$Gene1
+      lgn <- unique(c(lgn1,lgn2))
+      if(length(lgn)>0){
+        onco_gene<- unique(c(onco_gene,lgn))
+      }
     }
     if(missing(icp_gene)){
       icp_gene <- icp_gene_list
     }
-    lgn1 <- lgn_receptor_ligand[lgn_receptor_ligand$Gene1 %in% icp_gene,]$Gene2
-    lgn2 <- lgn_receptor_ligand[lgn_receptor_ligand$Gene2 %in% icp_gene,]$Gene1
-    lgn <- unique(c(lgn1,lgn2))
-    if(length(lgn)>0){
-      icp_gene<- unique(c(icp_gene,lgn))
+    if(add_receptor_ligand==TRUE){
+      lgn1 <- lgn_receptor_ligand[lgn_receptor_ligand$Gene1 %in% icp_gene,]$Gene2
+      lgn2 <- lgn_receptor_ligand[lgn_receptor_ligand$Gene2 %in% icp_gene,]$Gene1
+      lgn <- unique(c(lgn1,lgn2))
+      if(length(lgn)>0){
+        icp_gene<- unique(c(icp_gene,lgn))
+      }
     }
 
     #Check for co-target expressions----------------

@@ -35,6 +35,7 @@ function(input, output, session) {
       onco_gene  = onco_genes(),
       icp_gene = immune_genes(),
       cohort = input$cohort,
+      add_receptor_ligand = input$add_receptor_ligand,
       select_iap = input$immune_phenotype,
       method = input$method,
       ndatamin=4,

@@ -38,6 +38,7 @@ TCGA_immune_features_list
 #Calulate synergy scores, and optional pvalues, and variances, for combinatorial effects of all gene pairs on all immune phenotypes as listed in TCGA_immune_features_list
 my_syng_df <-  im_syng_tcga(onco_gene  = my_onco,
          icp_gene = my_icp, 
+         add_receptor_ligand=T,
          cohort = my_cohort, 
          select_iap = "IFNGscore"
          specificity = F,
