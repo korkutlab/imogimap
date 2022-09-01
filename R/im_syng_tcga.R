@@ -764,7 +764,8 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, ndatam
   df_syng_all <-merge(df_syng_all,lgn_receptor_ligand,by=c("Gene1","Gene2"),all.x=T)
   df_syng_all <-merge(df_syng_all,lgn_receptor_ligand,by.x=c("Gene1","Gene2"),by.y=c("Gene2","Gene1"),all.x=T)
   df_syng_all$ligand_receptor_interaction<-FALSE
-  df_syng_all[which(df_syng_all$ligand_receptor_interaction.x==T | df_syng_all$ligand_receptor_interaction.y==T ),]$ligand_receptor_interaction <- TRUE
+  df_syng_all$ligand_receptor_interaction[df_syng_all$ligand_receptor_interaction.x==T]<- TRUE
+  df_syng_all$ligand_receptor_interaction[df_syng_all$ligand_receptor_interaction.y==T]<- TRUE
   df_syng_all$ligand_receptor_interaction.x<-NULL
   df_syng_all$ligand_receptor_interaction.y<-NULL
   return(df_syng_all)

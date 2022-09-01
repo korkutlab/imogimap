@@ -29,6 +29,7 @@ Suggests:
     markdown,
     rmarkdown,
     shinydashboard,
+    shinyalert,
     shinythemes,
     waiter
 VignetteBuilder: knitr

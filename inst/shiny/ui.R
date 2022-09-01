@@ -5,7 +5,7 @@ library(waiter)
 library(shinydashboard)
 library(magrittr)
 library(markdown)
-
+library(shinyalert)
 library(imogimap)
 
 pkg_name <- "imogimap"
@@ -18,6 +18,14 @@ tmp_icp_genes <- paste(icp_gene_list, collapse="\n") #icp_gene_list
 # navbarPage() will not work here with combination of waiter and bsplus
 dashboardPage(
   dashboardHeader(title=site_name,
+                  tags$li(class = "dropdown",
+                          tags$a("Github" ,
+                                 href = 'https://github.com/korkutlab/imogimap',
+                                 #style = "padding: 10px 100px 0px 0px",
+
+                          )
+                  ),
+
                   tags$li(class = "dropdown",
                           tags$a("Publication" ,
                                  href = 'https://doi.org/10.1101/2021.10.06.462889',
@@ -67,7 +75,7 @@ dashboardPage(
                               textAreaInput("immune_genes", "Immune Checkpoint (ICP) Genes (One Gene Per Line; Curated List of 29 ICP Genes Provided Below as Default)", tmp_icp_genes, width = "480px"),
                               selectInput("immune_phenotype", "Immune Phenotype", TCGA_immune_features_list),
                               selectInput("cohort", "Cohort", tcgaTypes, selected="luad"),
-                              selectInput("method", "Method", c( "max","independence")),
+                              selectInput("method", "Method", c( "independence","max")),
 
 
                               checkboxInput("sensitivity", "Sensitivity", FALSE) %>%
