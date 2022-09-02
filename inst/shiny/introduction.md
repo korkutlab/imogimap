@@ -1,11 +1,22 @@
 ### How to use imogimap:
 
-1. Use the "Input Gene" field to insert Hugo IDs of your curated list of TAP genes. 
-2. Use the default ICP genes that are already included or insert your own set of ICP genes. 
-3. Choose an IAP from the immune phenotype drop-down menu, and specify the TCGA disease cohort that you are interested in. 
+1. Use the "Input Gene" field to insert Hugo ID(s) of a single gene or a curated gene list representing a tumor-associated process (TAP). 
+2. Use the default Immune checkpoint (ICP) genes that are already included or insert your own set of ICP genes.
+3. Check "add receptor/ligand" box to automatically add genes corresponding to the known interacting molecules using cellphoneDB receptor-ligand database.  
+4. Choose an immune associate phenotype (IAP) from the "immune phenotype"" drop-down menu, and specify the TCGA disease cohort that you are interested in. 
+5. If you wish to include specificity and sensitivity statistical assessments, check the corresponding boxes and specify number of iterations. 
 4. Hit the  "Submit" key and and go to the "Results" tab. 
 
-If you wish to include specificity and sensitivity statistical assessments, check the corresponding boxes and specify the number of iterations. Note that specificity and sensitivity analyses are time consuming. We recommend to leave the box unchecked for the first run, select onco-icp gene pair of interest based on synergy results, and finally conduct specificity and sensitivity analysis for the selected gene pair. 
+
+#### A note on sensitivity and specificity analysis:
+
+Specificity and sensitivity calculations are time-consuming statistical assessments. For gene sets larger than 5 we highly recommend to follow one of these workflows:
+
+1. Conduct an initial analysis without these assessments on your whole gene set, select TAP-ICP gene pairs of interest based on synergy scores and Wilcoxon p.values, and finally re-conduct separate analyses for each selected pair with specificity and sensitivity boxes checked. 
+
+2. Use the github link on top of this page to download our R software package and run the R software locally on your machine.
+
+3. The higher number of iterations we choose, the more accurate specificity pvalue and sensitivityR we will have. If your calculations are time consuming you can choose to decrease number of iterations for each assessment. We recommend number of iterations to be between 10-1000. 
 
 Imogimap automatically searches for available ligand-receptor interactions and adds genes that correspond to the interacting molecules.
 

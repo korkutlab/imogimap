@@ -1,4 +1,4 @@
-#' Calculation and statistical assessment of synergistic associations using TCGA data.
+#' Equivalent of im_syng_TCGA ro run with shiny app
 #'
 #' @param onco_gene A character vector of gene Hugo symbols.
 #' @param icp_gene An optional character vector of immune checkpoint gene Hugo symbols.
@@ -39,7 +39,7 @@
 #'
 #'All barcodes in sample_list must be 15 character long and belong to the same cohort. When sample_list is provided, cohort should be the disease cohort that they belong to, otherwise only the first element of the cohort list will be used.
 #'
-#' @examples im_syng_tcga(onco_gene=c("TGFB1","SERPINB9"), cohort=c("ucec"))
+#' @examples im_syng_tcga_shiny(onco_gene=c("TGFB1","SERPINB9"), cohort=c("ucec"))
 #'
 #' @importFrom dplyr bind_rows across mutate group_by everything distinct
 #' @importFrom magrittr %>%
@@ -50,7 +50,7 @@
 #' @importFrom stats complete.cases median
 #' @export
 
-im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, ndatamin=8,specificity, N_iteration_specificity=1000, sensitivity, N_iteration_sensitivity=100, sample_list, add_receptor_ligand=FALSE){
+im_syng_tcga_shiny <- function(onco_gene, icp_gene, cohort, select_iap, method, ndatamin=8,specificity, N_iteration_specificity=1000, sensitivity, N_iteration_sensitivity=100, sample_list, add_receptor_ligand=FALSE){
 
   PATIENT_BARCODE <- Disease <- agent1 <- agent2 <- Immune_feature <- NULL
   agent1_expression <- agent2_expression <- specificity_pvalue <- NULL
@@ -101,7 +101,7 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, ndatam
                           sensitivity_R=numeric())
 
     #Get expression data----------------------------
-
+    incProgress(0.1, detail = paste("Accessing data:...",10,"%" ))
     disease <- cohort[cohortID]
     message("\nReading TCGA ", toupper(disease), " data\n")
 
@@ -117,7 +117,7 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, ndatam
     }
 
     message("Quantile ranking Gene expressions...")
-
+    incProgress(50, detail = paste("Accessing data:...",50,"%" ))
     #Add interacting genes-----------
     if(add_receptor_ligand==TRUE){
       lgn1 <- lgn_receptor_ligand[lgn_receptor_ligand$Gene1 %in% onco_gene,]$Gene2
@@ -190,6 +190,8 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, ndatam
       next
     }
     icp_gene_sub <- colnames(df_icp)
+
+    incProgress(100, detail = paste("Accessing data:...",100,"%" ))
 
     #Construct quantile ranking matrices for each sample--------
 
@@ -327,7 +329,8 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, ndatam
           df_syng <- bind_rows(df_syng , df_helper)
         }
         setTxtProgressBar(pb, pair_ID)
-
+        step <- pair_ID/N_perm
+        incProgress(step, detail = paste("Calculating synergy scores ...", round(step*100),"%"))
       }
     }
     #Calculate synergy scores for immune cell features--------
@@ -375,6 +378,8 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, ndatam
           df_syng <- bind_rows(df_syng , df_helper)
         }
         setTxtProgressBar(pb, pair_ID)
+        step <- pair_ID/N_perm
+        incProgress(step, detail = paste("Calculating synergy scores ...", round(step*100),"%"))
       }
     }
     df_syng <- data.table::as.data.table(df_syng)
@@ -485,10 +490,13 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, ndatam
                                                    method = method,
                                                    ndatamin = ndatamin,
                                                    oncogene1 = gene_effect)$Synergy_score
+                step<-j*k/(tmpn*bank_size2)
+                incProgress(step, detail = paste("Calculating Specificity: Build bootstrapping distribution ...", round(step*100),"%"))
               }
               syng_dist_t <- syng_dist_t[complete.cases(syng_dist_t)]
               syng_dist[[j]] <- syng_dist_t
               setTxtProgressBar(pb, j)
+
             }
 
             #Calculate p.values for all pairs
@@ -567,6 +575,8 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, ndatam
               syng_dist_t <- syng_dist_t[complete.cases(syng_dist_t)]
               syng_dist[[j]] <- syng_dist_t
               setTxtProgressBar(pb, j)
+              step<-j/tmpn
+              incProgress(step, detail = paste("Calculating Specificity: Build bootstrapping distribution ...", round(step*100),"%"))
             }
 
             #Calculate p.value for all pairs
@@ -737,6 +747,8 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, ndatam
             }
           }
           setTxtProgressBar(pb, n_sns)
+          step<-n_sns/N_iteration_sensitivity
+          incProgress(step, detail = paste("Calculating Sensitivity:...",round(step*100),"%" ))
         }
         if(nrow(df_syng_complete1)>0 ){
           if(nrow(df_syng_complete2)>0 ){

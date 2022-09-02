@@ -23,7 +23,7 @@ function(input, output, session) {
   my_syng_df <- eventReactive(input$submit, {
     cat("DEBUG: im_syng_tcga started\n")
 
-    waiter_show(html=tagList(spin_fading_circles(), h4("Running ...")))
+    waiter_show(html=tagList(spin_fading_circles(), h4("Running ...")),color = "#58593FFF")
 
     cat("onco: ", paste(onco_genes(), collapse=","), "\n")
     cat("icp: ", paste(immune_genes(), collapse=","), "\n")
@@ -31,19 +31,21 @@ function(input, output, session) {
     cat("iap: ", input$immune_phenotype, "\n")
     cat("method: ", input$method, "\n")
 
-    tmp <-  im_syng_tcga(
-      onco_gene  = onco_genes(),
-      icp_gene = immune_genes(),
-      cohort = input$cohort,
-      add_receptor_ligand = input$add_receptor_ligand,
-      select_iap = input$immune_phenotype,
-      method = input$method,
-      ndatamin=4,
-      sensitivity = input$sensitivity,
-      specificity = input$specificity,
-      N_iteration_sensitivity = input$N_iteration_sensitivity,
-      N_iteration_specificity = input$N_iteration_specificity
-    )
+    withProgress(message = '', value = 0, {
+      tmp <-  im_syng_tcga_shiny(
+        onco_gene  = onco_genes(),
+        icp_gene = immune_genes(),
+        cohort = input$cohort,
+        add_receptor_ligand = input$add_receptor_ligand,
+        select_iap = input$immune_phenotype,
+        method = input$method,
+        ndatamin=4,
+        sensitivity = input$sensitivity,
+        specificity = input$specificity,
+        N_iteration_sensitivity = input$N_iteration_sensitivity,
+        N_iteration_specificity = input$N_iteration_specificity
+      )
+    })
     if(!exists("tmp")){ shinyalert("Oops! Something went wrong. Please contact us.",type="error")}
 
     cat("COLS: ", paste(colnames(tmp), collapse=","), "\n")
@@ -51,9 +53,11 @@ function(input, output, session) {
     tmp <- tmp[order(-tmp$Synergy_score),]
 
     cat("DEBUG: im_syng_tcga finished\n")
+
     waiter_hide()
     tmp
   })
+
   rowCallback <- c(
     "function(row, data){",
     "  for(var i=0; i<data.length; i++){",
@@ -76,6 +80,12 @@ function(input, output, session) {
     DT::datatable(tmp, rownames= FALSE,options = list(rowCallback = JS(rowCallback)))
   })
 
+  output$download_table <- downloadHandler(
+    filename = function(){"im_table.csv"},
+    content = function(fname){
+      write.csv(my_syng_df(), fname)
+    }
+  )
   boxplot_gene_pairs <- reactive({
     req(my_syng_df())
     t1 <- my_syng_df()
@@ -114,7 +124,7 @@ function(input, output, session) {
     plotinput1()
   })
   output$Network_plot <- downloadHandler(
-    filename = 'network.png',
+    filename = 'im_network.png',
     content = function(file) {
       png(file,width = 1000,height = 1000)
       print(plotinput1())
@@ -136,6 +146,10 @@ function(input, output, session) {
     cat("DEBUG: im_boxplot started\n")
 
     waiter_show(html=tagList(spin_fading_circles(), h4("Running ...")))
+
+    progress <- shiny::Progress$new()
+    on.exit(progress$close())
+    progress$set(message = "Creating plots...Almost done!", value = 99)
 
     gene_pair <- input$gene_pair
     if(length(gene_pair) > 0 ){

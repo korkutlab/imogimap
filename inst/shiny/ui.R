@@ -136,7 +136,7 @@ dashboardPage(
                      tabPanel("Results",
                               h4("Table"),
                               DT::dataTableOutput("results_table"),
-
+                              downloadButton('download_table'),
                               h4("Network"),
                               numericInput("cutoff", "Cutoff", 0.35, min = 0, max = 1, step=0.1),
                               #textOutput("netplot_text"),
