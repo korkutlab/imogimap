@@ -31,5 +31,6 @@ Suggests:
     shinydashboard,
     shinyalert,
     shinythemes,
-    waiter
+    waiter,
+    R.utils
 VignetteBuilder: knitr
