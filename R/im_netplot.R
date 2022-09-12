@@ -81,14 +81,15 @@ im_netplot<- function(df, icp_gene, cohort, Immune_phenotype, cutoff, seed=1) {
   E(g)$color <- ifelse(E(g)$group==TRUE,"black",E(g)$color)
 
   V(g)$color <- ifelse(substr(names(V(g)),1,nchar(names(V(g)))-1) %in% icp_gene,"grey",
-                       ifelse(substr(names(V(g)),nchar(names(V(g))),nchar(names(V(g))))=="+","darkorange1",
-                              "skyblue"))
+                       ifelse(substr(names(V(g)),nchar(names(V(g))),nchar(names(V(g))))=="+","darkorange1", "skyblue"))
   V(g)$color <- ifelse(substr(names(V(g)),1,nchar(names(V(g)))-1) %in% icp_gene,ifelse(substr(names(V(g)),nchar(names(V(g))),nchar(names(V(g))))=="+","red4","skyblue4"), V(g)$color)
 
 
   ming <- min(E(g)$Synergy_score)
   E(g)$width <- 5*(E(g)$Synergy_score-ming)/(max(E(g)$Synergy_score)-ming)+2
-
+  E(g)$width <- ifelse(E(g)$group==TRUE,5,E(g)$width)
+  gcurve <- rep(-0.5, length = igraph::ecount(g))
+  gcurve[E(g)$group==TRUE]<-0.5
   #par(omi=c(0,0,0,1))
   set.seed(seed)
   p <- plot(g,
@@ -103,6 +104,6 @@ im_netplot<- function(df, icp_gene, cohort, Immune_phenotype, cutoff, seed=1) {
             vertex.label.dist=1,
             #edge.color = edge_color,
             #edge.width = 5*(E(g)$Synergy_score-ming)/(max(E(g)$Synergy_score)-ming)+2,
-            edge.curved=seq(-0.5, 0.5, length = igraph::ecount(g)))
+            edge.curved=gcurve)
   return(p)
 }

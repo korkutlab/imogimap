@@ -4,6 +4,8 @@ library(shinydashboard)
 library(imogimap)
 library(base)
 library(DT)
+library(R.utils)
+
 function(input, output, session) {
   onco_genes <- reactive({
     unlist(strsplit(input$onco_genes, "\n"))
@@ -32,7 +34,7 @@ function(input, output, session) {
     cat("method: ", input$method, "\n")
 
     withProgress(message = '', value = 0, {
-      tmp <-  im_syng_tcga_shiny(
+      tmp <-  withTimeout(im_syng_tcga_shiny(
         onco_gene  = onco_genes(),
         icp_gene = immune_genes(),
         cohort = input$cohort,
@@ -44,10 +46,10 @@ function(input, output, session) {
         specificity = input$specificity,
         N_iteration_sensitivity = input$N_iteration_sensitivity,
         N_iteration_specificity = input$N_iteration_specificity
-      )
+      ),timout=3600,cpu = 3600,elapsed = 3600,onTimeout = "warning")
     })
     if(!exists("tmp")){ shinyalert("Oops! Something went wrong. Please contact us.",type="error")}
-
+    if(class(tmp)=="character"){ shinyalert("Reached elapsed time limit.  See instruction for more details.",type="error")}
     cat("COLS: ", paste(colnames(tmp), collapse=","), "\n")
 
     tmp <- tmp[order(-tmp$Synergy_score),]

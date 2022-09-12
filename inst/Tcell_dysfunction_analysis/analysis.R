@@ -158,10 +158,20 @@ n<- nrow(df)
 df$Q <- p.adjust(df$specificity_pvalue,method="BH",n =n)
 df <- df[df$Q<0.1,]
 df <- df[complete.cases(df),]
+
+#add ligand receptor interactions
+df <-merge(df,lgn_receptor_ligand,by=c("Gene1","Gene2"),all.x=T)
+df <-merge(df,lgn_receptor_ligand,by.x=c("Gene1","Gene2"),by.y=c("Gene2","Gene1"),all.x=T)
+df$ligand_receptor_interaction<-FALSE
+df$ligand_receptor_interaction[df$ligand_receptor_interaction.x==T]<- TRUE
+df$ligand_receptor_interaction[df$ligand_receptor_interaction.y==T]<- TRUE
+df$ligand_receptor_interaction.x<-NULL
+df$ligand_receptor_interaction.y<-NULL
+
 #change seed to explore different layouts
 while (!is.null(dev.list()))  dev.off()
 pdf("figure2d.pdf",width = 15,height = 15)
-im_netplot(df =df, Immune_phenotype  ="IFNGscore",cutoff = 0.0,seed=1)
+im_netplot(df =df,cohort = "ucec", Immune_phenotype  ="IFNGscore",cutoff = 0.0,seed=1)
 dev.off()
 
 #Plot2E---------------------------------------------
@@ -195,7 +205,7 @@ clin <- read.csv("TCGA_PFIsurvival_UCEC.csv",header = T)
 #Read TCGA UCEC expression
 df <-curatedTCGAData::curatedTCGAData(diseaseCode = "ucec",
                                       version = "1.1.38",
-                                      assays = c("RNASeq2GeneNorm"), 
+                                      assays = c("RNASeq2GeneNorm"),
                                       dry.run = F)@ExperimentList@listData[[1]]
 
 data_expression <- df@assays$data@listData[[1]]
@@ -411,6 +421,16 @@ n<- nrow(df)
 df$Q <- p.adjust(df$specificity_pvalue,method="BH",n =n)
 df <- df[df$Q<0.1,]
 
+
+#add ligand receptor interactions
+df <-merge(df,lgn_receptor_ligand,by=c("Gene1","Gene2"),all.x=T)
+df <-merge(df,lgn_receptor_ligand,by.x=c("Gene1","Gene2"),by.y=c("Gene2","Gene1"),all.x=T)
+df$ligand_receptor_interaction<-FALSE
+df$ligand_receptor_interaction[df$ligand_receptor_interaction.x==T]<- TRUE
+df$ligand_receptor_interaction[df$ligand_receptor_interaction.y==T]<- TRUE
+df$ligand_receptor_interaction.x<-NULL
+df$ligand_receptor_interaction.y<-NULL
+
 #change seed to explore different layouts
 while (!is.null(dev.list()))  dev.off()
 pdf("figure3d.pdf",width = 15,height = 15)
@@ -427,7 +447,7 @@ dfsc1 <- dfsc1[order(dfsc1$tissue),]
 dfsc1 <- dfsc1[order(dfsc1$cluster),]
 dfsc1 <- dfsc1[order(dfsc1$CD274),]
 
-mat <- as.matrix(dfsc1[,c(6:7)]) 
+mat <- as.matrix(dfsc1[,c(6:7)])
 mat<- t(mat)
 
 library(ComplexHeatmap)
@@ -450,17 +470,17 @@ ht = Heatmap(mat,
              column_split = dfsc1$celltype,
              bottom_annotation =  HeatmapAnnotation( "Patient"=dfsc1$patient,
                                                      "Tissue"=dfsc1$tissue,
-                                                     col=list( "Patient" = 
-                                                                 structure(1:length(unique(dfsc1$patient)), 
+                                                     col=list( "Patient" =
+                                                                 structure(1:length(unique(dfsc1$patient)),
                                                                            names = unique(dfsc1$patient)),
-                                                               "Tissue" = 
-                                                                 structure(1:length(unique(dfsc1$tissue)), 
+                                                               "Tissue" =
+                                                                 structure(1:length(unique(dfsc1$tissue)),
                                                                            names = unique(dfsc1$tissue))
                                                      )),
-             top_annotation =  HeatmapAnnotation( "Cell type"=dfsc1$celltype , 
-                                                  col=list("Cell type" = 
-                                                             structure(1:length(unique(dfsc1$celltype)), 
-                                                                       names = unique(dfsc1$celltype)) 
+             top_annotation =  HeatmapAnnotation( "Cell type"=dfsc1$celltype ,
+                                                  col=list("Cell type" =
+                                                             structure(1:length(unique(dfsc1$celltype)),
+                                                                       names = unique(dfsc1$celltype))
                                                   )))
 
 draw(ht, padding = unit(c(2, 2, 30, 2), "mm"))
@@ -468,7 +488,7 @@ dev.off()
 
 #plot3F---------------------------------------------
 dfsc2<-read.csv("GSE148673_rna_raw.csv",row.names = 1)
-mat <- as.matrix(dfsc2[,-c(1:2)]) 
+mat <- as.matrix(dfsc2[,-c(1:2)])
 mat<- t(mat)
 
 pdf("figure3f.pdf",width = 20,height = 7)
@@ -487,15 +507,15 @@ ht = Heatmap(mat,
              column_split = df$Patient,
              bottom_annotation =  HeatmapAnnotation(
                "Tissue"=df$copykat.pred,
-               col=list( 
-                 "Tissue" = 
+               col=list(
+                 "Tissue" =
                    structure(1:length(unique(df$copykat.pred)),names = unique(df$copykat.pred))
                )
              ),
-             top_annotation =  HeatmapAnnotation( 
-               "Patient"=df$Patient, 
+             top_annotation =  HeatmapAnnotation(
+               "Patient"=df$Patient,
                col=list(
-                 "Patient" = structure(1:length(unique(df$Patient)),names = unique(df$Patient)) 
+                 "Patient" = structure(1:length(unique(df$Patient)),names = unique(df$Patient))
                ))
 )
 
