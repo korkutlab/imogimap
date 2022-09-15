@@ -114,21 +114,21 @@ im_boxplot_tcga<-function(onco_gene,icp_gene,cohort,Immune_phenotype,sample_list
   #Find if expression or inhibition of genes positively impact feature
   my_score <- find_a_synergy(df_feature[,-1],method = "max",ndatamin=8)
   if(is.na(my_score$Synergy_score)){
-    effect_onco <- "Expressed"
-    effect_icp <- "Expressed"
+    effect_onco <- "High"
+    effect_icp <- "High"
   }else{
     effect_onco <- my_score$agent1_expression
     effect_icp <- my_score$agent2_expression
   }
 
   #Flip labels if inhibition of genes positively impact feature
-  if(effect_onco=="Inhibited"){
+  if(effect_onco=="Low"){
     df_feature[df_feature[,3]==4,3] <- 0
     df_feature[df_feature[,3]==1,3] <- 4
     df_feature[df_feature[,3]==0,3] <- 1
 
   }
-  if(effect_icp=="Inhibited"){
+  if(effect_icp=="Low"){
     df_feature[df_feature[,4]==4,4] <- 0
     df_feature[df_feature[,4]==1,4] <- 4
     df_feature[df_feature[,4]==0,4] <- 1
@@ -137,19 +137,19 @@ im_boxplot_tcga<-function(onco_gene,icp_gene,cohort,Immune_phenotype,sample_list
   #Define labels
   df_feature$state <- as.factor(as.integer((df_feature[,3]*2+df_feature[,4])/3))
 
-  if(effect_onco=="Expressed" && effect_icp=="Expressed"){
+  if(effect_onco=="High" && effect_icp=="High"){
     mylabels <-   c("Both low",
                     paste0(icp_gene," high\n",onco_gene," low"),
                     paste0(onco_gene," high\n",icp_gene," low"),
                     "Both high")
   }else{
-    if(effect_onco=="Inhibited" && effect_icp=="Inhibited"){
+    if(effect_onco=="Low" && effect_icp=="Low"){
       mylabels <- c("Both high",
                     paste0(onco_gene," high\n",icp_gene," low"),
                     paste0(icp_gene," high\n",onco_gene," low"),
                     "Both low")
     }else{
-      if(effect_onco=="Inhibited" && effect_icp=="Expressed"){
+      if(effect_onco=="Low" && effect_icp=="High"){
         mylabels <- c( paste0(icp_gene," low\n",onco_gene," high"),
                        "Both high",
                        "Both low",

@@ -12,7 +12,7 @@ pkg_name <- "imogimap"
 pkg_version <- packageVersion(pkg_name) %>% as.character
 site_name <- HTML(paste0("imogimap ", tags$sub(pkg_version)))
 
-tmp_onco_genes <- paste("CD70", collapse="\n")
+tmp_onco_genes <- paste(c("TGFB1","TGFBR1"), collapse="\n")
 tmp_icp_genes <- paste(icp_gene_list, collapse="\n") #icp_gene_list
 
 # navbarPage() will not work here with combination of waiter and bsplus
@@ -44,7 +44,7 @@ dashboardPage(
                           tags$a("MDAnderson" ,
                                  href = 'https://www.mdanderson.org/',
                                  #style = "padding: 10px 1190px 0px 0px",
-                                 #img(src = 'md-anderson-horizontal-logo.jpeg')
+                                 img(src = '__rectSitelogo__MDA SITE LOGO - Thumbnail.png',height="20%", width="20%", align="right")
                           )
                   )
   ),
@@ -61,18 +61,23 @@ dashboardPage(
       use_bs_popover(),
       tabPanel("Analysis",
                sidebarLayout(
-                 position="right",
+                 position="left",
                  sidebarPanel(
-                   includeMarkdown("introduction.md")
+                   conditionalPanel(condition="input.tabselected==1",
+                                    includeMarkdown("introduction.md")),
+
+                   conditionalPanel(condition="input.tabselected==2",
+                                    includeMarkdown("interpretation.md")
+                   )
                  ),
                  mainPanel(
                    tabsetPanel(
-                     tabPanel("Parameters",
+                     tabPanel("Parameters",value=1,
 
                               h4("Function Parameters"),
 
-                              textAreaInput("onco_genes", "Input Genes (One Gene Per Line)", tmp_onco_genes, width = "480px"),
-                              textAreaInput("immune_genes", "Immune Checkpoint (ICP) Genes (One Gene Per Line; Curated List of 29 ICP Genes Provided Below as Default)", tmp_icp_genes, width = "480px"),
+                              textAreaInput("onco_genes", "Input Genes Hugo ID (One Gene Per Line; Case sensitive)", tmp_onco_genes, width = "480px"),
+                              textAreaInput("immune_genes", "Immune Checkpoint (ICP) Genes Hugo ID (One Gene Per Line; Case sensitive; Curated List of 29 ICP Genes Provided Below as Default)", tmp_icp_genes, width = "480px"),
 
                               checkboxInput("add_receptor_ligand", "add receptor/ligand", FALSE) %>%
                                 shinyInput_label_embed(
@@ -89,7 +94,7 @@ dashboardPage(
 
                               selectInput("immune_phenotype", "Immune Phenotype", TCGA_immune_features_list),
                               selectInput("cohort", "Cohort", tcgaTypes, selected="luad"),
-                              selectInput("method", "Method", c( "independence","max")),
+                              selectInput("method", "Method", c( "max","independence")),
 
 
                               checkboxInput("sensitivity", "Sensitivity", FALSE) %>%
@@ -97,7 +102,7 @@ dashboardPage(
                                   shiny_iconlink() %>%
                                     bs_embed_popover(
                                       title = "Sensitivity",
-                                      content = "measures the sensitivity of the observed synergy score to the exact data configuration. Check the box to conduct sensitivity analysis. Note that sensitivity analyses are time consuming. We recommend to leave the box unchecked for the first run, select onco-icp gene pair of interest based on synergy results, and finally conduct sensitivity analysis for the selected gene pair.",
+                                      content = "measures the sensitivity of the observed synergy score to the exact data configuration. Check the box to conduct sensitivity analysis. Note that sensitivity analyses are time consuming. See sthe ide panel for more details.",
                                       placement = "right"
                                     )
                                 ),
@@ -112,16 +117,16 @@ dashboardPage(
                                   shiny_iconlink() %>%
                                     bs_embed_popover(
                                       title = "Specificity",
-                                      content = " measures the probability of finding a score higher than the observed synergy score, by randomly pairing a gene from genome to any of onco/icp genes. Check the box and choose the number of random iterations to conduct specificity analysis. Note that specificity analyses are time consuming. We recommend to leave the box unchecked for the first run, select onco-icp gene pair of interest based on synergy results, and finally conduct specificity analysis for the selected gene pair.",
+                                      content = " measures the probability of finding a score higher than the observed synergy score, by randomly pairing a gene from genome to any of  genes in the lists. Check the box and choose the number of random iterations to conduct specificity analysis. Note that specificity analyses are time consuming. See the side panel for more details",
                                       placement = "right"
                                     )
                                 ),
                               conditionalPanel(
                                 condition = "input.specificity == true",
                                 numericInput("N_iteration_specificity","Number of iterations",
-                                             1000,min = 100,step=100)
+                                             100,min = 10,step=10)
                               ),
-                              h4("Plot Parameters"),
+                              #h4("Plot Parameters"),
 
                               #textInput("plot_onco_gene", "Plot Gene", placeholder="HGNC Symbols (e.g., TP53)"),
                               #textInput("plot_icp_gene", "Plot Immune Checkpoint Gene", placeholder="HGNC Symbols (e.g., TP53)"),
@@ -133,28 +138,39 @@ dashboardPage(
 
                               textOutput("debug_text")
                      ),
-                     tabPanel("Results",
+                     tabPanel("Results",value=2,
                               h4("Table"),
-                              DT::dataTableOutput("results_table"),
+                              div(style = 'overflow-x: scroll',DT::dataTableOutput("results_table")),
                               downloadButton('download_table'),
                               h4("Network"),
-                              numericInput("cutoff", "Cutoff", 0.35, min = 0, max = 1, step=0.1),
+                              numericInput("cutoff", "Cutoff", 0.80, min = 0, max = 1, step=0.1) %>%
+                                shinyInput_label_embed(
+                                  shiny_iconlink() %>%
+                                    bs_embed_popover(
+                                      title = "Cutoff",
+                                      content = "Choose a percentile value, k, for absolute synergy scores to exclude scores with their absolute value below the k-th percentile.",
+                                      placement = "right"
+                                    )
+                                ),
                               #textOutput("netplot_text"),
-                              plotOutput('netplot'),
+                              plotOutput('netplot', width = 1000,
+                                         height = 1000),
                               downloadButton('Network_plot'),
-                              h4("Boxplot"),
+                              h4("Boxplot")
+                              ,
                               uiOutput("boxplot_gene_pair"),
                               plotOutput('boxplot')
-
                      ),
-                     tabPanel("About",
+                     tabPanel("About",value=3,
                               includeMarkdown("about.md")
-                     )
+                     ),
+                     id = "tabselected"
                    )
                  )
                )
       )
-    )
 
+    )
   )
 )
+

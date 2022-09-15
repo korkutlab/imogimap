@@ -21,7 +21,6 @@
 #' im_netplot uses \pkg{igraph} to construct and plot network from synergy score data frame. Immune-checkpoints/onco-genes are depicted as black/white vertices, and positive/negative synergistic interactions are depicted as red/blue edges. Thickness of an edge is determined by the absolute value of the score, and the size of each vertex is determined by its degree. Edges with absolute values lower that the cut-off will be removed from the graph.
 #'
 #' cutoff=0 does not remove any edges. cutoff=1 removes all edges. Default is 0.95, which keeps scores with their absolute value  higher than 0.95 quantile.
-#' Colored groups are constructed based on edge-between-ness membership. For more information see \code{\link[igraph]{edge.betweenness.community}}
 #' seed is an integer that is the starting point from which random numbers are generated in igraph. Seed value is used for the reproducibility of plot layout. different seed numbers will generate different
 #' @seealso [igraph]
 #'
@@ -54,8 +53,8 @@ im_netplot<- function(df, icp_gene, cohort, Immune_phenotype, cutoff, seed=1) {
 
   df$Synergy_sign <- ifelse(sign(df$Synergy_score)==1, "+", "-")
   df$Synergy_score <- abs(df$Synergy_score)
-  df$Gene1_expression <- ifelse(df$Gene1_expression=="Expressed","+","-")
-  df$Gene2_expression <- ifelse(df$Gene2_expression=="Expressed","+","-")
+  df$Gene1_expression <- ifelse(df$Gene1_expression=="High","+","-")
+  df$Gene2_expression <- ifelse(df$Gene2_expression=="High","+","-")
   df$gene1 <- paste0(df$Gene1,df$Gene1_expression)
   df$gene2 <- paste0(df$Gene2,df$Gene2_expression)
 
@@ -100,7 +99,7 @@ im_netplot<- function(df, icp_gene, cohort, Immune_phenotype, cutoff, seed=1) {
             rescale=TRUE,add=FALSE,
             vertex.label.font = 1,
             vertex.label.color = "black",
-            vertex.label.cex=1.5,
+            vertex.label.cex=0.80,
             vertex.label.dist=1,
             #edge.color = edge_color,
             #edge.width = 5*(E(g)$Synergy_score-ming)/(max(E(g)$Synergy_score)-ming)+2,

@@ -11,7 +11,7 @@ find_a_synergy(fdata, method, oncogene1, oncogene2, ndatamin)
 
 \item{method}{a character string indicating which synergy score method to be used. one of "max" or "independence". Default is "max".}
 
-\item{oncogene1}{An optional factor indicating assumed expression of gene1 in relation to IAP. One of "Expressed","Inhibited",or NA. Default is NA}
+\item{oncogene1}{An optional factor indicating assumed expression of gene1 in relation to IAP. One of "High","Low",or NA. Default is NA}
 
 \item{oncogene2}{An optional factor indicating assumed expression of  gene2. One of 1,-1,or NA. Default is NA}
 
@@ -28,7 +28,7 @@ fdata is a numeric matrix with 3 columns: The first column contains the numeric 
 
 For synergy score calculations, input data is stratified based on  its last two columns. Groups are labeled as low-low (LL), low-high (LH), high-low(HL), and high-high(HH) representing the expression levels of the corresponding two genes in each group. Groups are then reordered four times: (LL LH HL HH) (HH HL LH LL) (LH LL HH HL) and (HL HH LL LH). The right-most group is recognized as the base group and the left-most group is recognized as the impacted group for synergy score calculation. The order of groups in each permutation makes a unique assumption about whether each of the genes is an oncogene or a tumor suppressor (See publication for more details). If oncogene1 or oncogene2 values are provided, one of the four permutations will be chosen accordingly.
 
-Oncogene1 and oncogene2 force our prior knowledge on expression of single genes in in relation to IAP, and determine which groups should be taken as base-groups. If a gene is marked as "Expressed" it means it is expressed at higher IAP levels. If a gene is marked as "Inhibited" it indicates its lack of expression at higher IAP levels. Hence  groups with low(L) expression of gene are chosen as base groups (one of LL or LH) and only the two permutations with these base groups will be chosen.  Hence  groups with high(H) expression of gene are chosen as base groups (one of HH or LH) and only the two permutations with these base groups will be chosen.If Oncogene1 and oncogene2 are missing, all four permutations will be assessed as described above.
+Oncogene1 and oncogene2 force our prior knowledge on expression of single genes in in relation to IAP, and determine which groups should be taken as base-groups. If a gene is marked as "High" it means it is highly expressed at higher IAP levels. If a gene is marked as "Low" it indicates its low expression at higher IAP levels. Hence  groups with low(L) expression of gene are chosen as base groups (one of LL or LH) and only the two permutations with these base groups will be chosen.  Hence  groups with high(H) expression of gene are chosen as base groups (one of HH or LH) and only the two permutations with these base groups will be chosen.If Oncogene1 and oncogene2 are missing, all four permutations will be assessed as described above.
 
 A synergy score is calculated for each permutation. The score with the maximum absolute value is chosen as the synergy score and the corresponding permutation order determines the oncogenic properties of two genes.  For details of synergy score calculations see calculate_syng_score.
 

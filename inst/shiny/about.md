@@ -8,25 +8,6 @@ tumor-associated processes (TAP), and immune associated processes (IAPs).
 
 TAP genes may be any set of genes that are expressed in tumor ecosystems (likely but not necessarily in the tumor cells) and with functions involving hallmarks of cancer (e.g., proliferation, apoptosis, DNA repair, tumor metabolism, immune evasion). IAPs may involve processes that are related to immunotherapy responses and immune states in tumor ecosystems such as Immune cell infiltration (leukocyte fraction), Immune cell type fractions, tumor mutation burden, mRNA-based pathway scores for epithelial mesenchymal transition (EMT) status, vascularization, and IFNG expression.By mapping the ICP-TAP interactions, ImogiMap is able to inform on underlying mechanisms that jointly relate TAPs to therapeutically actionable ICPs and IAPs that are potential therapy response predictors.
 
-## How to use imogimap
- 
-Use the "Input Gene" field to insert Hugo IDs of your curated list of TAP genes. Use the default ICP genes that are already included or insert your own set of ICP genes. Choose an IAP from the immune phenotype drop-down menu, and specify the TCGA disease cohort that you are interested in. Hit the  "Submit" key and and go to the "Results" tab. If you wish to include specificity and sensitivity statistical assessments, check the corresponding boxes and specify the number of iterations.
-
-
-## How to interpret the results
-
-Under the "Results" tab you will see a synergy score, and three statistical assessment measures for each gene pair. A positive synergy score with both genes marked as "Expressed" means synergistic increase of IAP level in response to expression of both genes. Similarly a negative synergy score with both genes marked as "Expressed" means synergistic decrease of IAP level in response to expression of both genes. 
-
-Sensitivity, R, measures the sensitivity of the observed synergy score to the exact data configuration. The more robust scores, therefore the least sensitive, have lower sensitivityR. 
-
-Specificity p.value measures the probability of finding a score higher than the observed synergy score, by randomly pairing a gene from genome to any of onco/icp genes. A lower p.value indicates a more specific results.
-
-
-A color-coded graphical network of combinatorial associations is shown in the "Network" section. Red (Blue) edges represent synergistic up-regulation (down-regulation) of IAP. Dark red (Dark blue) vertices identify over-expression (inhibition) of ICP genes, and orange (blue) vertices identify over-expression (low expression) of oncogenes. A solid black edge indicates an existing ligand-receptor interaction between two adjacent vertices.
-
-A cutoff parameter is included to subset the list to those pairs with absolute value of synergy scores higher than the cutoff quantile value. 
-
-Choose a gene pair from the drop-down menu in the boxplot section to see boxplots of IAP values, stratified by gene expression levels. 
 
 For more information see  https://doi.org/10.1101/2021.10.06.462889
 

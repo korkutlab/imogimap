@@ -143,17 +143,18 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, ndatam
 
     onco_gene[onco_gene=="VSIR"]<- "C10orf54"
     onco_gene[onco_gene=="NCR3LG1"]<- "DKFZp686O24166"
-
+    missing_genes <- onco_gene[-which(onco_gene %in% rownames(data_expression))]
+    if(length(missing_genes)>0){
+      warning(length(missing_genes)," oncogene(s) are missing:  \n  ",
+              lapply(missing_genes, function(x)paste0(x,"  ")))
+      onco_gene<- onco_gene[!(onco_gene %in% missing_genes)]
+      if(length(onco_gene)==0){  stop("ERROR: No oncogene was found. Check Hugo IDs.")}
+    }
     if(length(onco_gene)==1){
       df_selected <- as.data.frame((data_expression[rownames(data_expression ) %in% onco_gene,]))
       colnames(df_selected) <- onco_gene
     }else{
       df_selected <- t(data_expression[rownames(data_expression ) %in% onco_gene,])
-      missing_genes <- onco_gene[-which(onco_gene %in% rownames(df_selected))]
-      if(length(missing_genes)>0){
-        warning(length(missing_genes)," Some oncogenes are missing:  \n  ",
-                lapply(missing_genes, function(x)paste0(x,"  ")))
-      }
     }
     if(nrow(df_selected)==0){
       stop("ERROR: No Hugo symbols found for onco-genes.")
@@ -169,17 +170,18 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, ndatam
     icp_gene[icp_gene=="VSIR"]<- "C10orf54"
     icp_gene[icp_gene=="NCR3LG1"]<- "DKFZp686O24166"
 
+    missing_genes <- icp_gene[-which(icp_gene %in% rownames(data_expression))]
+    if(length(missing_genes)>0){
+      warning(length(missing_genes)," icp gene(s) are missing:  \n  ",
+              lapply(missing_genes, function(x)paste0(x,"  ")))
+      icp_gene<- icp_gene[!(icp_gene %in% missing_genes)]
+    }
+
     if(length(icp_gene)==1){
       df_icp <- as.data.frame(data_expression[rownames(data_expression) %in% icp_gene,])
       colnames(df_icp) <- icp_gene
     }else{
       df_icp <- t(data_expression[rownames(data_expression) %in% icp_gene,])
-      missing_genes <- icp_gene[-which(icp_gene %in% rownames(df_icp))]
-      if(length(missing_genes)>0){
-        warning(length(missing_genes)," Some oncogenes are missing:  \n  ",
-                lapply(missing_genes, function(x)paste0(x,"  ")))
-      }
-
     }
     if(nrow(df_icp)==0){
       stop("ERROR: No Hugo symbols found for icp_genes.")

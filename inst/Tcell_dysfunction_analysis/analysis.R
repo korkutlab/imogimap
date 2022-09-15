@@ -504,18 +504,18 @@ ht = Heatmap(mat,
              row_dend_width = unit(4, "cm"),
              column_gap =  unit(5, "mm"),
              heatmap_legend_param = list(title = "raw counts"),
-             column_split = df$Patient,
+             column_split = dfsc2$Patient,
              bottom_annotation =  HeatmapAnnotation(
-               "Tissue"=df$copykat.pred,
+               "Tissue"=dfsc2$copykat.pred,
                col=list(
                  "Tissue" =
-                   structure(1:length(unique(df$copykat.pred)),names = unique(df$copykat.pred))
+                   structure(1:length(unique(dfsc2$copykat.pred)),names = unique(dfsc2$copykat.pred))
                )
              ),
              top_annotation =  HeatmapAnnotation(
-               "Patient"=df$Patient,
+               "Patient"=dfsc2$Patient,
                col=list(
-                 "Patient" = structure(1:length(unique(df$Patient)),names = unique(df$Patient))
+                 "Patient" = structure(1:length(unique(dfsc2$Patient)),names = unique(dfsc2$Patient))
                ))
 )
 

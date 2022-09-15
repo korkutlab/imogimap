@@ -53,9 +53,12 @@ function(input, output, session) {
     cat("COLS: ", paste(colnames(tmp), collapse=","), "\n")
 
     tmp <- tmp[order(-tmp$Synergy_score),]
-
+    tmp2 <- tmp[complete.cases(tmp$Synergy_score),]
+    tmp2 <- tmp2[tmp2$Synergy_score!=0,]
     cat("DEBUG: im_syng_tcga finished\n")
-
+   if(nrow(tmp2)==0){
+     shinyalert("All synergy scores are zero or missing. Try a different immune phenotype.",type="warning")
+   }
     waiter_hide()
     tmp
   })
@@ -90,9 +93,9 @@ function(input, output, session) {
   )
   boxplot_gene_pairs <- reactive({
     req(my_syng_df())
-    t1 <- my_syng_df()
-    t2 <- subset(t1,!is.na(Synergy_score))
-    t2 <- subset(t2, !(Synergy_score==0))
+    t2 <- my_syng_df()
+    #t2 <- subset(t1,!is.na(Synergy_score))
+    #t2 <- subset(t2, !(Synergy_score==0))
     t2 <- t2[, c("Gene1", "Gene2")] %>% unique
     t3 <- paste(t2[,1], t2[,2], sep="|")
     t3
@@ -151,7 +154,7 @@ function(input, output, session) {
 
     progress <- shiny::Progress$new()
     on.exit(progress$close())
-    progress$set(message = "Creating plots...Almost done!", value = 99)
+    progress$set(message = "Creating boxplot...", value = 99)
 
     gene_pair <- input$gene_pair
     if(length(gene_pair) > 0 ){

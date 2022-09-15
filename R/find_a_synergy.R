@@ -3,7 +3,7 @@
 #' @importFrom stats median mad
 #' @param fdata A numeric matrix with 3 columns: A numeric indicating value of an immune feature and two integers, each interpreted as a coded label for the expression level of a gene. Each row of fdata is a different sample or experiment.
 #' @param method a character string indicating which synergy score method to be used. one of "max" or "independence". Default is "max".
-#' @param oncogene1 An optional factor indicating assumed expression of gene1 in relation to IAP. One of "Expressed","Inhibited",or NA. Default is NA
+#' @param oncogene1 An optional factor indicating assumed expression of gene1 in relation to IAP. One of "High","Low",or NA. Default is NA
 #' @param oncogene2 An optional factor indicating assumed expression of  gene2. One of 1,-1,or NA. Default is NA
 #' @param ndatamin minimum number of samples. Synergy score calculation will be skipped for matrices with number of rows less than ndatamin
 #' @keywords synergy scoring
@@ -14,7 +14,7 @@
 #'
 #' For synergy score calculations, input data is stratified based on  its last two columns. Groups are labeled as low-low (LL), low-high (LH), high-low(HL), and high-high(HH) representing the expression levels of the corresponding two genes in each group. Groups are then reordered four times: (LL LH HL HH) (HH HL LH LL) (LH LL HH HL) and (HL HH LL LH). The right-most group is recognized as the base group and the left-most group is recognized as the impacted group for synergy score calculation. The order of groups in each permutation makes a unique assumption about whether each of the genes is an oncogene or a tumor suppressor (See publication for more details). If oncogene1 or oncogene2 values are provided, one of the four permutations will be chosen accordingly.
 #'
-#' Oncogene1 and oncogene2 force our prior knowledge on expression of single genes in in relation to IAP, and determine which groups should be taken as base-groups. If a gene is marked as "Expressed" it means it is expressed at higher IAP levels. If a gene is marked as "Inhibited" it indicates its lack of expression at higher IAP levels. Hence  groups with low(L) expression of gene are chosen as base groups (one of LL or LH) and only the two permutations with these base groups will be chosen.  Hence  groups with high(H) expression of gene are chosen as base groups (one of HH or LH) and only the two permutations with these base groups will be chosen.If Oncogene1 and oncogene2 are missing, all four permutations will be assessed as described above.
+#' Oncogene1 and oncogene2 force our prior knowledge on expression of single genes in in relation to IAP, and determine which groups should be taken as base-groups. If a gene is marked as "High" it means it is highly expressed at higher IAP levels. If a gene is marked as "Low" it indicates its low expression at higher IAP levels. Hence  groups with low(L) expression of gene are chosen as base groups (one of LL or LH) and only the two permutations with these base groups will be chosen.  Hence  groups with high(H) expression of gene are chosen as base groups (one of HH or LH) and only the two permutations with these base groups will be chosen.If Oncogene1 and oncogene2 are missing, all four permutations will be assessed as described above.
 #'
 #'
 #' A synergy score is calculated for each permutation. The score with the maximum absolute value is chosen as the synergy score and the corresponding permutation order determines the oncogenic properties of two genes.  For details of synergy score calculations see calculate_syng_score.
@@ -88,7 +88,7 @@ find_a_synergy=function(fdata,method,oncogene1,oncogene2,ndatamin){
         CS4 <- calculate_syng_score(m_HH,m_HL,m_LH,m_LL,SEM2_HH,SEM2_HL,SEM2_LH,SEM2_LL,method)
       }else{
         if(!is.na(oncogene1) && is.na(oncogene2)){
-          if(oncogene1=="Expressed"){
+          if(oncogene1=="High"){
             CS1 <- calculate_syng_score(m_LL,m_LH,m_HL,m_HH,SEM2_LL,SEM2_LH,SEM2_HL,SEM2_HH,method)
             CS2 <- calculate_syng_score(m_LH,m_LL,m_HH,m_HL,SEM2_LH,SEM2_LL,SEM2_HH,SEM2_HL,method)
           }else{
@@ -97,7 +97,7 @@ find_a_synergy=function(fdata,method,oncogene1,oncogene2,ndatamin){
           }
         }else{
           if(!is.na(oncogene2) && is.na(oncogene1)){
-            if(oncogene2=="Expressed"){
+            if(oncogene2=="High"){
               CS1 <- calculate_syng_score(m_LL,m_LH,m_HL,m_HH,SEM2_LL,SEM2_LH,SEM2_HL,SEM2_HH,method)
               CS3 <- calculate_syng_score(m_HL,m_HH,m_LL,m_LH,SEM2_HL,SEM2_HH,SEM2_LL,SEM2_LH,method)
             }else{
@@ -105,14 +105,14 @@ find_a_synergy=function(fdata,method,oncogene1,oncogene2,ndatamin){
               CS4 <- calculate_syng_score(m_HH,m_HL,m_LH,m_LL,SEM2_HH,SEM2_HL,SEM2_LH,SEM2_LL,method)
             }
           }else{
-            if(oncogene1=="Expressed"){
-              if(oncogene2=="Expressed"){
+            if(oncogene1=="High"){
+              if(oncogene2=="High"){
                 CS1 <- calculate_syng_score(m_LL,m_LH,m_HL,m_HH,SEM2_LL,SEM2_LH,SEM2_HL,SEM2_HH,method)
               }else{
                 CS2 <- calculate_syng_score(m_LH,m_LL,m_HH,m_HL,SEM2_LH,SEM2_LL,SEM2_HH,SEM2_HL,method)
               }
             }else{
-              if(oncogene2=="Expressed"){
+              if(oncogene2=="High"){
                 CS3 <- calculate_syng_score(m_HL,m_HH,m_LL,m_LH,SEM2_HL,SEM2_HH,SEM2_LL,SEM2_LH,method)
               }else{
                 CS4 <- calculate_syng_score(m_HH,m_HL,m_LH,m_LL,SEM2_HH,SEM2_HL,SEM2_LH,SEM2_LL,method)
@@ -140,22 +140,22 @@ find_a_synergy=function(fdata,method,oncogene1,oncogene2,ndatamin){
         CS <- CS0[i]
 
         if(i==1){
-          agent1_expression <- "Expressed"
-          agent2_expression <- "Expressed"
+          agent1_expression <- "High"
+          agent2_expression <- "High"
           pval <-  max(ggpubr::compare_means(IAP~group,fdata2,paired=F,ref.group = 4)$p,na.rm=TRUE)
         }else{
           if(i==2){
-            agent1_expression <- "Expressed"
-            agent2_expression <- "Inhibited"
+            agent1_expression <- "High"
+            agent2_expression <- "Low"
             pval <-  max(ggpubr::compare_means(IAP~group,fdata2,paired=F,ref.group = 3)$p,na.rm=TRUE)
           }else{
             if(i==3){
-              agent1_expression <- "Inhibited"
-              agent2_expression <- "Expressed"
+              agent1_expression <- "Low"
+              agent2_expression <- "High"
               pval <-  max(ggpubr::compare_means(IAP~group,fdata2,paired=F,ref.group = 2)$p,na.rm=TRUE)
             }else{
-              agent1_expression <- "Inhibited"
-              agent2_expression <- "Inhibited"
+              agent1_expression <- "Low"
+              agent2_expression <- "Low"
               pval <- max(ggpubr::compare_means(IAP~group,fdata2,paired=F,ref.group = 1)$p,na.rm=TRUE)
             }
           }
