@@ -101,6 +101,6 @@ dev.off()
 
 ## Citation
 
-Bozorgui, Behnaz, Elisabeth K. Kong, Augustin Luna, and Anil Korkut.2021. Mapping the Functional Interactions at the Tumor-ImmuneCheckpoint Interface.
+Bozorgui, B., Kong E. K., Luna A., and Korkut A. (2021) Mapping the Functional Interactions at the Tumor-ImmuneCheckpoint Interface.
 <http://dx.doi.org/10.1101/2021.10.06.462889>.
 
