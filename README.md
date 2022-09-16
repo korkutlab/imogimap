@@ -96,6 +96,7 @@ im_netplot(df = my_syng_df ,
 dev.off()
 ```
 
+## Citation
 
 Bozorgui, B., Kong, E.K., Luna, A., and Korkut, A. (2021) Mapping the Functional Interactions at the Tumor-Immune Checkpoint Interface.
 <http://dx.doi.org/10.1101/2021.10.06.462889>.
