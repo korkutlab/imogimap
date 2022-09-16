@@ -1,16 +1,18 @@
+---
+bibliography: references.bib
+---
 
 # imogimap
 
 <!-- badges: start -->
-<!-- badges: end -->
 
+<!-- badges: end -->
 
 The goal of imogimap is to calculate statistical synergy scores based on mRNA expression profiles of multi-sample data to quantify combinatorial effects of single onco-genes or tumor intrinsic onco-genic pathways and immune checkpoints on immune related phenotype in tumor microenvironment.
 
-
 ## Installation
 
-You can install the released version of imogimap from  GitHub with:
+You can install the released version of imogimap from GitHub with:
 
 ``` r
 install_github('korkutlab/imogimap')
@@ -48,7 +50,9 @@ my_syng_df <-  im_syng_tcga(onco_gene  = my_onco,
 results <- im_boxplot_tcga(onco_gene = "TGFB1", icp_gene = "CD27", cohort = "luad", Immune_phenotype = "IFNGscore")
 im_boxplot_tcga_plot(results)
 ```
+
 This is a basic example of how to use imogimap with user's data
+
 ``` r
 library(imogimap)
 # Use sample_mRNA_data directly or as formatting guide for expression data
@@ -83,7 +87,7 @@ im_boxplot(cotarget = "TGFB1",
 
 This is a basic example of generating graphical network for synergy scores.
 
-```r       
+``` r
 #Generate graphical network based on synergy scores for a single immune feature
 jpeg("syng_network.jpeg",width=1000,height=1000)
 im_netplot(df = my_syng_df ,
@@ -94,3 +98,5 @@ im_netplot(df = my_syng_df ,
            seed = 123)
 dev.off()
 ```
+
+[@bozorgui2021]
