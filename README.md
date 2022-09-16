@@ -99,10 +99,8 @@ im_netplot(df = my_syng_df ,
 dev.off()
 ```
 
-::: {#refs .references .csl-bib-body .hanging-indent}
-::: {#ref-xie2018 .csl-entry}
-Bozorgui, Behnaz, Elisabeth K. Kong, Augustin Luna, and Anil Korkut.2021. \"Mapping the Functional Interactions at the Tumor-ImmuneCheckpoint Interface.\"
+## Citation
 
+Bozorgui, Behnaz, Elisabeth K. Kong, Augustin Luna, and Anil Korkut.2021. Mapping the Functional Interactions at the Tumor-ImmuneCheckpoint Interface.
 <http://dx.doi.org/10.1101/2021.10.06.462889>.
-:::
-:::
+
