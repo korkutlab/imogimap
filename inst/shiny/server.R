@@ -7,6 +7,8 @@ library(DT)
 library(R.utils)
 
 function(input, output, session) {
+
+
   onco_genes <- reactive({
     unlist(strsplit(input$onco_genes, "\n"))
   })
@@ -56,9 +58,9 @@ function(input, output, session) {
     tmp2 <- tmp[complete.cases(tmp$Synergy_score),]
     tmp2 <- tmp2[tmp2$Synergy_score!=0,]
     cat("DEBUG: im_syng_tcga finished\n")
-   if(nrow(tmp2)==0){
-     shinyalert("All synergy scores are zero or missing. Try a different immune phenotype.",type="warning")
-   }
+    if(nrow(tmp2)==0){
+      shinyalert("All synergy scores are zero or missing. Try a different immune phenotype.",type="warning")
+    }
     waiter_hide()
     tmp
   })
@@ -82,7 +84,9 @@ function(input, output, session) {
 
     #cat("COLS: ", paste(colnames(tmp), collapse=","), "\n")
     options(htmlwidgets.TOJSON_ARGS = list(na = 'string'))
-    DT::datatable(tmp, rownames= FALSE,options = list(rowCallback = JS(rowCallback)))
+    DT::datatable(tmp, rownames= FALSE,
+                  options = list(rowCallback = DT::JS(rowCallback))
+    )
   })
 
   output$download_table <- downloadHandler(
@@ -185,5 +189,10 @@ function(input, output, session) {
       dev.off()
     }
   )
+  observeEvent(input$submit, {
+    updateTabsetPanel(session, "tabselected",
+                      selected = "Result"
+    )
+  })
 
 }

@@ -658,7 +658,11 @@ im_syng_tcga_shiny <- function(onco_gene, icp_gene, cohort, select_iap, method, 
             data_feature1 <- get_selected_features(dft,my_features_var1)
             data_feature_const1 <-data_feature[rownames(df_sub),my_features_const1,drop=F]
             if(length(data_feature_const1)>0){
-              data_feature1 <- merge(data_feature1,data_feature_const1,by="")
+              if(length(data_feature1)>0){
+                data_feature1 <- merge(data_feature1,data_feature_const1,by="")
+              }else{
+                data_feature1<-data_feature_const1
+              }
             }
             for(pair_ID in 1:N_syng_complete1 ){
               tmp_df <- df_syng_complete1[pair_ID,]

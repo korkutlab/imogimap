@@ -651,9 +651,13 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, ndatam
           if(N_syng_complete1>0){
 
             data_feature1 <- get_selected_features(dft,my_features_var1)
-            data_feature_const1 <-data_feature[rownames(df_sub),my_features_const1,drop=F]
+            data_feature_const1 <- data_feature[rownames(df_sub),my_features_const1,drop=F]
             if(length(data_feature_const1)>0){
+              if(length(data_feature1)>0){
               data_feature1 <- merge(data_feature1,data_feature_const1,by="")
+              }else{
+                data_feature1<-data_feature_const1
+              }
             }
             for(pair_ID in 1:N_syng_complete1 ){
               tmp_df <- df_syng_complete1[pair_ID,]
@@ -718,8 +722,8 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, ndatam
 
               dft <- df_sub_qr2[ , c(which(colnames(df_sub_qr2)==gene_ID1),
                                      which(colnames(df_sub_qr2)==gene_ID2))]
-              dft <- dft[dft[ , 1] %in% c(1 , 4) ,,drop=F ]
-              dft <- dft[dft[ , 2] %in% c(1 , 4) ,,drop=F ]
+              dft <- dft[dft[ , 1] %in% c(1 , 4) , ,drop=F ]
+              dft <- dft[dft[ , 2] %in% c(1 , 4) , ,drop=F ]
               dft <- cbind(df_feature[match(rownames(dft),rownames(df_feature)),,drop=F], dft)
               dft <- dft[complete.cases(dft),,drop=F]
               dfts <- find_a_synergy(fdata = dft,

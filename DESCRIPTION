@@ -32,5 +32,6 @@ Suggests:
     shinyalert,
     shinythemes,
     waiter,
+    DT,
     R.utils
 VignetteBuilder: knitr

@@ -139,6 +139,7 @@ dashboardPage(
                               textOutput("debug_text")
                      ),
                      tabPanel("Results",value=2,
+                              conditionalPanel(condition="input.submit!=0",
                               h4("Table"),
                               div(style = 'overflow-x: scroll',DT::dataTableOutput("results_table")),
                               downloadButton('download_table'),
@@ -160,7 +161,7 @@ dashboardPage(
                               ,
                               uiOutput("boxplot_gene_pair"),
                               plotOutput('boxplot')
-                     ),
+                     )),
                      tabPanel("About",value=3,
                               includeMarkdown("about.md")
                      ),
