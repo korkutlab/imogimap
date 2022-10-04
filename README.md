@@ -5,7 +5,7 @@
 
 <!-- badges: end -->
 
-The goal of imogimap is to calculate statistical synergy scores based on mRNA expression profiles of multi-sample data to quantify combinatorial effects of single onco-genes or tumor intrinsic onco-genic pathways and immune checkpoints on immune related phenotype in tumor microenvironment.
+The goal of imogimap is to calculate statistical combined action scores based on mRNA expression profiles of multi-sample data to quantify combinatorial effects of single onco-genes or tumor intrinsic onco-genic pathways and immune checkpoints on immune related phenotype in tumor microenvironment.
 
 ## Installation
 
@@ -34,7 +34,7 @@ my_cohort <- c("luad","lusc")
 #list abbreviated names for available immune features
 TCGA_immune_features_list
 
-#Calulate synergy scores, and optional pvalues, and variances, for combinatorial effects of all gene pairs on all immune phenotypes as listed in TCGA_immune_features_list
+#Calulate combined action scores, and optional pvalues, and variances, for combinatorial effects of all gene pairs on all immune phenotypes as listed in TCGA_immune_features_list
 my_syng_df <-  im_syng_tcga(onco_gene  = my_onco,
          icp_gene = my_icp, 
          add_receptor_ligand=T,
@@ -43,7 +43,7 @@ my_syng_df <-  im_syng_tcga(onco_gene  = my_onco,
          specificity = F,
          sensitivity = F)
 
-#Generate stratified boxplot that represents data used to get a single synergy score.
+#Generate stratified boxplot that represents data used to get a single combined action score.
 results <- im_boxplot_tcga(onco_gene = "TGFB1", icp_gene = "CD27", cohort = "luad", Immune_phenotype = "IFNGscore")
 im_boxplot_tcga_plot(results)
 ```
@@ -64,7 +64,7 @@ my_onco <- c("TGFB1","TGFB2","TGFB3")
 # List gene ID's for immune checkpoints that you are interested in. icp_gene_list can be used as default.
 my_icp <- icp_gene_list
 
-# Calulate synergy scores, and optional pvalues, and variances, for combinatorial effects of all gene pairs on immune features. 
+# Calulate combined action scores, and optional pvalues, and variances, for combinatorial effects of all gene pairs on immune features. 
 df <- im_syng( onco_gene = my_onco,
              icp_gene = my_icp,
              data_expression = my_expressions ,
@@ -75,17 +75,17 @@ df <- im_syng( onco_gene = my_onco,
             sensitivity = T)
 
  
-#Generate stratified boxplot that represents data used to get a single synergy score.
+#Generate stratified boxplot that represents data used to get a single combined action score.
 im_boxplot(cotarget = "TGFB1", 
   icp_gene = "CD276",
   data_expression = sample_mRNA_data,
   data_feature = sample_Leukocyte_fraction_data)
 ```
 
-This is a basic example of generating graphical network for synergy scores.
+This is a basic example of generating graphical network for combined action scores.
 
 ``` r
-#Generate graphical network based on synergy scores for a single immune feature
+#Generate graphical network based on combined action scores for a single immune feature
 jpeg("syng_network.jpeg",width=1000,height=1000)
 im_netplot(df = my_syng_df ,
            Immune_Feature = "IFNGscore",

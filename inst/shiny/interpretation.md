@@ -2,9 +2,9 @@
 
 ### Table:
 
-For each gene pair, a synergy score and three statistical assessments are calculated. Gene1Expr and Gene2Expr columns show expression levels of Gene1 and Gene2 correspondingly. A positive synergy score with both gene expressions marked as "High" indicates a synergistic increase of Immune-associated phenotype (IAP) level in response to high expression of both genes. A negative synergy score with both genes marked as "High" indicates synergistic decrease of IAP level in response to high expression of both genes. The higher the absolute value of a synergy score is, the stronger the two genes co-associate with IAP levels.
+For each gene pair, a combined action score and three statistical assessments are calculated. Gene1Expr and Gene2Expr columns show expression levels of Gene1 and Gene2 correspondingly. A positive combined action score with both gene expressions marked as "High" indicates a synergistic increase of Immune-associated phenotype (IAP) level in response to high expression of both genes. A negative combined action score with both genes marked as "High" indicates synergistic decrease of IAP level in response to high expression of both genes. The higher the absolute value of a combined action score is, the stronger the two genes co-associate with IAP levels.
 
-Similarly, A positive synergy score with both gene expressions marked as "Low" indicates a synergistic increase of Immune-associated phenotype (IAP) level in response to low expression of both genes. A negative synergy score with both genes marked as "low" means synergistic decrease of IAP level in response to low expression of both genes.
+Similarly, A positive combined action score with both gene expressions marked as "Low" indicates a synergistic increase of Immune-associated phenotype (IAP) level in response to low expression of both genes. A negative combined action score with both genes marked as "low" means synergistic decrease of IAP level in response to low expression of both genes.
 
 Three statistical measurements include:
 
@@ -12,9 +12,9 @@ Three statistical measurements include:
 
 <li>An unpaired Wilcoxon signed-rank pvalue, that evaluates the largest of the three pvalues in the boxplot below.</li>
 
-<li>A specificity p.value, that measures the probability of finding a score higher than the observed synergy score, by randomly pairing a gene from genome to any of genes in the lists. A lower p.value indicates a more specific results.</li>
+<li>A specificity p.value, that measures the probability of finding a score higher than the observed combined action score, by randomly pairing a gene from genome to any of genes in the lists. A lower p.value indicates a more specific results.</li>
 
-<li>A Sensitivity R coefficient, that measures the sensitivity of the observed synergy score to the exact data configuration. The more robust scores, therefore the least sensitive ones, have lower sensitivityR.</li>
+<li>A Sensitivity R coefficient, that measures the sensitivity of the observed combined action score to the exact data configuration. The more robust scores, therefore the least sensitive ones, have lower sensitivityR.</li>
 
 </ul>
 
@@ -26,7 +26,7 @@ A color coded graphical network of combinatorial associations is shown in the "N
 
 <div><img src="www/network_guide.png" width="80%"/></div>
 
-A cutoff parameter is included to subset the list to those pairs with absolute value of synergy scores higher than the cutoff percentile value. For example, a cutoff of 80 will exclude 80% of scores that are lowest in absolute value.
+A cutoff parameter is included to subset the list to those pairs with absolute value of combined action scores higher than the cutoff percentile value. For example, a cutoff of 80 will exclude 80% of scores that are lowest in absolute value.
 
 ### Boxplot
 

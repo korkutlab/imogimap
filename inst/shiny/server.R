@@ -59,7 +59,7 @@ function(input, output, session) {
     tmp2 <- tmp2[tmp2$Synergy_score!=0,]
     cat("DEBUG: im_syng_tcga finished\n")
     if(nrow(tmp2)==0){
-      shinyalert("All synergy scores are zero or missing. Try a different immune phenotype.",type="warning")
+      shinyalert("All combined action scores are zero or missing. Try a different immune phenotype.",type="warning")
     }
     waiter_hide()
     tmp
@@ -78,7 +78,7 @@ function(input, output, session) {
   output$results_table <- DT::renderDataTable({
     req(my_syng_df())
     tmp <- my_syng_df() %>% round_df(., 3)
-    colnames(tmp) <- c("Gene1", "Gene2","Disease" ,"IAP", "Synergy",
+    colnames(tmp) <- c("Gene1", "Gene2","Disease" ,"IAP", "combined action",
                        "Gene1Expr", "Gene2Expr", "WilcoxPvalue",
                        "SpecificityPvalue","SensitivityR","receptor_ligand")
 

@@ -102,7 +102,7 @@ dashboardPage(
                                   shiny_iconlink() %>%
                                     bs_embed_popover(
                                       title = "Sensitivity",
-                                      content = "measures the sensitivity of the observed synergy score to the exact data configuration. Check the box to conduct sensitivity analysis. Note that sensitivity analyses are time consuming. See sthe ide panel for more details.",
+                                      content = "measures the sensitivity of the observed combined action score to the exact data configuration. Check the box to conduct sensitivity analysis. Note that sensitivity analyses are time consuming. See sthe ide panel for more details.",
                                       placement = "right"
                                     )
                                 ),
@@ -117,7 +117,7 @@ dashboardPage(
                                   shiny_iconlink() %>%
                                     bs_embed_popover(
                                       title = "Specificity",
-                                      content = " measures the probability of finding a score higher than the observed synergy score, by randomly pairing a gene from genome to any of  genes in the lists. Check the box and choose the number of random iterations to conduct specificity analysis. Note that specificity analyses are time consuming. See the side panel for more details",
+                                      content = " measures the probability of finding a score higher than the observed combined action score, by randomly pairing a gene from genome to any of  genes in the lists. Check the box and choose the number of random iterations to conduct specificity analysis. Note that specificity analyses are time consuming. See the side panel for more details",
                                       placement = "right"
                                     )
                                 ),
@@ -149,7 +149,7 @@ dashboardPage(
                                   shiny_iconlink() %>%
                                     bs_embed_popover(
                                       title = "Cutoff",
-                                      content = "Choose a percentile value, k, for absolute synergy scores to exclude scores with their absolute value below the k-th percentile.",
+                                      content = "Choose a percentile value, k, for absolute combined action scores to exclude scores with their absolute value below the k-th percentile.",
                                       placement = "right"
                                     )
                                 ),
