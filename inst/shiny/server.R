@@ -78,7 +78,7 @@ function(input, output, session) {
   output$results_table <- DT::renderDataTable({
     req(my_syng_df())
     tmp <- my_syng_df() %>% round_df(., 3)
-    colnames(tmp) <- c("Gene1", "Gene2","Disease" ,"IAP", "combined action",
+    colnames(tmp) <- c("Gene1", "Gene2","Disease" ,"IAP", "combined action score",
                        "Gene1Expr", "Gene2Expr", "WilcoxPvalue",
                        "SpecificityPvalue","SensitivityR","receptor_ligand")
 
