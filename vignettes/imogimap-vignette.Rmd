@@ -21,7 +21,7 @@ imogimap (Immuno-Oncology gene interaction maps)
 
 ## Introduction
 
-imogimap calculates statistical synergy scores based on gene expression profiles in multi-sample data to quantify combinatorial effects of oncogenes and immune checkpoints on immune related phenotype.
+imogimap calculates statistical Combined action scores based on gene expression profiles in multi-sample data to quantify combinatorial effects of oncogenes and immune checkpoints on immune related phenotype.
 
 ## Example use of TCGA data
 
@@ -38,7 +38,7 @@ Then we define disease lists using any of the TCGA abbreviated  disease names as
 ```{r}
 my_cohort <- c("luad")
 ```
-Now we use `im_syng_tcga` function to get synergy scores. The rest of parameters are optional, with default values as below: 
+Now we use `im_syng_tcga` function to get Combined action scores. The rest of parameters are optional, with default values as below: 
 
 ```{r}
 my_syng_df <-  im_syng_tcga(
@@ -53,13 +53,13 @@ my_syng_df <-  im_syng_tcga(
 
 We have the option to search for genes that interact with either of the onco/icp genes using CellphoneDB public receptor-ligand database. `add_receptor_ligand=T` adds the known interacting genes to their corresponding original gene lists. 
 
-We have the option to choose one of the two available synergy scoring methods and determine whether we want to include specificity and robustness analysis. Specificity and robustness measures are calculated  by random bootstrapping, and we can increase or decrease the number of bootstrapping iterations, `N_iteration`, to gain more accuracy or save time.  
+We have the option to choose one of the two available Combined action scoring methods and determine whether we want to include specificity and robustness analysis. Specificity and robustness measures are calculated  by random bootstrapping, and we can increase or decrease the number of bootstrapping iterations, `N_iteration`, to gain more accuracy or save time.  
 
 Other optional inputs of `im_syng_tcga` are: `sample_list` that allow us to define a curated set of TCGA samples, and `feature` that allow us to provide additional immune phenotypes/features.
 
-The output contains  synergy scores for all pairs of genes, as well as specificity p.values and robustness variances that are used to identify noteworthy interactions on all the immune features listed in `TCGA_immune_features_list`. 
+The output contains  Combined action scores for all pairs of genes, as well as specificity p.values and robustness variances that are used to identify noteworthy interactions on all the immune features listed in `TCGA_immune_features_list`. 
 
-synergy outputs can be visualized as an `igraph` graphical network model for each specific phenotype using `im_netplot` function and saved as an image:
+Combined action outputs can be visualized as an `igraph` graphical network model for each specific phenotype using `im_netplot` function and saved as an image:
 
 ```{r}
 p <- im_netplot(df = my_syng_df,
@@ -70,9 +70,9 @@ p <- im_netplot(df = my_syng_df,
                 seed = 123)
 ```
 
-`im_netplot` function directly uses the output of `im_syng_tcga` function.A unique immune feature from the output needs to be specified. We have the option to specify a sub-group of our disease cohorts, or make a single network for all the cohorts in the output. We are also able to change the cutoff value for synergy scores. Synergy scores with their absolute value below the cut-off won't be displayed.  We may want to input our immune checkpoint list if it differs from imogimap's default `icp_gene_list`. `im_netplot` uses this list to color code onco-genes and immune checkpoints differently. Finally by changing `seed` we can change the plots layout and make it reproducible.
+`im_netplot` function directly uses the output of `im_syng_tcga` function.A unique immune feature from the output needs to be specified. We have the option to specify a sub-group of our disease cohorts, or make a single network for all the cohorts in the output. We are also able to change the cutoff value for Combined action scores. Combined action scores with their absolute value below the cut-off won't be displayed.  We may want to input our immune checkpoint list if it differs from imogimap's default `icp_gene_list`. `im_netplot` uses this list to color code onco-genes and immune checkpoints differently. Finally by changing `seed` we can change the plots layout and make it reproducible.
 
-imogimap also visualizes data that has been used in calculation of an individual synergy scores. To do this we can use `im_boxplot_tcga` and `im_boxplot_tcga_plot` functions:
+imogimap also visualizes data that has been used in calculation of an individual Combined action scores. To do this we can use `im_boxplot_tcga` and `im_boxplot_tcga_plot` functions:
 
 ```{r, fig.width=6, fig.height=4}
 results <- im_boxplot_tcga(onco_gene = "TGFB1", icp_gene = "CD27", cohort = "luad", Immune_phenotype = "IFNGscore")
