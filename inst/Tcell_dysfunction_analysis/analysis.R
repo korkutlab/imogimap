@@ -28,12 +28,12 @@ df_TCDF_genes<- read.csv("TCell_dys_genes_ucec.csv",header = F)
 lgenes <- c(df_TCDF_genes$V1,"LILRB2","ADGRV1","XCR1")
 
 
-icp_gene <- c(icp_gene_list,"CSF1","IL34","NCR3",
+icp_gene <- unique(c(icp_gene_list,"CSF1","IL34","NCR3",
               "FLT3LG","CSF2","CSF3","SLC7A1",
               "SIRPA","CELSR3","BMP10","CCL4L2",
               "TNF","TNFRSF13B","TNFRSF17","GPRC5B",
               "FAM3C","KLRG2","HLA-DPA1","PVR",
-              "IL13RA2","ADGRG5")
+              "IL13RA2","ADGRG5"))
 
 
 #Calculate and evaluate synergy scores------------
@@ -46,7 +46,7 @@ my_scores <- im_syng_tcga( onco_gene= lgenes,
                          cohort="ucec",
                          select_iap ="IFNGscore",
                          ndatamin = 8,
-                         specificity = F,
+                         specificity = T,N_iteration_specificity = 1000,
                          sensitivity = F)
 proc.time()-ptm
 
@@ -156,7 +156,7 @@ df$Q <- p.adjust(df$wilcox_pvalue,method="BH",n =n)
 df <- df[df$Q<0.1,]
 n<- nrow(df)
 df$Q <- p.adjust(df$specificity_pvalue,method="BH",n =n)
-df <- df[df$Q<0.1,]
+df2 <- df[df$Q<0.1,]
 df <- df[complete.cases(df),]
 
 #add ligand receptor interactions
@@ -208,7 +208,7 @@ df <-curatedTCGAData::curatedTCGAData(diseaseCode = "ucec",
                                       assays = c("RNASeq2GeneNorm"),
                                       dry.run = F)@ExperimentList@listData[[1]]
 
-data_expression <- df@assays$data@listData[[1]]
+data_expression <- df@assays@data@listData[[1]]
 colnames(data_expression)<-  substr(colnames(data_expression), 1, 15)
 
 #Select genes

@@ -23,13 +23,23 @@ usethis::use_data(icp_gene_list,overwrite = T)
 
 
 #Ligand-receptor pairs
-lgn_receptor_ligand <- read.csv("ligand_receptor.csv")
-lgn_receptor_ligand$X<-NULL
-lgn_receptor_ligand <- apply(lgn_receptor_ligand, 1, function(x) data.frame(t(x[order(x)])))
-
-lgn_receptor_ligand <- data.table::rbindlist(lgn_receptor_ligand,use.names = FALSE)
+tmp1 <- readxl::read_xlsx("cellphoneDB_interaction_input.xlsx")
+tmp1<-tmp1[complete.cases(tmp1$protein_name_a),]
+tmp1<-tmp1[complete.cases(tmp1$protein_name_b),]
+tmp2 <- readxl::read_xlsx("cellphoneDB_gene_name.xlsx")
+tmp1$Gene_a <- plyr::mapvalues(tmp1$partner_a,tmp2$uniprot,tmp2$hgnc_symbol)
+tmp1$Gene_b <- plyr::mapvalues(tmp1$partner_b,tmp2$uniprot,tmp2$hgnc_symbol)
+lgn_receptor_ligand <- tmp1[,c("Gene_a","Gene_b")]
 colnames(lgn_receptor_ligand)<-c("Gene1","Gene2")
 lgn_receptor_ligand$ligand_receptor_interaction <- TRUE
+
+# lgn_receptor_ligand <- read.csv("ligand_receptor_curated.csv")
+# lgn_receptor_ligand$X<-NULL
+# lgn_receptor_ligand <- apply(lgn_receptor_ligand, 1, function(x) data.frame(t(x[order(x)])))
+#
+# lgn_receptor_ligand <- data.table::rbindlist(lgn_receptor_ligand,use.names = FALSE)
+# colnames(lgn_receptor_ligand)<-c("Gene1","Gene2")
+# lgn_receptor_ligand$ligand_receptor_interaction <- TRUE
 
 usethis::use_data(lgn_receptor_ligand,overwrite = T)
 
