@@ -9,6 +9,7 @@ im_syng(
   icp_gene,
   data_expression,
   data_feature,
+  ndatamin = 8,
   add_features,
   method,
   specificity,
@@ -25,6 +26,8 @@ im_syng(
 \item{data_expression}{A non-negative numeric matrix or data frame containing gene/protein expressions in linear scale.}
 
 \item{data_feature}{An optional numeric matrix or data frame containing immune features.}
+
+\item{ndatamin}{minimum number of samples. Synergy score calculation will be skipped for matrices with number of rows less than ndatamin}
 
 \item{add_features}{An optional logical indicating if EMT score, angiogenesis score and IFNG expression should be added to immune features. Default is TRUE.}
 

@@ -11,6 +11,7 @@
 #' @param data_feature An optional numeric matrix or data frame containing immune features.
 #' @param add_features An optional logical indicating if EMT score, angiogenesis score and IFNG expression should be added to immune features. Default is TRUE.
 #' @param method A character string indicating which synergy score to be used. one of "max" or "independence". Default is "max".
+#' @param ndatamin minimum number of samples. Synergy score calculation will be skipped for matrices with number of rows less than ndatamin
 #' @param specificity An optional logical indicating if specificity analysis should be done. Default is FALSE.
 #' @param N_iteration_specificity Number of iterations for random sampling for specificity p.value calculation.
 #' Default is 1000.
@@ -45,7 +46,7 @@
 #' @export
 
 
-im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, add_features,method,specificity, N_iteration_specificity, sensitivity, N_iteration_sensitivity){
+im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, ndatamin=8, add_features,method,specificity, N_iteration_specificity, sensitivity, N_iteration_sensitivity){
 
   agent1 <- agent2 <- Immune_feature <- agent1_expression <- agent2_expression <- NULL
   specificity_pvalue <- sensitivity_R <- i.sensitivity_R <- NULL
@@ -67,6 +68,10 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, add_features,
       stop("ERROR: Method is not found. Please choose a method from: max or independence.")
     }
   }
+  onco_gene[onco_gene=="VSIR"]<- "C10orf54"
+  onco_gene[onco_gene=="NCR3LG1"]<- "DKFZp686O24166"
+
+
   #Check for co-target expressions-----------------------
   data_expression <- as.data.frame(data_expression)
   if(length(onco_gene)==1){
@@ -83,9 +88,10 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, add_features,
   #Check for immune checkpoint expressions----------------
   if(missing(icp_gene)){
     icp_gene <- icp_gene_list
-    icp_gene[1] <- "C10orf54"
-    icp_gene[12] <- "DKFZp686O24166"
   }
+  icp_gene[icp_gene=="VSIR"]<- "C10orf54"
+  icp_gene[icp_gene=="NCR3LG1"]<- "DKFZp686O24166"
+
   missing_icp <- icp_gene[-which(icp_gene %in% rownames(data_expression))]
   if(length(missing_icp)>0){
     warning("Missing immune checkpoints:   ",lapply(missing_icp, function(x)paste0(x,"  ")))
@@ -124,15 +130,16 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, add_features,
     }
   }
   data_feature$Tumor_Sample_ID <- rownames(data_feature)
+  data_feature <-data_feature[,c("Tumor_Sample_ID",setdiff(colnames(data_feature), "Tumor_Sample_ID")),drop=F]
   data_feature0 <- data_feature
+
   #Calculate additional immune features---------------------
-  message("Calculating additional features...")
   if(add_features==TRUE){
+    message("Calculating additional features...")
     df_tmp <- get_features(data_expression)
     df_tmp <- df_tmp[,c("Tumor_Sample_ID","EMTscore","AGscore","IFNGscore")]
     data_feature <- merge(df_tmp,data_feature,by="Tumor_Sample_ID")
   }
-
 
   #Construct quantile ranking matrices--------------
   df_selected <- scale(log2(df_selected+1),center = T,scale = T)
@@ -159,7 +166,7 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, add_features,
       gene_ID2 <- which(colnames(df_all)==all_perms[pair_ID,2])
       dft <- df_all[ , c(1 , gene_ID1,gene_ID2)]
       dft <- dft[dft[ , 2] %in% c(1 , 4) , ,drop=F]
-      dft <- dft[dft[ , 3] %in% c(1 , 4) ,,drop=F ]
+      dft <- dft[dft[ , 3] %in% c(1 , 4) , ,drop=F ]
       if(nrow(dft) > 4){
         df_helper <-  data.frame(agent1=character(),
                                  agent2=character(),
@@ -201,9 +208,9 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, add_features,
     message("No feature data found.\n")
   }
 
-  rownames(data_feature)<- data_feature$Tumor_Sample_ID
-  data_feature<- as.matrix(data_feature[,-1,drop=F])
-  data_feature <- data_feature[,colSums(is.na(data_feature))<nrow(data_feature),drop=F]
+  #rownames(data_feature)<- data_feature$Tumor_Sample_ID
+  #data_feature<- as.matrix(data_feature[,-1,drop=F])
+  #data_feature <- data_feature[,colSums(is.na(data_feature))<nrow(data_feature),drop=F]
 
   #Check if p.value should be calculated-----------------------
   if(missing(specificity)){
@@ -372,13 +379,12 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, add_features,
         dft <- data_expression[,colnames(data_expression) %in% rownames(df_sub)]
         tmp_feature <- data_feature0[rownames(data_feature0) %in% rownames(df_sub),]
         if(add_features==TRUE){
-        df_tmp <- get_features(dft)
-        df_tmp <- df_tmp[,c("Tumor_Sample_ID","EMTscore","AGscore","IFNGscore")]
-        tmp_feature <- merge(df_tmp,tmp_feature,by="Tumor_Sample_ID")
+          df_tmp <- get_features(dft)
+          df_tmp <- df_tmp[,c("Tumor_Sample_ID","EMTscore","AGscore","IFNGscore")]
+          tmp_feature <- merge(df_tmp,tmp_feature,by="Tumor_Sample_ID")
         }
-        rownames(tmp_feature)<- tmp_feature$Tumor_Sample_ID
-        tmp_feature<- as.matrix(tmp_feature[,-1])
-
+        #rownames(tmp_feature) <- tmp_feature$Tumor_Sample_ID
+        #tmp_feature <- as.matrix(tmp_feature[,-1])
 
         for(pair_ID in 1:N_syng_complete1 ){
           tmp_df <- df_syng_complete1[pair_ID,]

@@ -170,7 +170,7 @@ df$ligand_receptor_interaction.y<-NULL
 
 #change seed to explore different layouts
 while (!is.null(dev.list()))  dev.off()
-pdf("figure2d.pdf",width = 15,height = 15)
+pdf("figure2d_2.pdf",width = 25,height = 25)
 im_netplot(df =df,cohort = "ucec", Immune_phenotype  ="IFNGscore",cutoff = 0.0,seed=1)
 dev.off()
 
@@ -527,18 +527,218 @@ dev.off()
 #-------------------Supplementary figure------------
 #---------------------------*******-----------------
 
+library(ComplexHeatmap)
+library(circlize)
 
+
+#Figure S1------
+df2 <- im_syng_tcga( onco_gene= icp_gene_list,
+                     cohort="luad",
+                     add_receptor_ligand = T,
+                     select_iap ="Macrophages.M2")
+
+df2 <- df2[complete.cases(df2$Synergy_score),]
+df3 <- df2[df2$wilcox_pvalue<0.05,]
+
+pdf("Figure_S1.pdf",width = 10,height = 10)
+im_netplot(df =df3, Immune_phenotype ="Macrophages.M2",cohort = "luad", cutoff = 0.8, seed=1 )
+dev.off()
+
+
+#Figure_S2----
+df <-curatedTCGAData::curatedTCGAData( diseaseCode = "ucec",version = "1.1.38",
+                                       assays = c("RNASeq2GeneNorm"), dry.run = F)@ExperimentList@listData[[1]]
+df <- df@assays@data@listData[[1]]
+colnames(df) <-  substr(colnames(df), 1, 15)
+
+df_TCDF_genes<- read.csv("TCell_dys_genes_ucec.csv",header = F)
+
+#Add ligand/receptor pairs from cellphoneDB
+TAP_genes <- c(df_TCDF_genes$V1,"LILRB2","ADGRV1","XCR1")
+icp_genes <- unique(c(icp_gene_list,"CSF1","IL34","NCR3",
+                     "FLT3LG","CSF2","CSF3","SLC7A1",
+                     "SIRPA","CELSR3","BMP10","CCL4L2",
+                     "TNF","TNFRSF13B","TNFRSF17","GPRC5B",
+                     "FAM3C","KLRG2","HLA-DPA1","PVR",
+                     "IL13RA2","ADGRG5"))
+icp_genes[which(icp_genes=="VSIR")] <- "C10orf54"
+icp_genes[which(icp_genes=="NCR3LG1")]<- "DKFZp686O24166"
+
+df1 <- t(df[rownames(df) %in% TAP_genes,])
+df1 <- log2(df1+1)
+df1 <- apply(df1,2, function(x) (x-mean(x))/sd(x))
+
+df2 <- t(df[rownames(df) %in% icp_genes,])
+colnames(df2)[colnames(df2)=="DKFZp686O24166"]<-"NCR3LG1"
+colnames(df2)[colnames(df2)=="C10orf54"]<-"VSIR"
+df2 <- log2(df2+1)
+df2 <- apply(df2,2, function(x) (x-mean(x))/sd(x))
+
+
+h2=Heatmap(df2,name="z scaled\nlog2 normazlied \nmRNA expression\n",
+           col = colorRamp2(c(-4,0,4), c("steelblue2","white", "orangered2")),
+           row_names_gp = gpar(fontsize =20),
+           column_names_gp = gpar(fontsize = 20),
+           row_dend_side = "left",
+           show_row_names = F,
+           clustering_distance_rows = "euclidean",
+           clustering_distance_columns = "euclidean",
+           clustering_method_rows = "complete",
+           clustering_method_columns = "complete",
+           heatmap_legend_param = list(grid_width = unit(1, "cm"),
+                                       labels_gp=gpar(fontsize = 20),
+                                       title_gp = gpar(fontsize = 30)))
+
+
+h1 =Heatmap(df1,name="log2 \nmRNA expression\n",
+            col = colorRamp2(c(-4,0,4), c("steelblue2","white", "orangered2")),
+            row_names_gp = gpar(fontsize =20),
+            column_names_gp = gpar(fontsize = 20),
+            row_dend_side = "right",
+            show_row_names = F,show_heatmap_legend = F,
+            clustering_distance_rows = "euclidean",
+            clustering_distance_columns = "euclidean",
+            clustering_method_rows = "complete",
+            clustering_method_columns = "complete",
+            heatmap_legend_param = list(grid_width = unit(1, "cm"),
+                                        labels_gp=gpar(fontsize = 20),
+                                        title_gp = gpar(fontsize = 30)))
+
+pdf("FigureS2_ab.pdf",width = 30,height = 10)
+ComplexHeatmap::draw(h2+h1, ht_gap = unit(1, "cm"))
+dev.off()
+
+df_scores <- read.csv("TCell_dys_scores_ucec.csv")
+df_scores <- df_scores[-which(is.na(df_scores$Synergy_score)),]
+
+df_scores$Gene1 <- ifelse(df_scores$Gene1_expression=="High",
+                          paste0(df_scores$Gene1,"+"),
+                          paste0(df_scores$Gene1,"-"))
+df_scores$Gene2 <- ifelse(df_scores$Gene2_expression=="High",
+                          paste0(df_scores$Gene2,"+"),
+                          paste0(df_scores$Gene2,"-"))
+
+df1 <- df_scores[,c("Gene1","Gene2","Synergy_score")]
+df2 <- df_scores[,c("Gene2","Gene1","Synergy_score")]
+colnames(df2) <- c("Gene1","Gene2","Synergy_score")
+df <- rbind(df1,df2)
+df <- reshape2::acast(df, Gene1 ~ Gene2, value.var="Synergy_score")
+df[is.na(df)]<- 0
+
+pdf("figureS2_c.pdf",width = 30,height = 30)
+Heatmap(df,name="synergy \nscore\n",
+        col = colorRamp2(c(-0.6,0,0.6), c("blue","white", "red")),
+        row_names_gp = gpar(fontsize =20),
+        column_names_gp = gpar(fontsize = 20),
+        row_dend_side = "right",
+        row_names_side = "left",
+        clustering_distance_rows = "euclidean",
+        clustering_distance_columns = "euclidean",
+        clustering_method_rows = "ward.D2",
+        clustering_method_columns = "ward.D2",
+        heatmap_legend_param = list(grid_width = unit(1, "cm"),
+                                    labels_gp=gpar(fontsize = 20),
+                                    title_gp = gpar(fontsize = 30)))
+dev.off()
+
+#Figure_S3----
+
+samples_basal <- read.csv("samples_BRCA_basal.csv",row.names = 1)
+samples_basal <- samples_basal$x
+TAP_genes  <- read.csv2("TCell_dys_genes_brca.csv",row.names = 1)$x
+df <-curatedTCGAData::curatedTCGAData( diseaseCode = "brca",version = "1.1.38",
+                                       assays = c("RNASeq2GeneNorm"), dry.run = F)@ExperimentList@listData[[1]]
+df <- df@assays@data@listData[[1]]
+colnames(df)<-  substr(colnames(df), 1, 15)
+df<-df[,samples_basal ]
+
+df1 <- t(df[rownames(df) %in% TAP_genes,])
+df1 <- log2(df1+1)
+df1 <- apply(df1,2, function(x) (x-mean(x))/sd(x))
+df1<-df1[, colSums(is.nan(df1)) != nrow(df1)]
+
+df2 <- t(df[rownames(df) %in% icp_genes,])
+colnames(df2)[colnames(df2)=="DKFZp686O24166"]<-"NCR3LG1"
+colnames(df2)[colnames(df2)=="C10orf54"]<-"VSIR"
+df2 <- log2(df2+1)
+df2 <- apply(df2,2, function(x) (x-mean(x))/sd(x))
+
+h2=Heatmap(df2,name="z scaled \n log2 normazlied \n mRNA expression\n",
+           col = colorRamp2(c(-4,0,4), c("steelblue2","white", "orangered2")),
+           row_names_gp = gpar(fontsize =20),
+           column_names_gp = gpar(fontsize = 20),
+           row_dend_side = "left",
+           show_row_names = F,
+           clustering_distance_rows = "euclidean",
+           clustering_distance_columns = "euclidean",
+           clustering_method_rows = "complete",
+           clustering_method_columns = "complete",
+           heatmap_legend_param = list(grid_width = unit(1, "cm"),
+                                       labels_gp=gpar(fontsize = 20),
+                                       title_gp = gpar(fontsize = 30)))
+
+h1 =Heatmap(df1,name="log2 \n mRNA expression\n",
+            col = colorRamp2(c(-4,0,4), c("steelblue2","white", "orangered2")),
+            row_names_gp = gpar(fontsize =20),
+            column_names_gp = gpar(fontsize = 20),
+            row_dend_side = "right",
+            show_row_names = F,show_heatmap_legend = F,
+            clustering_distance_rows = "euclidean",
+            clustering_distance_columns = "euclidean",
+            clustering_method_rows = "complete",
+            clustering_method_columns = "complete",
+            heatmap_legend_param = list(grid_width = unit(1, "cm"),
+                                        labels_gp=gpar(fontsize = 20),
+                                        title_gp = gpar(fontsize = 30)))
+
+pdf("FigureS3_ab.pdf",width = 45,height = 10)
+ComplexHeatmap::draw(h2+h1, ht_gap = unit(1, "cm"))
+dev.off()
+df_scores <- read.csv("TCellDys_scores_Basal.csv")
+
+df_scores$Gene1 <- ifelse(df_scores$Gene1_expression=="High",
+                          paste0(df_scores$Gene1,"+"),
+                          paste0(df_scores$Gene1,"-"))
+df_scores$Gene2 <- ifelse(df_scores$Gene2_expression=="High",
+                          paste0(df_scores$Gene2,"+"),
+                          paste0(df_scores$Gene2,"-"))
+
+df1 <- df_scores[,c("Gene1","Gene2","Synergy_score")]
+df2 <- df_scores[,c("Gene2","Gene1","Synergy_score")]
+colnames(df2) <- c("Gene1","Gene2","Synergy_score")
+df <- rbind(df1,df2)
+df <- reshape2::acast(df, Gene1 ~ Gene2, value.var="Synergy_score")
+df[is.na(df)]<- 0
+
+pdf("figureS3_c.pdf",width = 45,height = 45)
+Heatmap(df,name="synergy \nscore\n",
+        col = colorRamp2(c(-0.6,0,0.6), c("blue","white", "red")),
+        row_names_gp = gpar(fontsize =20),
+        column_names_gp = gpar(fontsize = 20),
+        row_dend_side = "right",
+        row_names_side = "left",
+        clustering_distance_rows = "euclidean",
+        clustering_distance_columns = "euclidean",
+        clustering_method_rows = "ward.D2",
+        clustering_method_columns = "ward.D2",
+        heatmap_legend_param = list(grid_width = unit(1, "cm"),
+                                    labels_gp=gpar(fontsize = 20),
+                                    title_gp = gpar(fontsize = 30)))
+dev.off()
+
+
+#Figure S4--------
+library(grid)
 df_all<-list()
-
 #Read TCGA mRNA data for all disease cohorts
 for(cohortID in 1:length(TCGA_disease_list)){
   disease <- TCGA_disease_list[cohortID]
 
   message("\nReading TCGA ",toupper(disease)," data\n")
-  df <-curatedTCGAData::curatedTCGAData( diseaseCode =disease,
+  df <-curatedTCGAData::curatedTCGAData( diseaseCode =disease,version = "1.1.38",
                                          assays = c("RNASeq2GeneNorm"), dry.run = F)@ExperimentList@listData[[1]]
 
-  df <- df@assays$data@listData[[1]]
+  df <- df@assays@data@listData[[1]]
   colnames(df)<-  substr(colnames(df), 1, 15)
   df_all[[cohortID]] <- df
 }
@@ -554,45 +754,105 @@ df$gene<-NULL
 df1 <- get_emt_score(df)
 df2 <- get_angio_score(df)
 df3 <- get_ifng_score(df)
-df4 <-TCGA_Leukocyte_fraction
-df5 <-TCGA_TMB[,c("Tumor_Sample_ID","TMB_Non.silent_per_Mb")]
-df6 <- TCGA_TMB[,c("Tumor_Sample_ID","TMB_Silent_per_Mb")]
+df4 <- get_TCI_score(df)
+
+#df5 <-TCGA_Leukocyte_fraction
+df6 <-TCGA_TMB[,c("Tumor_Sample_ID","TMB_Non.silent_per_Mb")]
+df7 <- TCGA_TMB[,c("Tumor_Sample_ID","TMB_Silent_per_Mb")]
 
 data_feature <- get_features(df)
 
 d1<- merge(df1, data_feature[,c("Tumor_Sample_ID" ,"EMTscore")],by= "Tumor_Sample_ID")
 d2<- merge(df2, data_feature[,c("Tumor_Sample_ID" ,"AGscore")],by= "Tumor_Sample_ID")
 d3<- merge(df3, data_feature[,c("Tumor_Sample_ID" ,"IFNGscore")],by= "Tumor_Sample_ID")
-d4<- merge(df4, data_feature[,c("Tumor_Sample_ID" ,"Leukocyte_fraction")],by= "Tumor_Sample_ID")
-d5<- merge(df5, data_feature[,c("Tumor_Sample_ID" ,"TMB_Non.silent_per_Mb")],by= "Tumor_Sample_ID")
-d6<- merge(df6, data_feature[,c("Tumor_Sample_ID" ,"TMB_Silent_per_Mb")],by= "Tumor_Sample_ID")
+d4<- merge(df4, data_feature[,c("Tumor_Sample_ID" ,"TCIscore")],by= "Tumor_Sample_ID")
+#d5<- merge(df5, data_feature[,c("Tumor_Sample_ID" ,"Leukocyte_fraction")],by= "Tumor_Sample_ID")
+d6<- merge(df6, data_feature[,c("Tumor_Sample_ID" ,"TMB_Non.silent_per_Mb")],by= "Tumor_Sample_ID")
+d7<- merge(df7, data_feature[,c("Tumor_Sample_ID" ,"TMB_Silent_per_Mb")],by= "Tumor_Sample_ID")
+
+colnames(d6)[c(2,3)]<-c("TMB_Non_silent_per_Mb.x", "TMB_Non_silent_per_Mb.y")
+
+ldf <- list(d1,d2,d3,d4,d6,d7)
 
 #plot
 while (!is.null(dev.list()))  dev.off()
-plot(d1$EMTscore.x,d1$EMTscore.y,
-     xlab="EMT score",ylab="Transformed\n EMT score")
-plot(d2$AGscore.x,d2$AGscore.y,
-     xlab="Vascularization",ylab="Transformed\n Vascularization")
-plot(d3$IFNGscore.x,d3$IFNGscore.y,
-     xlab="IFNG score",ylab="Transformed\n IFNG score")
-plot(d4$Leukocyte_fraction.x,d4$Leukocyte_fraction.y,
-     xlab="Leukocyte fraction",ylab="Transformed\n Leukocyte fraction")
-plot(d5$TMB_Non.silent_per_Mb.x,d5$TMB_Non.silent_per_Mb.y,
-     xlab="Non.silent TMB",ylab="Transformed\n Non.silent TMB")
-plot(d6$TMB_Silent_per_Mb.x,d6$TMB_Silent_per_Mb.y,
-     xlab="Silent TMB",ylab="Transformed\n Silent TMB")
 
-hist(df1$EMTscore,breaks=20,xlab="EMT score",main = "")
-hist(df2$AGscore,breaks=20,xlab="Vascularization",main = "")
-hist(df3$IFNGscore,breaks=20,xlab="IFNG score",main = "")
-hist(df4$Leukocyte_fraction,breaks=20,xlab="Leukocyte fraction",main = "")
-hist(df5$TMB_Non.silent_per_Mb,breaks=20,xlab="Non.silent TMB",main = "")
-hist(df6$TMB_Silent_per_Mb,breaks=20,xlab="Silent TMB",main = "")
+p_list <- list()
 
-hist(data_feature$EMTscore,breaks=20,xlab="Transformed EMT score",main = "")
-hist(data_feature$AGscore,breaks=20,xlab="Transformed Vascularization",main = "")
-hist(data_feature$IFNGscore,breaks=20,xlab="Transformed IFNG score",main = "")
-hist(data_feature$Leukocyte_fraction,breaks=20,xlab="Transformed Leukocyte fraction",main = "")
-hist(data_feature$TMB_Non.silent_per_Mb,breaks=20,xlab="Transformed Non.silent TMB",main = "")
-hist(data_feature$TMB_Silent_per_Mb,breaks=20,xlab="Transformed Silent TMB",main = "")
+for(p in 1:6){
+  tmp <- ldf[[p]]
+  myname <- unique(gsub("\\..*", "\\1", colnames(tmp)[c(2,3)]))
+  colnames(tmp)[c(2,3)]<-c("x","y")
+  p_list[[p]]=ggplot(tmp,aes(x,y))+
+  labs(x=paste0(myname," before\n"),y=paste0(myname," after\n"))+
+  geom_point(show.legend = F,size=5)+
+  theme( axis.text.x = element_text(size=50,angle = 0),
+         axis.text.y = element_text(size=50,angle = 90),
+         axis.title = element_text(size=50),
+         plot.margin=unit(c(1,1,1.5,1.2),"cm"),
+         plot.tag.position = c(.05, 1.15),
+         plot.tag = element_text(size=60,colour="red",hjust = -0.3,vjust = 9),
+         axis.line.x.top  = element_line( size = 1),
+         axis.line.x.bottom = element_line( size = 1),
+         axis.line.y.left  = element_line( size = 1),
+         axis.line.y.right  = element_line( size = 1),
+         panel.grid.major = element_blank(),
+         panel.grid.minor = element_blank(),
+         panel.background = element_blank())
+}
+
+for(p in 1:6){
+  tmp <- ldf[[p]]
+  myname <- unique(gsub("\\..*", "\\1", colnames(tmp)[c(2,3)]))
+  colnames(tmp)[c(2,3)]<-c("x","y")
+
+  p_list[[p+6]]=ggplot(tmp,aes(x))+
+  geom_histogram(bins=30,color="#e9ecef", alpha=0.6, position = 'identity')+
+  labs(x=paste0(myname," before\n"),y="Frequency")+
+    theme( axis.text.x = element_text(size=50,angle = 0),
+           axis.text.y = element_text(size=50,angle = 90),
+           axis.title = element_text(size=50),
+           plot.margin=unit(c(1,1,1.5,1.2),"cm"),
+           plot.tag.position = c(.05, 1.15),
+           plot.tag = element_text(size=60,colour="red",hjust = -0.3,vjust = 9),
+           axis.line.x.top  = element_line( size = 1),
+           axis.line.x.bottom = element_line( size = 1),
+           axis.line.y.left  = element_line( size = 1),
+           axis.line.y.right  = element_line( size = 1),
+           panel.grid.major = element_blank(),
+           panel.grid.minor = element_blank(),
+           panel.background = element_blank())
+}
+
+for(p in 1:6){
+  tmp <- ldf[[p]]
+  myname <- unique(gsub("\\..*", "\\1", colnames(tmp)[c(2,3)]))
+  colnames(tmp)[c(2,3)]<-c("x","y")
+
+  p_list[[p+12]]=ggplot(tmp,aes(y))+
+    geom_histogram(bins=30,color="#e9ecef", alpha=0.6, position = 'identity')+
+    labs(x=paste0(myname," after\n"),y="Frequency")+
+    theme( axis.text.x = element_text(size=50,angle = 0),
+           axis.text.y = element_text(size=50,angle = 90),
+           axis.title = element_text(size=50),
+           plot.margin=unit(c(1,1,1.5,1.2),"cm"),
+           plot.tag.position = c(.05, 1.15),
+           plot.tag = element_text(size=60,colour="red",hjust = -0.3,vjust = 9),
+           axis.line.x.top  = element_line( size = 2),
+           axis.line.x.bottom = element_line( size = 2),
+           axis.line.y.left  = element_line( size = 2),
+           axis.line.y.right  = element_line( size = 2),
+           panel.grid.major = element_blank(),
+           panel.grid.minor = element_blank(),
+           panel.background = element_blank())
+}
+
+pdf("Figure_S4_alternative.pdf",height =50,width = 100)
+par(mfrow=c(3,6))
+margin = theme(plot.margin = unit(c(1,1,1,1), "cm"))
+gridExtra::grid.arrange(grobs =lapply(p_list, "+", margin),
+                        as.table = TRUE,
+                        vp=viewport(width=1, height=1),
+                        nrow=3,ncol = 6)
+dev.off()
 
