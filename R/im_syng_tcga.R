@@ -385,7 +385,7 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, ndatam
     message("\nSynergy calculation completed!\n ")
 
 
-    #Check if p.value should be calculated-----------------------
+    #Check if Specificity should be calculated-----------------------
     if(missing(specificity)){
       specificity <- FALSE
     }

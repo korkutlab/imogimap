@@ -10,6 +10,7 @@
 #' @param data_expression A non-negative numeric matrix or data frame containing gene/protein expressions in linear scale.
 #' @param data_feature An optional numeric matrix or data frame containing immune features.
 #' @param add_features An optional logical indicating if EMT score, angiogenesis score and IFNG expression should be added to immune features. Default is TRUE.
+#' @param add_receptor_ligand An optional logical indicating whether receptor_ligands pair should be added. Default is FALSE.
 #' @param method A character string indicating which synergy score to be used. one of "max" or "independence". Default is "max".
 #' @param ndatamin minimum number of samples. Synergy score calculation will be skipped for matrices with number of rows less than ndatamin
 #' @param specificity An optional logical indicating if specificity analysis should be done. Default is FALSE.
@@ -46,7 +47,7 @@
 #' @export
 
 
-im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, ndatamin=8, add_features,method,specificity, N_iteration_specificity, sensitivity, N_iteration_sensitivity){
+im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, ndatamin=8, add_features,method,specificity, N_iteration_specificity, sensitivity, N_iteration_sensitivity,add_receptor_ligand=FALSE){
 
   agent1 <- agent2 <- Immune_feature <- agent1_expression <- agent2_expression <- NULL
   specificity_pvalue <- sensitivity_R <- i.sensitivity_R <- NULL
@@ -68,11 +69,31 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, ndatamin=8, a
       stop("ERROR: Method is not found. Please choose a method from: max or independence.")
     }
   }
-  onco_gene[onco_gene=="VSIR"]<- "C10orf54"
-  onco_gene[onco_gene=="NCR3LG1"]<- "DKFZp686O24166"
 
+  #Add interacting genes-----------
+  if(add_receptor_ligand==TRUE){
+    lgn1 <- lgn_receptor_ligand[lgn_receptor_ligand$Gene1 %in% onco_gene,]$Gene2
+    lgn2 <- lgn_receptor_ligand[lgn_receptor_ligand$Gene2 %in% onco_gene,]$Gene1
+    lgn <- unique(c(lgn1,lgn2))
+    if(length(lgn)>0){
+      onco_gene<- unique(c(onco_gene,lgn))
+    }
+  }
+  if(missing(icp_gene)){
+    icp_gene <- icp_gene_list
+  }
+  if(add_receptor_ligand==TRUE){
+    lgn1 <- lgn_receptor_ligand[lgn_receptor_ligand$Gene1 %in% icp_gene,]$Gene2
+    lgn2 <- lgn_receptor_ligand[lgn_receptor_ligand$Gene2 %in% icp_gene,]$Gene1
+    lgn <- unique(c(lgn1,lgn2))
+    if(length(lgn)>0){
+      icp_gene<- unique(c(icp_gene,lgn))
+    }
+  }
 
   #Check for co-target expressions-----------------------
+  #onco_gene[onco_gene == "VSIR"]<- "C10orf54"
+  #onco_gene[onco_gene == "NCR3LG1"]<- "DKFZp686O24166"
   data_expression <- as.data.frame(data_expression)
   if(length(onco_gene)==1){
     df_selected <- as.data.frame(t(data_expression[rownames(data_expression) %in% onco_gene,]))
@@ -86,11 +107,8 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, ndatamin=8, a
   }
 
   #Check for immune checkpoint expressions----------------
-  if(missing(icp_gene)){
-    icp_gene <- icp_gene_list
-  }
-  icp_gene[icp_gene=="VSIR"]<- "C10orf54"
-  icp_gene[icp_gene=="NCR3LG1"]<- "DKFZp686O24166"
+  #icp_gene[icp_gene=="VSIR"]<- "C10orf54"
+  #icp_gene[icp_gene=="NCR3LG1"]<- "DKFZp686O24166"
 
   missing_icp <- icp_gene[-which(icp_gene %in% rownames(data_expression))]
   if(length(missing_icp)>0){
@@ -114,7 +132,7 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, ndatamin=8, a
       add_features <- TRUE
     }else{
       if(add_features==FALSE){
-        warning("No feature data is specified. Using optional features. \n")
+        warning("No feature data is specified. Optional features are being added.. \n")
         add_features <- TRUE
       }
     }
@@ -137,7 +155,10 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, ndatamin=8, a
   if(add_features==TRUE){
     message("Calculating additional features...")
     df_tmp <- get_features(data_expression)
-    df_tmp <- df_tmp[,c("Tumor_Sample_ID","EMTscore","AGscore","IFNGscore")]
+    df_tmp <- df_tmp[,colSums(is.na(df_tmp))<nrow(df_tmp)]
+    df_tmp$Leukocyte_fraction<-NULL
+    df_tmp$TMB_Non.silent_per_Mb<-NULL
+    df_tmp$TMB_Silent_per_Mb<-NULL
     data_feature <- merge(df_tmp,data_feature,by="Tumor_Sample_ID")
   }
 
@@ -212,11 +233,14 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, ndatamin=8, a
   #data_feature<- as.matrix(data_feature[,-1,drop=F])
   #data_feature <- data_feature[,colSums(is.na(data_feature))<nrow(data_feature),drop=F]
 
-  #Check if p.value should be calculated-----------------------
+
+  #Check if Specificity should be calculated---------------------------
+
   if(missing(specificity)){
     specificity <- FALSE
   }
   if(specificity){
+
     message("\nStarting Specificity analysis:\n ")
     #Build unique permutations----------------------
     df_syng_complete <- df_syng[ !is.na( df_syng$Synergy_score),]
@@ -232,7 +256,7 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, ndatamin=8, a
         N_iteration_specificity <- 1000
       }
       message("  Building bootstrapping distribution from ", N_iteration_specificity ," genes")
-
+      df_syng_complete<-as.data.table(df_syng_complete)
       #Build random bank of expression values---------
       df_bank <- data.frame()
       while(ncol(df_bank)==0){
@@ -249,6 +273,7 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, ndatamin=8, a
       df_bank_qr <- get_quantile_rank(df_bank)
       df_bank_qr <- as.matrix(df_bank_qr[,-1])
 
+      rownames(data_feature)<-data_feature$Tumor_Sample_ID
       #Calculate p.values for each feature----
       message(" Calculating specificity pvalues...\n")
       if(N_feature > 0){
@@ -380,8 +405,12 @@ im_syng<-function(onco_gene,icp_gene,data_expression,data_feature, ndatamin=8, a
         tmp_feature <- data_feature0[rownames(data_feature0) %in% rownames(df_sub),]
         if(add_features==TRUE){
           df_tmp <- get_features(dft)
-          df_tmp <- df_tmp[,c("Tumor_Sample_ID","EMTscore","AGscore","IFNGscore")]
+          df_tmp <- df_tmp[,colSums(is.na(df_tmp))<nrow(df_tmp)]
+          df_tmp$Leukocyte_fraction<-NULL
+          df_tmp$TMB_Non.silent_per_Mb<-NULL
+          df_tmp$TMB_Silent_per_Mb<-NULL
           tmp_feature <- merge(df_tmp,tmp_feature,by="Tumor_Sample_ID")
+          rownames(tmp_feature) <- tmp_feature$Tumor_Sample_ID
         }
         #rownames(tmp_feature) <- tmp_feature$Tumor_Sample_ID
         #tmp_feature <- as.matrix(tmp_feature[,-1])
@@ -442,6 +471,15 @@ df_syng[df_syng=="C10orf54"]<-"VSIR"
 colnames(df_syng)[1:6] <- c("Gene1","Gene2",
                                 "IAP","Synergy_score",
                                 "Gene1_expression","Gene2_expression")
+
+df_syng <-merge(df_syng,lgn_receptor_ligand,by=c("Gene1","Gene2"),all.x=T)
+df_syng <-merge(df_syng,lgn_receptor_ligand,by.x=c("Gene1","Gene2"),by.y=c("Gene2","Gene1"),all.x=T)
+df_syng$ligand_receptor_interaction <- FALSE
+df_syng$ligand_receptor_interaction[df_syng$ligand_receptor_interaction.x==T] <- TRUE
+df_syng$ligand_receptor_interaction[df_syng$ligand_receptor_interaction.y==T] <- TRUE
+df_syng$ligand_receptor_interaction.x <- NULL
+df_syng$ligand_receptor_interaction.y <- NULL
+
 return(df_syng)
 }
 

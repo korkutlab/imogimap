@@ -15,7 +15,8 @@ im_syng(
   specificity,
   N_iteration_specificity,
   sensitivity,
-  N_iteration_sensitivity
+  N_iteration_sensitivity,
+  add_receptor_ligand = FALSE
 )
 }
 \arguments{
@@ -42,6 +43,8 @@ Default is 1000.}
 
 \item{N_iteration_sensitivity}{Number of iterations for random sampling for sensitivity analysis.
 Default is 1000.}
+
+\item{add_receptor_ligand}{An optional logical indicating whether receptor_ligands pair should be added. Default is FALSE.}
 }
 \value{
 a data.frames of synergy scores and bootstrapping p.values
