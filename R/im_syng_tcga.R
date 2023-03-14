@@ -110,7 +110,7 @@ im_syng_tcga <- function(onco_gene, icp_gene, cohort, select_iap, method, ndatam
     data_expression <- df@assays@data@listData[[1]]
     colnames(data_expression)<-  substr(colnames(data_expression), 1, 15)
     if(!missing(sample_list)){
-      data_expression<-data_expression[,sample_list ]
+      data_expression<-data_expression[,intersect(sample_list,colnames(data_expression)) ]
       if(ncol(data_expression)==0){
         stop("ERROR: barcodes not found.")
       }
