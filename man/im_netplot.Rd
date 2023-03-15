@@ -26,7 +26,7 @@ A plotted igraph object showing network of synergistic (red) and antagonistic (b
 Creates and plot an igraph network from dataframe
 }
 \details{
-im_netplot uses \pkg{igraph} to construct and plot network from synergy score data frame. Immune-checkpoints/onco-genes are depicted as black/white vertices, and positive/negative synergistic interactions are depicted as red/blue edges. Thickness of an edge is determined by the absolute value of the score, and the size of each vertex is determined by its degree. Edges with absolute values lower that the cut-off will be removed from the graph.
+im_netplot uses \pkg{igraph} to construct and plot network from synergy score data frame. Dark red (Dark blue) vertices identify over-expression (low-expression) of Immune-checkpoint genes and orange (blue) vertices identify over-expression (low-expression) of oncogenes. up-regulations (down-regulations) of the immune phenotype are depicted as red (blue) edges. Thickness of an edge is determined by the absolute value of the score, and the size of each vertex is determined by its degree. Edges with absolute values lower that the cut-off will be removed from the graph.
 
 cutoff=0 does not remove any edges. cutoff=1 removes all edges. Default is 0.95, which keeps scores with their absolute value  higher than 0.95 quantile.
 seed is an integer that is the starting point from which random numbers are generated in igraph. Seed value is used for the reproducibility of plot layout. different seed numbers will generate different
